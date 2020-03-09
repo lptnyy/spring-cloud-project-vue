@@ -16,7 +16,7 @@ export const getUserInfo = () => {
 
 export const getUserList = (params) => {
   return axios.request({
-    url: '/user/userPageList',
+    url: '/system/user/userPageList',
     method: 'post',
     data: params
   })
@@ -29,6 +29,30 @@ export const logout = (token) => {
     params: {
       access_token: token
     }
+  })
+}
+
+export const updateStats = (params) => {
+  return axios.request({
+    url: '/system/user/updateStats',
+    method: 'post',
+    data: params
+  })
+}
+
+export const deleteUser = (params) => {
+  return axios.request({
+    url: '/system/user/delete',
+    method: 'post',
+    data: params
+  })
+}
+
+export const updateUser = (params) => {
+  return axios.request({
+    url: '/system/user/update',
+    method: 'post',
+    data: params
   })
 }
 

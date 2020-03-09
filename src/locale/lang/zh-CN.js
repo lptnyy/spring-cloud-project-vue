@@ -44,5 +44,20 @@ export default {
   drag_drawer_page: '可拖动抽屉',
   tree_select_page: '树状下拉选择器',
   system: '系统管理',
-  user: '管理员'
+  user: '管理员',
+  generator: '代码生成器',
+  menu: '菜单管理',
+  usertable: {
+    userName: '用户名',
+    loginNum: '登录次数',
+    stats: '状态',
+    lastLoginTime: '登录时间',
+    createTime: '创建时间',
+    action: '操作',
+    statscancellation: '已注销',
+    statsnormal: '正常',
+    buttonstats: '注销',
+    buttonrecovery: '恢复',
+    searchtile: '用户名'
+  }
 }

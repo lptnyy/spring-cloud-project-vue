@@ -44,5 +44,20 @@ export default {
   drag_drawer_page: 'Draggable Drawer',
   tree_select_page: 'Tree Selector',
   system: 'system',
-  user: 'manger'
+  user: 'manger',
+  generator: 'generator',
+  menu: 'menu',
+  usertable: {
+    userName: 'UserName',
+    loginNum: '登录次数',
+    stats: '状态',
+    lastLoginTime: '登录时间',
+    createTime: '创建时间',
+    action: '操作',
+    statscancellation: '已注销',
+    statsnormal: '正常',
+    buttonstats: '注销',
+    buttonrecovery: '恢复',
+    searchtitile: '登录名称'
+  }
 }

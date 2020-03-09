@@ -449,6 +449,24 @@ export default [
           title: 'user'
         },
         component: () => import('@/view/pro/system/user/index')
+      },
+      {
+        path: '/generator',
+        name: 'generator',
+        meta: {
+          icon: 'md-funnel',
+          title: 'generator'
+        },
+        component: () => import('@/view/pro/gen/index')
+      },
+      {
+        path: '/menu',
+        name: 'menu',
+        meta: {
+          icon: 'md-funnel',
+          title: 'menu'
+        },
+        component: () => import('@/view/pro/system/menu/index')
       }
     ]
   },

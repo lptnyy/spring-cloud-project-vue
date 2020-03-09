@@ -43,7 +43,21 @@ export default {
   org_tree_page: '組織結構樹',
   drag_drawer_page: '可拖動抽屜',
   tree_select_page: '樹狀下拉選擇器',
-  // 新加字段
-  system: 'system',
-  user: 'user'
+  system: '系统管理',
+  user: '管理员',
+  generator: '代码生成器',
+  menu: '菜单管理',
+  usertable: {
+    userName: '用户名',
+    loginNum: '登录次数',
+    stats: '状态',
+    lastLoginTime: '登录时间',
+    createTime: '创建时间',
+    action: '操作',
+    statscancellation: '已注销',
+    statsnormal: '正常',
+    buttonstats: '注销',
+    buttonrecovery: '恢复',
+    searchtile: '用户名'
+  }
 }

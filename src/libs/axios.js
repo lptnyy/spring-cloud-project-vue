@@ -7,11 +7,13 @@ class HttpRequest {
     this.queue = {}
   }
   getInsideConfig () {
+    var headers = {}
+    if (user.state.token !== '') {
+      headers.Authorization = 'Bearer ' + user.state.token
+    }
     const config = {
       baseURL: this.baseUrl,
-      headers: {
-        Authorization: 'Bearer ' + user.state.token
-      }
+      headers: headers
     }
     return config
   }
