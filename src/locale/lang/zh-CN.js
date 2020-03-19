@@ -47,6 +47,7 @@ export default {
   user: '管理员',
   generator: '代码生成器',
   menu: '菜单管理',
+  role: '角色管理',
   usertable: {
     userName: '用户名',
     loginNum: '登录次数',

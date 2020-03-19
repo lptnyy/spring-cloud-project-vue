@@ -467,6 +467,15 @@ export default [
           title: 'menu'
         },
         component: () => import('@/view/pro/system/menu/index')
+      },
+      {
+        path: '/role',
+        name: 'role',
+        meta: {
+          icon: 'md-funnel',
+          title: 'role'
+        },
+        component: () => import('@/view/pro/system/role/index')
       }
     ]
   },

@@ -3,7 +3,7 @@
 </style>
 <template>
   <Row>
-        <Col span="11">
+        <Col span="8">
             <Card :bordered="false">
                 <p slot="title">生成器配置</p>
                   <Form :model="formItem" :label-width="120">
@@ -49,8 +49,8 @@
                   </Form>
             </Card>
         </Col>
-        <Col span="11" offset="1">
-            <Card shadow>
+        <Col span="15" offset="1">
+            <Card :bordered="false">
                 <p slot="title">数据库表</p>
                 <Table border :columns="columns12" :data="data6">
                     <template slot-scope="{ row }" slot="name">
@@ -87,25 +87,25 @@ export default {
       },
       columns12: [
         {
-            title: '表名',
-            key: 'tableName'
+          title: '表名',
+          key: 'tableName'
         },
         {
-            title: '备注',
-            key: 'tableComment'
+          title: '备注',
+          key: 'tableComment'
         },
         {
-            title: '创建时间',
-            key: 'createTime'
+          title: '创建时间',
+          key: 'createTime'
         },
         {
-            title: '操作',
-            slot: 'action',
-            width: 150,
-            align: 'center'
+          title: '操作',
+          slot: 'action',
+          width: 150,
+          align: 'center'
         }
-     ],
-     data6: []
+      ],
+      data6: []
     }
   },
   methods: {
@@ -121,17 +121,16 @@ export default {
           }
         })
     },
-    getTableInfo(tableName) {
-        this.formItem.tableName = tableName
-        generator(this.formItem)
-        .then(res => {
-          var data = res.data
-          if (data.code !== 200) {
-            this.$Message.error(data.msg)
-          } else {
-            this.$Message.success('操作成功')
-          }
-        })
+    getTableInfo (tableName) {
+      this.formItem.tableName = tableName
+      generator(this.formItem).then(res => {
+        var data = res.data
+        if (data.code !== 200) {
+          this.$Message.error(data.msg)
+        } else {
+          this.$Message.success('操作成功')
+        }
+      })
     }
   }
 }

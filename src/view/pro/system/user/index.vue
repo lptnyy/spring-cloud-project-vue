@@ -15,7 +15,7 @@
 
 <script>
 import Tables from '_c/tables'
-import { getUserList, updateStats, deleteUser, updateUser } from '@/api/user'
+import { getUserList, updateStats, deleteUser } from '@/api/user'
 
 export default {
   name: 'admin',

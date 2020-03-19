@@ -47,6 +47,7 @@ export default {
   user: 'manger',
   generator: 'generator',
   menu: 'menu',
+  role: 'role',
   usertable: {
     userName: 'UserName',
     loginNum: '登录次数',

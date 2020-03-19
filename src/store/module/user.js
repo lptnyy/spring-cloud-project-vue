@@ -103,7 +103,6 @@ export default {
     // 获取用户相关信息
     getUserInfo ({ state, commit }) {
       return new Promise((resolve, reject) => {
-        console.log('logkin')
         try {
           getUserInfo().then(res => {
             const data = res.data
