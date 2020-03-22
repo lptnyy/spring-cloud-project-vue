@@ -10,7 +10,9 @@ import {
   getUnreadCount
 } from '@/api/user'
 import { setToken } from '@/libs/util'
-import { downloadUrl } from '@/config'
+import config from '@/config'
+const { downloadUrl } = config
+
 export default {
   state: {
     downloadUrl: downloadUrl,

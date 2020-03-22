@@ -17,20 +17,20 @@
       title="添加管理员"
       :footer-hide=true>
         <Form ref="formInline" :model="formInline" :rules="ruleValidate">
-          <FormItem label="头像" prop="headImage">
+          <FormItem label="头像" prop="headImg">
             <img style="width: 60px;" :src="formInline.headImg"/>
             <Upload :show-upload-list="false" :on-success="onUploadSuccess" :format="['jpg','jpeg','png']" :headers="headers" :action="uploadUrl+'oss/file/uploadMultipartFile'">
               <Button icon="ios-cloud-upload-outline">上传图片</Button>
             </Upload>
           </FormItem>
           <FormItem label="账户名" prop="userName">
-            <Input v-model="formInline.userName" placeholder="输入账户"></Input>
+            <Input v-model="formInline.userName" placeholder="输入账户" />
           </FormItem>
           <FormItem label="密码" prop="passWord">
-            <Input v-model="formInline.passWord" placeholder="输入密码"></Input>
+            <Input v-model="formInline.passWord" placeholder="输入密码" />
           </FormItem>
-          <FormItem label="重复密码" prop="passWord">
-            <Input v-model="formInline.resPassWord" placeholder="输入密码"></Input>
+          <FormItem label="重复密码" prop="resPassWord">
+            <Input v-model="formInline.resPassWord" placeholder="输入密码" />
           </FormItem>
        </Form>
         <div class="foodl">
@@ -43,7 +43,7 @@
 
 <script>
 import Tables from '_c/tables'
-import { getUserList, updateStats, deleteUser } from '@/api/user'
+import { getUserList, updateStats, deleteUser, saveUser } from '@/api/user'
 import userStore from '@/store/module/user'
 
 export default {
@@ -52,11 +52,36 @@ export default {
     Tables
   },
   data () {
+    const that = this
+    const validatePassCheck = function (rule, value, callback) {
+      if (value === '') {
+        return callback(new Error('请输入重复密码'))
+      } else if (value !== that.formInline.passWord) {
+        return callback(new Error('两次密码不一致'))
+      }
+      callback()
+    }
+
     return {
       uploadUrl: userStore.state.baseUrl,
       downloadUrl: userStore.state.downloadUrl,
       addFlag: false,
+      ruleValidate: {
+        headImg: [
+          { required: true, message: '请上传头像', trigger: 'blur' }
+        ],
+        userName: [
+          { required: true, message: '请输入账号名', trigger: 'blur' }
+        ],
+        passWord: [
+          { required: true, message: '请输入密码', trigger: 'blur' }
+        ],
+        resPassWord: [
+          { required: true, validator: validatePassCheck, trigger: 'blur' }
+        ]
+      },
       formInline: {
+        userName: '',
         headImg: '',
         passWord: '',
         resPassWord: ''
@@ -144,6 +169,26 @@ export default {
     }
   },
   methods: {
+    cancel () {
+      this.addFlag = false
+      this.formInline = {
+        userName: '',
+        headImg: '',
+        passWord: '',
+        resPassWord: ''
+      }
+    },
+    handleSubmit (name) {
+      this.$refs['formInline'].validate((valid) => {
+        if (valid) {
+          this.formInline.userPass = this.formInline.passWord
+          saveUser(this.formInline)
+            .then(res => {
+              this.initData()
+            })
+        }
+      })
+    },
     onUploadSuccess (response, file, fileList) {
       if (response.code !== 200) {
         this.$Message.error('上传失败')
@@ -154,6 +199,12 @@ export default {
     },
     addBtnClick () {
       this.addFlag = true
+      this.formInline = {
+        userName: '',
+        headImg: '',
+        passWord: '',
+        resPassWord: ''
+      }
     },
     tableOnChange (index) {
       console.log(index)

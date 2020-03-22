@@ -22,6 +22,14 @@ export const getUserList = (params) => {
   })
 }
 
+export const saveUser = (params) => {
+  return axios.request({
+    url: '/system/user/save',
+    method: 'post',
+    data: params
+  })
+}
+
 export const logout = (token) => {
   return axios.request({
     url: '/auth/oauth/exit',
