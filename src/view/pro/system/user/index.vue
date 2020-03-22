@@ -5,18 +5,39 @@
   <div>
     <Card>
       <div class="search">
-        <Input class="input" v-model="username" placeholder="用户名"/><Button @click="search" type="primary">查询</Button>
+        <Input class="input" v-model="username" placeholder="用户名"/>
+        <Button @click="search">查询</Button>
+        <Button class="add_button" @click="addBtnClick" type="primary">添加</Button>
       </div>
       <Table border :columns="columns" :data="tableData"></Table>
-      <Page class="page" @on-page-size-change="onPageSizeChange"  show-total show-sizer @on-change="tableOnChange" :total="total" show-elevator />
+      <Page class="page" @on-page-size-change="onPageSizeChange" show-total show-sizer @on-change="tableOnChange" :total="total" show-elevator />
     </Card>
+    <Modal
+      v-model="addFlag"
+      title="添加管理"
+      :footer-hide=true>
+        <Form ref="formInline" :model="formInline" :rules="ruleValidate">
+          <FormItem label="头像" prop="headImage">
+            <Input v-model="formInline.headImage" placeholder="输入账户"></Input>
+          </FormItem>
+          <FormItem label="账户" prop="userName">
+            <Input v-model="formInline.userName" placeholder="输入账户"></Input>
+          </FormItem>
+          <FormItem label="账户" prop="passWord">
+            <Input v-model="formInline.passWord" placeholder="输入密码"></Input>
+          </FormItem>
+       </Form>
+        <div class="foodl">
+          <Button @click="cancel">取消</Button>
+          &nbsp;&nbsp;<Button type="primary" @click="handleSubmit('formInline')">确定</Button>
+        </div>
+    </Modal>
   </div>
 </template>
 
 <script>
 import Tables from '_c/tables'
 import { getUserList, updateStats, deleteUser } from '@/api/user'
-
 export default {
   name: 'admin',
   components: {
@@ -24,6 +45,8 @@ export default {
   },
   data () {
     return {
+      addFlag: false,
+      formInline: [],
       username: '',
       total: 0,
       pageSize: 10,
@@ -104,6 +127,9 @@ export default {
     }
   },
   methods: {
+    addBtnClick () {
+      this.addFlag = true
+    },
     tableOnChange (index) {
       console.log(index)
     },
