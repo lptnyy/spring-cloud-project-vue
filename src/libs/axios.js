@@ -15,6 +15,8 @@ class HttpRequest {
       baseURL: this.baseUrl,
       headers: headers
     }
+    user.state.baseUrl = this.baseUrl
+
     return config
   }
   destroy (url) {

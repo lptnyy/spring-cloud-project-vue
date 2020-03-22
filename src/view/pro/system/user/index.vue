@@ -14,17 +14,23 @@
     </Card>
     <Modal
       v-model="addFlag"
-      title="添加管理"
+      title="添加管理员"
       :footer-hide=true>
         <Form ref="formInline" :model="formInline" :rules="ruleValidate">
           <FormItem label="头像" prop="headImage">
-            <Input v-model="formInline.headImage" placeholder="输入账户"></Input>
+            <img style="width: 60px;" :src="formInline.headImg"/>
+            <Upload :show-upload-list="false" :on-success="onUploadSuccess" :format="['jpg','jpeg','png']" :headers="headers" :action="uploadUrl+'oss/file/uploadMultipartFile'">
+              <Button icon="ios-cloud-upload-outline">上传图片</Button>
+            </Upload>
           </FormItem>
-          <FormItem label="账户" prop="userName">
+          <FormItem label="账户名" prop="userName">
             <Input v-model="formInline.userName" placeholder="输入账户"></Input>
           </FormItem>
-          <FormItem label="账户" prop="passWord">
+          <FormItem label="密码" prop="passWord">
             <Input v-model="formInline.passWord" placeholder="输入密码"></Input>
+          </FormItem>
+          <FormItem label="重复密码" prop="passWord">
+            <Input v-model="formInline.resPassWord" placeholder="输入密码"></Input>
           </FormItem>
        </Form>
         <div class="foodl">
@@ -38,6 +44,8 @@
 <script>
 import Tables from '_c/tables'
 import { getUserList, updateStats, deleteUser } from '@/api/user'
+import userStore from '@/store/module/user'
+
 export default {
   name: 'admin',
   components: {
@@ -45,10 +53,19 @@ export default {
   },
   data () {
     return {
+      uploadUrl: userStore.state.baseUrl,
+      downloadUrl: userStore.state.downloadUrl,
       addFlag: false,
-      formInline: [],
+      formInline: {
+        headImg: '',
+        passWord: '',
+        resPassWord: ''
+      },
       username: '',
       total: 0,
+      headers: {
+        Authorization: 'Bearer ' + userStore.state.token
+      },
       pageSize: 10,
       columns: [
         {
@@ -127,6 +144,14 @@ export default {
     }
   },
   methods: {
+    onUploadSuccess (response, file, fileList) {
+      if (response.code !== 200) {
+        this.$Message.error('上传失败')
+      } else {
+        this.formInline.headImg = this.downloadUrl + response.obj.path
+        this.$Message.success('上传成功')
+      }
+    },
     addBtnClick () {
       this.addFlag = true
     },

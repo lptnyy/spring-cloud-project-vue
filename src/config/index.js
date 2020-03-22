@@ -2,7 +2,7 @@ export default {
   /**
    * @description 配置显示在浏览器标签的title
    */
-  title: 'iView-admin',
+  title: 'pro-admin',
   /**
    * @description token在Cookie中存储的天数，默认1天
    */
@@ -13,13 +13,15 @@ export default {
    *              用来在菜单中显示文字
    */
   useI18n: true,
+
   /**
    * @description api请求基础路径
    */
   baseUrl: {
-    dev: 'http://localhost:8101/',
+    dev: 'http://localhost:8101/', // 后台api接口地址
     pro: 'https://produce.com'
   },
+  downloadUrl: 'http://localhost:8101/oss/file/download?path=', // 图片下载域名
   /**
    * @description 默认打开的首页的路由name值，默认为home
    */

@@ -10,8 +10,11 @@ import {
   getUnreadCount
 } from '@/api/user'
 import { setToken } from '@/libs/util'
+import { downloadUrl } from '@/config'
 export default {
   state: {
+    downloadUrl: downloadUrl,
+    baseUrl: '',
     userName: '',
     userId: '',
     avatarImgPath: '',
@@ -25,6 +28,12 @@ export default {
     messageContentStore: {}
   },
   mutations: {
+    setBaseUrl (state, baseUrl) {
+      state.baseUrl = baseUrl
+    },
+    setDownloadUrl (state, downloadUrl) {
+      state.downloadUrl = downloadUrl
+    },
     setAvatar (state, avatarPath) {
       state.avatarImgPath = avatarPath
     },
