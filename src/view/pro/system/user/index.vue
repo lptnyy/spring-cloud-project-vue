@@ -3,22 +3,39 @@
 </style>
 <template>
   <div>
-    <Card>
-      <div class="search">
-        <Input class="input" v-model="username" placeholder="用户名"/>
-        <Button @click="search">查询</Button>
-        <Button class="add_button" @click="addBtnClick" type="primary">添加</Button>
-      </div>
-      <Table border :columns="columns" :data="tableData"></Table>
-      <Page class="page" @on-page-size-change="onPageSizeChange" show-total show-sizer @on-change="tableOnChange" :total="total" show-elevator />
-    </Card>
+    <Row>
+      <Col span="16">
+        <Card :bordered="false">
+          <p slot="title">管理员管理</p>
+          <div class="search">
+            <Input class="input" v-model="username" placeholder="用户名"/>
+            <Button @click="search">查询</Button>
+            <Button class="add_button" @click="addBtnClick" type="primary">添加</Button>
+          </div>
+          <Table border :columns="columns" :data="tableData"></Table>
+          <Page class="page" @on-page-size-change="onPageSizeChange" show-total show-sizer @on-change="tableOnChange" :total="total" show-elevator />
+        </Card>
+      </Col>
+      <Col span="6" offset="1">
+        <Card :bordered="false">
+          <p slot="title">角色设置</p>
+          <CheckboxGroup v-model="roleCheckDatas">
+            <Checkbox v-for="(item, index) in roleDatas" :key="index" :label="item.roleId" border>{{ item.name }}</Checkbox>
+          </CheckboxGroup>
+          <br/>
+          <Button @click="all">全选</Button>&nbsp;&nbsp;
+          <Button @click="notAll">反选</Button>&nbsp;&nbsp;
+          <Button type="primary">保存</Button>
+        </Card>
+      </Col>
+    </Row>
     <Modal
       v-model="addFlag"
       title="添加管理员"
       :footer-hide=true>
         <Form ref="formInline" :model="formInline" :rules="ruleValidate">
           <FormItem label="头像" prop="headImg">
-            <img style="width: 60px;" :src="formInline.headImg"/>
+            <img style="width: 60px;" :src="this.downloadUrl + formInline.headImg"/>
             <Upload :show-upload-list="false" :on-success="onUploadSuccess" :format="['jpg','jpeg','png']" :headers="headers" :action="uploadUrl+'oss/file/uploadMultipartFile'">
               <Button icon="ios-cloud-upload-outline">上传图片</Button>
             </Upload>
@@ -44,6 +61,7 @@
 <script>
 import Tables from '_c/tables'
 import { getUserList, updateStats, deleteUser, saveUser } from '@/api/user'
+import { getRoleList } from '@/api/role'
 import userStore from '@/store/module/user'
 
 export default {
@@ -63,6 +81,8 @@ export default {
     }
 
     return {
+      roleCheckDatas: [],
+      roleDatas: [],
       uploadUrl: userStore.state.baseUrl,
       downloadUrl: userStore.state.downloadUrl,
       addFlag: false,
@@ -169,6 +189,14 @@ export default {
     }
   },
   methods: {
+    all (row) {
+      for (var i = 0; i < this.roleDatas.length; i++) {
+        this.roleCheckDatas.push(this.roleDatas[i].roleId)
+      }
+    },
+    notAll () {
+      this.roleCheckDatas = []
+    },
     cancel () {
       this.addFlag = false
       this.formInline = {
@@ -184,7 +212,13 @@ export default {
           this.formInline.userPass = this.formInline.passWord
           saveUser(this.formInline)
             .then(res => {
-              this.initData()
+              if (res.data.code === 200) {
+                this.$Message.success('保存成功')
+                this.initData()
+                this.cancel()
+              } else {
+                this.$Message.error(res.data.msg)
+              }
             })
         }
       })
@@ -193,7 +227,7 @@ export default {
       if (response.code !== 200) {
         this.$Message.error('上传失败')
       } else {
-        this.formInline.headImg = this.downloadUrl + response.obj.path
+        this.formInline.headImg = response.obj.path
         this.$Message.success('上传成功')
       }
     },
@@ -258,7 +292,7 @@ export default {
                 this.$Message.success('操作成功')
                 this.initData()
               } else {
-                this.$Message.error('操作成功')
+                this.$Message.error('操作失败')
               }
             })
         }
@@ -296,11 +330,20 @@ export default {
           this.tableData = data
           this.total = res.data.count
         })
+    },
+    initRoleData () {
+      var params = {}
+      getRoleList(params)
+        .then(res => {
+          const data = res.data.obj
+          this.roleDatas = data
+        })
     }
   },
   mounted () {},
   created () {
     this.initData()
+    this.initRoleData()
   }
 }
 </script>

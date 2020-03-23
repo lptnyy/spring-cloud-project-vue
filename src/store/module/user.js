@@ -117,7 +117,7 @@ export default {
         try {
           getUserInfo().then(res => {
             const data = res.data
-            commit('setAvatar', data.userface)
+            commit('setAvatar', downloadUrl + data.userface)
             commit('setUserName', data.username)
             commit('setUserId', data.id)
             commit('setAccess', 'admin')

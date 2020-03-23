@@ -37,12 +37,24 @@ export const saveRole = (params) => {
 }
 
 /**
- * 删除
+ * 保存角色菜单
  * @param {} params
  */
 export const saveRoleMenu = (params) => {
   return axios.request({
     url: '/system/proRoleMenu/save',
+    method: 'post',
+    data: params
+  })
+}
+
+/**
+ * 获取所有角色信息
+ * @param {} params
+ */
+export const getRoleList = (params) => {
+  return axios.request({
+    url: '/system/proRole/getList',
     method: 'post',
     data: params
   })

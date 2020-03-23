@@ -3,8 +3,21 @@
 </style>
 <template>
   <Row>
-        <Col span="8">
+        <Col span="16">
             <Card :bordered="false">
+                <p slot="title">数据库表</p>
+                <Table border :columns="columns12" :data="data6">
+                    <template slot-scope="{ row }" slot="name">
+                        <strong>{{ row.name }}</strong>
+                    </template>
+                    <template slot-scope="{ row, index }" slot="action">
+                        <Button type="success" size="small" style="margin-right: 5px" @click="getTableInfo(row.tableName)">生成</Button>
+                    </template>
+                </Table>
+            </Card>
+        </Col>
+        <Col span="6" offset="1">
+         <Card :bordered="false">
                 <p slot="title">生成器配置</p>
                   <Form :model="formItem" :label-width="120">
                       <FormItem label="数据库地址">
@@ -47,19 +60,6 @@
                           <Button type="primary" @click="getTableList">连接</Button>
                       </FormItem>
                   </Form>
-            </Card>
-        </Col>
-        <Col span="15" offset="1">
-            <Card :bordered="false">
-                <p slot="title">数据库表</p>
-                <Table border :columns="columns12" :data="data6">
-                    <template slot-scope="{ row }" slot="name">
-                        <strong>{{ row.name }}</strong>
-                    </template>
-                    <template slot-scope="{ row, index }" slot="action">
-                        <Button type="success" size="small" style="margin-right: 5px" @click="getTableInfo(row.tableName)">生成</Button>
-                    </template>
-                </Table>
             </Card>
         </Col>
     </Row>

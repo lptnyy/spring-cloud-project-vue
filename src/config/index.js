@@ -21,7 +21,7 @@ export default {
     dev: 'http://localhost:8101/', // 后台api接口地址
     pro: 'https://produce.com'
   },
-  downloadUrl: 'http://localhost:8101/oss/file/download?path=', // 图片下载域名
+  downloadUrl: 'http://wzyfiles.oss-cn-beijing.aliyuncs.com/', // 图片下载域名
   /**
    * @description 默认打开的首页的路由name值，默认为home
    */
