@@ -59,3 +59,15 @@ export const getRoleList = (params) => {
     data: params
   })
 }
+
+/**
+ * 设置管理员角色
+ * @param {} params
+ */
+export const saveAdminRole = (params) => {
+  return axios.request({
+    url: '/system/proUserRole/save',
+    method: 'post',
+    data: params
+  })
+}

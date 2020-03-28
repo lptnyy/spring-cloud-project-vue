@@ -25,7 +25,7 @@
           <br/>
           <Button @click="all">全选</Button>&nbsp;&nbsp;
           <Button @click="notAll">反选</Button>&nbsp;&nbsp;
-          <Button type="primary">保存</Button>
+          <Button @click="saveOption" type="primary">保存</Button>
         </Card>
       </Col>
     </Row>
@@ -61,7 +61,7 @@
 <script>
 import Tables from '_c/tables'
 import { getUserList, updateStats, deleteUser, saveUser } from '@/api/user'
-import { getRoleList } from '@/api/role'
+import { getRoleList, saveAdminRole } from '@/api/role'
 import userStore from '@/store/module/user'
 
 export default {
@@ -81,6 +81,7 @@ export default {
     }
 
     return {
+      optionId: 0,
       roleCheckDatas: [],
       roleDatas: [],
       uploadUrl: userStore.state.baseUrl,
@@ -156,9 +157,20 @@ export default {
           title: '操作',
           key: 'action',
           fixed: 'right',
-          width: 120,
+          width: 160,
           render: (h, params) => {
             return h('div', [
+              h('Button', {
+                props: {
+                  type: 'text',
+                  size: 'small'
+                },
+                on: {
+                  click: () => {
+                    this.option(params.row)
+                  }
+                }
+              }, '设置'),
               h('Button', {
                 props: {
                   type: 'text',
@@ -189,6 +201,30 @@ export default {
     }
   },
   methods: {
+    option (row) {
+      this.optionId = row.userId
+      this.roleCheckDatas = row.ids
+      this.$Message.success('请勾选择角色')
+    },
+    saveOption () {
+      if (this.optionId === 0) {
+        this.$Message.error('请在列表当中选择数据（设置）')
+      } else {
+        var adminRole = {}
+        adminRole.userId = this.optionId
+        adminRole.ids = this.roleCheckDatas
+        saveAdminRole(adminRole)
+          .then(res => {
+            if (res.data.code === 200) {
+              this.$Message.success('保存成功')
+              this.initData()
+              this.cancel()
+            } else {
+              this.$Message.error(res.data.msg)
+            }
+          })
+      }
+    },
     all (row) {
       for (var i = 0; i < this.roleDatas.length; i++) {
         this.roleCheckDatas.push(this.roleDatas[i].roleId)
