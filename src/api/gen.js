@@ -20,6 +20,7 @@ export const generator = (params) => {
   return axios.request({
     url: '/gen/db/generator',
     method: 'post',
-    data: params
+    data: params,
+    responseType: 'blob'
   })
 }

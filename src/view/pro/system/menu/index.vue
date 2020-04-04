@@ -4,14 +4,14 @@
 <template>
   <div>
     <Row>
-      <Col span="6">
+      <Col span="4">
         <Card :bordered="false">
           <p slot="title">菜单管理</p>
           <Tree @on-check-change="checkSelect" @on-select-change="downBtn" class="buttontop" :data="data1" show-checkbox></Tree>
           <p><Button type="primary" @click="blur">新建</Button>&nbsp;&nbsp;<Button @click="btnMenuDelete" type="warning">删除</Button></p>
         </Card>
       </Col>
-      <Col span="11" offset="1">
+      <Col span="6" offset="1">
         <Card :bordered="false">
           <p slot="title">菜单属性</p>
           <Form :model="formItem" :label-width="100">
