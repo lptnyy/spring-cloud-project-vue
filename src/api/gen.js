@@ -1,4 +1,5 @@
 import axios from '@/libs/api.request'
+import user from '../store/module/user'
 
 /**
  * 查询数据库表列表
@@ -23,4 +24,12 @@ export const generator = (params) => {
     data: params,
     responseType: 'blob'
   })
+}
+
+/**
+ * 查询数据库表列表
+ * @param {} params
+ */
+export const downloadZip = () => {
+  window.location.href = user.state.baseUrl + 'gen/db/downloadZip'
 }

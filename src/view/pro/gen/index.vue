@@ -66,7 +66,7 @@
 </template>
 
 <script>
-import { getTableList, generator } from '@/api/gen'
+import { getTableList, generator, downloadZip } from '@/api/gen'
 export default {
   name: 'gen',
   data () {
@@ -109,47 +109,6 @@ export default {
     }
   },
   methods: {
-    // downloadFile (attachment) {
-    //   let that = this
-    //   var ajax = new XMLHttpRequest()
-    //   ajax.responseType = 'blob'
-    //   ajax.open('GET', strategyDownloadUrl + '/' + attachment.id, true)
-    //   ajax.setRequestHeader('X-Authorization', 'Bearer ' + this.$store.state.token)
-    //   ajax.onreadystatechange = function () {
-    //     if (this.readyState == 4) {
-    //       if (this.status == 200) {
-    //         // console.log(this.response) // should be a blob
-    //         if (this.response.type == 'application/octet-stream') {
-    //           that.downloadHandler(this.response, attachment.displayName)
-    //         } else {
-    //           swal('您要下载的资源已被删除！', '', 'error')
-    //         }
-    //       } else if (this.responseText != '') {
-    //         // console.log(this.responseText);
-    //       }
-    //     } else if (this.readyState == 2) {
-    //       if (this.status == 200) {
-    //         this.responseType = 'blob'
-    //       } else {
-    //         this.responseType = 'text'
-    //       }
-    //     }
-    //   }
-    //   ajax.send(null)
-    // },
-    // downloadHandler (content, filename) {
-    //   var eleLink = document.createElement('a')
-    //   eleLink.download = filename
-    //   eleLink.style.display = 'none'
-    //   // 字符内容转变成blob地址
-    //   var blob = new Blob([content], { type: 'application/octet-stream' })
-    //   eleLink.href = URL.createObjectURL(blob)
-    //   // 触发点击
-    //   document.body.appendChild(eleLink)
-    //   eleLink.click()
-    //   // 然后移除
-    //   document.body.removeChild(eleLink)
-    // },
     getTableList () {
       getTableList(this.formItem)
         .then(res => {
@@ -165,22 +124,7 @@ export default {
     getTableInfo (tableName) {
       this.formItem.tableName = tableName
       generator(this.formItem).then(res => {
-        const content = res.data
-        console.log(content)
-        const blob = new Blob([content], { type: 'application/zip' })
-        const fileName = 'generator.zip'
-        if ('download' in document.createElement('a')) { // 非IE下载
-          const elink = document.createElement('a')
-          elink.download = fileName
-          elink.style.display = 'none'
-          elink.href = URL.createObjectURL(blob)
-          document.body.appendChild(elink)
-          elink.click()
-          URL.revokeObjectURL(elink.href) // 释放URL 对象
-          document.body.removeChild(elink)
-        } else { // IE10+下载
-          navigator.msSaveBlob(blob, fileName)
-        }
+        downloadZip()
       })
     }
   }
