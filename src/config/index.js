@@ -15,6 +15,11 @@ export default {
   useI18n: true,
 
   /**
+   * 路由模式
+   */
+  routerModel: 'history', // hash
+
+  /**
    * @description api请求基础路径
    */
   baseUrl: {

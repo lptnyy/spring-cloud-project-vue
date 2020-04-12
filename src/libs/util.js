@@ -392,3 +392,63 @@ export const setTitle = (routeItem, vm) => {
   const resTitle = pageTitle ? `${title} - ${pageTitle}` : title
   window.document.title = resTitle
 }
+
+export const backendMenusToRouters = (menus) => {
+  let routers = []
+  forEach(menus, (menu) => {
+    // 将后端数据转换成路由数据
+    let route = backendMenuToRoute(menu)
+    // 如果后端数据有下级，则递归处理下级
+    if (menu.children && menu.children.length !== 0) {
+      route.children = backendMenusToRouters(menu.children)
+    }
+    routers.push(route)
+  })
+  return routers
+}
+
+/**
+ * @description 将后端菜单转换为路由
+ * @param {Object} menu
+ * @returns {Object}
+ */
+const backendMenuToRoute = (menu) => {
+  // 具体内容根据自己的数据结构来定，这里需要注意的一点是
+  // 原先routers写法是component: () => import('@/view/error-page/404.vue')
+  // 经过json数据转换，这里会丢失，所以需要按照上面提过的做转换，下面只写了核心点，其他自行处理
+  let route = Object.assign({}, menu)
+  // route.component = () => import(`/* webpackChunkName: ${menu.title} */'@/${menu.component}'`)
+  // route.component = () => import(`@/${menu.component}`)
+  return route
+}
+
+/**
+ * 筛选用户的路由
+ * 从dynamic-routes.js中读取所有路由
+ * 与用户的access权限进行对比，留下具有权限的路由，动态加入
+ * @param routers dynamic-routes.js配置
+ * @param access 用户权限
+ * @returns {[]}
+ */
+export const filterUserRouter = (routers, access) => {
+  let res = []
+  forEach(routers, item => {
+    res.push(item)
+    // 没meta的自动加入
+    // if (!item.meta || (item.meta && !item.meta.hideInMenu)) {
+    // 必须有meta而且不隐藏的
+    // if ((item.meta && !item.meta.hideInMenu && item.meta.access && item.meta.access.length > 0)) {
+    //   let obj = item;
+    //   if ((hasChild(item)) && showThisMenuEle(item, access)) {
+    //     obj.children = filterUserRouter(item.children, access)
+    //   }
+    //   //如果配置了href,设置href
+    //   if (item.meta && item.meta.href) obj.href = item.meta.href
+    //   //如果本节点有权限，加入
+    //   if (showThisMenuEle(item, access))
+    //     res.push(obj)
+    // }
+  }
+  )
+  return res
+}

@@ -9,6 +9,7 @@ import {
   restoreTrash,
   getUnreadCount
 } from '@/api/user'
+
 import { setToken } from '@/libs/util'
 import config from '@/config'
 const { downloadUrl } = config
@@ -117,6 +118,8 @@ export default {
         try {
           getUserInfo().then(res => {
             const data = res.data
+            var user = {}
+            user.userId = data.id
             commit('setAvatar', downloadUrl + data.userface)
             commit('setUserName', data.username)
             commit('setUserId', data.id)

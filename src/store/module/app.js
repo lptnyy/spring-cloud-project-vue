@@ -9,12 +9,15 @@ import {
   routeEqual,
   getRouteTitleHandled,
   localSave,
-  localRead
+  localRead,
+  filterUserRouter
 } from '@/libs/util'
+import { getUserPerms } from '@/api/routers'
+import menu_routers from '@/router/menu_routers'
 import { saveErrorLogger } from '@/api/data'
 import router from '@/router'
-import routers from '@/router/routers'
 import config from '@/config'
+import user from './user'
 const { homeName } = config
 
 const closePage = (state, route) => {
@@ -27,18 +30,27 @@ const closePage = (state, route) => {
 
 export default {
   state: {
+    routers: [],
+    hasGetRouter: false,
     breadCrumbList: [],
     tagNavList: [],
     homeRoute: {},
     local: localRead('local'),
     errorList: [],
-    hasReadErrorPage: false
+    hasReadErrorPage: false,
+    menuList: []
   },
   getters: {
-    menuList: (state, getters, rootState) => getMenuByRouter(routers, rootState.user.access),
     errorCount: state => state.errorList.length
   },
   mutations: {
+    setRouters (state, routers) {
+      state.routers = routers
+      state.menuList = getMenuByRouter(routers, [])
+    },
+    setHasGetRouter (state, status) {
+      state.status = status
+    },
     setBreadCrumb (state, route) {
       state.breadCrumbList = getBreadCrumbList(route, state.homeRoute)
     },
@@ -88,6 +100,30 @@ export default {
     }
   },
   actions: {
+
+    /**
+     * 从后台获取用户拥有的菜单权限数组
+     * @param commit
+     * @returns {Promise<unknown>}
+     */
+    getUserMenus ({ commit }) {
+      return new Promise((resolve, reject) => {
+        try {
+          var perms = {}
+          perms.userId = user.state.userId
+          getUserPerms(perms).then(res => {
+            let routers = filterUserRouter(menu_routers, res.data)
+            commit('setRouters', routers)
+            commit('setHasGetRouter', true)
+            resolve(routers)
+          }).catch(err => {
+            reject(err)
+          })
+        } catch (error) {
+          reject(error)
+        }
+      })
+    },
     addErrorLog ({ commit, rootState }, info) {
       if (!window.location.href.includes('error_logger_page')) commit('setHasReadErrorLoggerStatus', false)
       const { user: { token, userId, userName } } = rootState

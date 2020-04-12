@@ -16,15 +16,15 @@
           <p slot="title">菜单属性</p>
           <Form :model="formItem" :label-width="100">
             <FormItem label="名称">
-                <Input v-model="formItem.name" placeholder="名称"></Input>
+                <Input v-model="formItem.title" placeholder="名称"></Input>
             </FormItem>
             <FormItem label="图标">
                 <Input v-model="formItem.icon" placeholder="图标"></Input>
             </FormItem>
-            <FormItem label="请求路径">
-                <Input v-model="formItem.url" placeholder="请求路径"></Input>
+            <FormItem label="组件名称">
+                <Input v-model="formItem.name" placeholder="组件名称"></Input>
             </FormItem>
-            <FormItem label="页面组件路径">
+            <FormItem label="组件路径">
                 <Input v-model="formItem.path" placeholder="文件物理路径"></Input>
             </FormItem>
             <FormItem label="访问权限">

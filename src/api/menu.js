@@ -47,3 +47,15 @@ export const update = (params) => {
     data: params
   })
 }
+
+/**
+ * 查询此用户权限
+ * @param {} params
+ */
+export const getUserMenus = (params) => {
+  return axios.request({
+    url: '/system/menu/getUserMenus',
+    method: 'post',
+    data: params
+  })
+}
