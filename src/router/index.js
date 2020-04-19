@@ -34,7 +34,6 @@ const initRouters = (store) => {
 router.beforeEach((to, from, next) => {
   iView.LoadingBar.start()
   const token = getToken()
-  console.log(!token)
   if (!token && to.name !== LOGIN_PAGE_NAME) {
     // 未登录且要跳转的页面不是登录页
     next({
@@ -50,7 +49,9 @@ router.beforeEach((to, from, next) => {
     })
   } else {
     if (store.state.user.hasGetInfo) {
-      initRouters(store)
+      if (!store.state.app.hasGetRouter) {
+        initRouters(store)
+      }
       next()
     } else {
       store.dispatch('getUserInfo').then(user => {

@@ -3,7 +3,7 @@
 </style>
 <template>
   <Row>
-        <Col span="16">
+        <Col span="12">
             <Card :bordered="false">
                 <p slot="title">数据库表</p>
                 <Table border :columns="columns12" :data="data6">
@@ -16,7 +16,7 @@
                 </Table>
             </Card>
         </Col>
-        <Col span="6" offset="1">
+        <Col span="10" offset="1">
          <Card :bordered="false">
                 <p slot="title">生成器配置</p>
                   <Form :model="formItem" :label-width="120">
@@ -57,14 +57,13 @@
                           <Input v-model="formItem.dtoPgk" placeholder="com.wzy.dto"/>
                       </FormItem>
                       <FormItem>
-                          <Button type="primary" @click="getTableList">连接</Button>
+                          <Button :disabled="!authorities('gen:connecnt')" type="primary" @click="getTableList">连接</Button>
                       </FormItem>
                   </Form>
             </Card>
         </Col>
     </Row>
 </template>
-
 <script>
 import { getTableList, generator, downloadZip } from '@/api/gen'
 export default {

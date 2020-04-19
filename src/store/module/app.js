@@ -49,7 +49,7 @@ export default {
       state.menuList = getMenuByRouter(routers, [])
     },
     setHasGetRouter (state, status) {
-      state.status = status
+      state.hasGetRouter = status
     },
     setBreadCrumb (state, route) {
       state.breadCrumbList = getBreadCrumbList(route, state.homeRoute)
@@ -112,7 +112,7 @@ export default {
           var perms = {}
           perms.userId = user.state.userId
           getUserPerms(perms).then(res => {
-            let routers = filterUserRouter(menu_routers, res.data)
+            let routers = filterUserRouter(menu_routers, res.data.obj)
             commit('setRouters', routers)
             commit('setHasGetRouter', true)
             resolve(routers)

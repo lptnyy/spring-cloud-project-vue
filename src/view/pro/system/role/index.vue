@@ -45,13 +45,11 @@
 import Tables from '_c/tables'
 import { getRolePageList, deleteRole, saveRole, saveRoleMenu } from '@/api/role'
 import { getMenuList } from '@/api/menu'
-import recursion from '@/utils/recursion'
 
 export default {
   name: 'role',
   components: {
-    Tables,
-    recursion
+    Tables
   },
   data () {
     return {

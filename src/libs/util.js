@@ -2,6 +2,7 @@ import Cookies from 'js-cookie'
 // cookie保存的天数
 import config from '@/config'
 import { forEach, hasOneOf, objEqual } from '@/libs/tools'
+import Main from '@/components/main'
 const { title, cookieExpires, useI18n } = config
 
 export const TOKEN_KEY = 'token'
@@ -432,23 +433,19 @@ const backendMenuToRoute = (menu) => {
  */
 export const filterUserRouter = (routers, access) => {
   let res = []
-  forEach(routers, item => {
+  forEach(access, item => {
+    if (item.type === '0') {
+      item.component = Main
+    }
+    if (item.children !== null && item.children.length > 0) {
+      forEach(item.children, item2 => {
+        if (item2.type === '1') {
+          var myComponent = () => import('@/view' + item2.path)
+          item2.component = myComponent
+        }
+      })
+    }
     res.push(item)
-    // 没meta的自动加入
-    // if (!item.meta || (item.meta && !item.meta.hideInMenu)) {
-    // 必须有meta而且不隐藏的
-    // if ((item.meta && !item.meta.hideInMenu && item.meta.access && item.meta.access.length > 0)) {
-    //   let obj = item;
-    //   if ((hasChild(item)) && showThisMenuEle(item, access)) {
-    //     obj.children = filterUserRouter(item.children, access)
-    //   }
-    //   //如果配置了href,设置href
-    //   if (item.meta && item.meta.href) obj.href = item.meta.href
-    //   //如果本节点有权限，加入
-    //   if (showThisMenuEle(item, access))
-    //     res.push(obj)
-    // }
-  }
-  )
+  })
   return res
 }

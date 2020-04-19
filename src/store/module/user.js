@@ -28,9 +28,13 @@ export default {
     messageUnreadList: [],
     messageReadedList: [],
     messageTrashList: [],
-    messageContentStore: {}
+    messageContentStore: {},
+    authorities: []
   },
   mutations: {
+    setAuthorities (state, authorities) {
+      state.authorities = authorities
+    },
     setBaseUrl (state, baseUrl) {
       state.baseUrl = baseUrl
     },
@@ -125,6 +129,8 @@ export default {
             commit('setUserId', data.id)
             commit('setAccess', 'admin')
             commit('setHasGetInfo', true)
+            commit('setAuthorities', data.authorities)
+            console.log(data.authorities)
             resolve(data)
           }).catch(err => {
             reject(err)
