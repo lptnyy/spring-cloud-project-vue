@@ -4,7 +4,7 @@
 <template>
   <div>
     <Row>
-      <Col span="16">
+      <Col span="18">
         <Card :bordered="false">
           <p slot="title">管理员管理</p>
           <div class="search">
@@ -16,7 +16,7 @@
           <Page class="page" @on-page-size-change="onPageSizeChange" show-total show-sizer @on-change="tableOnChange" :total="total" show-elevator />
         </Card>
       </Col>
-      <Col span="6" offset="1">
+      <Col span="5" offset="1">
         <Card :bordered="false">
           <p slot="title">角色设置</p>
           <CheckboxGroup v-model="roleCheckDatas">
@@ -60,7 +60,7 @@
 
 <script>
 import Tables from '_c/tables'
-import { getUserList, updateStats, deleteUser, saveUser } from '@/api/user'
+import { getUserList, updateStats, deleteUser, saveUser, updateUser } from '@/api/user'
 import { getRoleList, saveAdminRole } from '@/api/role'
 import userStore from '@/store/module/user'
 
@@ -157,9 +157,20 @@ export default {
           title: '操作',
           key: 'action',
           fixed: 'right',
-          width: 160,
+          width: 200,
           render: (h, params) => {
             return h('div', [
+              h('Button', {
+                props: {
+                  type: 'text',
+                  size: 'small'
+                },
+                on: {
+                  click: () => {
+                    this.editButton(params.index)
+                  }
+                }
+              }, '编辑'),
               h('Button', {
                 props: {
                   type: 'text',
@@ -170,7 +181,7 @@ export default {
                     this.option(params.row)
                   }
                 }
-              }, '设置'),
+              }, '角色'),
               h('Button', {
                 props: {
                   type: 'text',
@@ -246,16 +257,30 @@ export default {
       this.$refs['formInline'].validate((valid) => {
         if (valid) {
           this.formInline.userPass = this.formInline.passWord
-          saveUser(this.formInline)
-            .then(res => {
-              if (res.data.code === 200) {
-                this.$Message.success('保存成功')
-                this.initData()
-                this.cancel()
-              } else {
-                this.$Message.error(res.data.msg)
-              }
-            })
+          console.log(this.formInline.userId)
+          if (this.formInline.userId !== null) {
+            updateUser(this.formInline)
+              .then(res => {
+                if (res.data.code === 200) {
+                  this.$Message.success('修改成功')
+                  this.initData()
+                  this.cancel()
+                } else {
+                  this.$Message.error(res.data.msg)
+                }
+              })
+          } else {
+            saveUser(this.formInline)
+              .then(res => {
+                if (res.data.code === 200) {
+                  this.$Message.success('保存成功')
+                  this.initData()
+                  this.cancel()
+                } else {
+                  this.$Message.error(res.data.msg)
+                }
+              })
+          }
         }
       })
     },
@@ -286,6 +311,17 @@ export default {
     },
     search () {
       this.initData()
+    },
+    editButton (index) {
+      let user = this.tableData[index]
+      this.addFlag = true
+      this.formInline = {
+        userId: user.userId,
+        userName: user.userName,
+        headImg: user.headImg,
+        passWord: user.userPass,
+        resPassWord: user.userPass
+      }
     },
     deleteButton (index) {
       var user = this.tableData[index]

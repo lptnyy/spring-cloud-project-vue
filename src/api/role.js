@@ -25,6 +25,18 @@ export const deleteRole = (params) => {
 }
 
 /**
+ * 修改
+ * @param {} params
+ */
+export const updateRole = (params) => {
+  return axios.request({
+    url: '/system/proRole/update',
+    method: 'post',
+    data: params
+  })
+}
+
+/**
  * 删除
  * @param {} params
  */

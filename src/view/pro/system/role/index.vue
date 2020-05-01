@@ -3,7 +3,7 @@
 </style>
 <template>
   <Row>
-    <Col span="16">
+    <Col span="18">
       <Card :bordered="false">
         <p slot="title">角色管理</p>
         <div class="search">
@@ -15,7 +15,7 @@
         <Page class="page" @on-page-size-change="onPageSizeChange"  show-total show-sizer @on-change="tableOnChange" :total="total" show-elevator />
       </Card>
     </Col>
-    <Col span="6" offset="1">
+    <Col span="5" offset="1">
       <Card :bordered="false">
         <p slot="title">菜单设置</p>
         <Tree ref="tree" class="buttontop" :data="data1" show-checkbox></Tree>
@@ -43,7 +43,7 @@
 
 <script>
 import Tables from '_c/tables'
-import { getRolePageList, deleteRole, saveRole, saveRoleMenu } from '@/api/role'
+import { getRolePageList, deleteRole, saveRole, saveRoleMenu, updateRole } from '@/api/role'
 import { getMenuList } from '@/api/menu'
 
 export default {
@@ -84,9 +84,20 @@ export default {
           title: '操作',
           key: 'action',
           fixed: 'right',
-          width: 120,
+          width: 160,
           render: (h, params) => {
             return h('div', [
+              h('Button', {
+                props: {
+                  type: 'text',
+                  size: 'small'
+                },
+                on: {
+                  click: () => {
+                    this.updateBtnClick(params.index)
+                  }
+                }
+              }, '编辑'),
               h('Button', {
                 props: {
                   type: 'text',
@@ -97,7 +108,7 @@ export default {
                     this.tableOption(params.row)
                   }
                 }
-              }, '设置'),
+              }, '菜单'),
               h('Button', {
                 props: {
                   type: 'text',
@@ -176,6 +187,7 @@ export default {
       this.selecData = this.$refs.tree.getCheckedNodes()
     },
     tableOption (row) {
+      this.$Message.success('请勾选择菜单')
       this.tableSelectId = row.roleId
       var params = {}
       params.pageNum = 1
@@ -208,20 +220,40 @@ export default {
     addBtnClick () {
       this.addFlag = true
     },
+    updateBtnClick (index) {
+      let role = this.tableData[index]
+      this.addFlag = true
+      this.formInline.name = role.name
+      this.formInline.roleId = role.roleId
+    },
     handleSubmit (name) {
       this.$refs['formInline'].validate((valid) => {
         if (valid) {
-          saveRole(this.formInline)
-            .then(res => {
-              if (res.data.code === 200) {
-                this.$Message.success('操作成功')
-                this.formInline.name = ''
-                this.addFlag = false
-                this.initData(1)
-              } else {
-                this.$Message.error('操作失败')
-              }
-            })
+          if (this.formInline.roleId !== null) {
+            updateRole(this.formInline)
+              .then(res => {
+                if (res.data.code === 200) {
+                  this.$Message.success('修改成功')
+                  this.formInline.name = ''
+                  this.addFlag = false
+                  this.initData(1)
+                } else {
+                  this.$Message.error('操作失败')
+                }
+              })
+          } else {
+            saveRole(this.formInline)
+              .then(res => {
+                if (res.data.code === 200) {
+                  this.$Message.success('操作成功')
+                  this.formInline.name = ''
+                  this.addFlag = false
+                  this.initData(1)
+                } else {
+                  this.$Message.error('操作失败')
+                }
+              })
+          }
         } else {
 
         }
