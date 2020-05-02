@@ -11,7 +11,8 @@
                         <strong>{{ row.name }}</strong>
                     </template>
                     <template slot-scope="{ row, index }" slot="action">
-                        <Button type="success" size="small" style="margin-right: 5px" @click="getTableInfo(row.tableName)">生成</Button>
+                      <Button type="success" size="small" style="margin-right: 5px" @click="getTableInfo(row.tableName)">生成后端</Button>
+                      <Button type="success" size="small" style="margin-right: 5px" @click="getTableInfoWeb(row.tableName)">生成前端</Button>
                     </template>
                 </Table>
             </Card>
@@ -65,7 +66,7 @@
     </Row>
 </template>
 <script>
-import { getTableList, generator, downloadZip } from '@/api/gen'
+import { getTableList, generator, downloadZip, generatorWeb } from '@/api/gen'
 export default {
   name: 'gen',
   data () {
@@ -100,7 +101,7 @@ export default {
         {
           title: '操作',
           slot: 'action',
-          width: 150,
+          width: 190,
           align: 'center'
         }
       ],
@@ -124,6 +125,12 @@ export default {
       this.formItem.tableName = tableName
       generator(this.formItem).then(res => {
         downloadZip()
+      })
+    },
+    getTableInfoWeb (tableName) {
+      this.formItem.tableName = tableName
+      generatorWeb(this.formItem).then(res => {
+
       })
     }
   }

@@ -30,6 +30,19 @@ export const generator = (params) => {
  * 查询数据库表列表
  * @param {} params
  */
+export const generatorWeb = (params) => {
+  return axios.request({
+    url: '/gen/db/generatorWeb',
+    method: 'post',
+    data: params,
+    responseType: 'blob'
+  })
+}
+
+/**
+ * 查询数据库表列表
+ * @param {} params
+ */
 export const downloadZip = () => {
   window.location.href = user.state.baseUrl + 'gen/db/downloadZip'
 }
