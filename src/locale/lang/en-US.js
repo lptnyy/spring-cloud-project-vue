@@ -48,6 +48,7 @@ export default {
   generator: 'generator',
   menu: 'menu',
   role: 'role',
+  enum: 'enum',
   usertable: {
     userName: 'UserName',
     loginNum: '登录次数',
