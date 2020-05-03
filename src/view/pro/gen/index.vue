@@ -21,36 +21,39 @@
          <Card :bordered="false">
                 <p slot="title">生成器配置</p>
                   <Form :model="formItem" :label-width="120">
-                      <FormItem label="数据库地址">
-                          <Input v-model="formItem.mysql" placeholder="输入mysql连接字符串"/>
-                      </FormItem>
-                      <FormItem label="数据库驱动">
-                          <Input v-model="formItem.mysqlDev" placeholder="输入数据库驱动"/>
-                      </FormItem>
-                      <FormItem label="数据库账号">
-                          <Input v-model="formItem.mysqlUser" placeholder="输入输入库账号"/>
-                      </FormItem>
-                      <FormItem label="数据库密码">
-                          <Input v-model="formItem.msyqlPass" placeholder="输入数据库密码"/>
-                      </FormItem>
-                      <FormItem label="Controller包名">
-                          <Input v-model="formItem.controllerPkg" placeholder="com.wzy.controller"/>
-                      </FormItem>
-                      <FormItem label="api参数包名">
-                          <Input v-model="formItem.apiPkg" placeholder="com.wzy.request"/>
-                      </FormItem>
-                      <FormItem label="Vo包名">
-                          <Input v-model="formItem.voPkg" placeholder="com.wzy.vo"/>
-                      </FormItem>
-                      <FormItem label="Service接口包名">
-                          <Input v-model="formItem.servicePkg" placeholder="com.wzy.service"/>
-                      </FormItem>
-                       <FormItem label="Service实现包名">
-                          <Input v-model="formItem.serviceImplPkg" placeholder="com.wzy.service"/>
-                      </FormItem>
-                       <FormItem label="Feign服务名">
-                          <Input v-model="formItem.feignClientService" placeholder="UserService"/>
-                      </FormItem>
+                    <FormItem label="数据库地址">
+                      <Input v-model="formItem.mysql" placeholder="输入mysql连接字符串"/>
+                    </FormItem>
+                    <FormItem label="数据库驱动">
+                      <Input v-model="formItem.mysqlDev" placeholder="输入数据库驱动"/>
+                    </FormItem>
+                    <FormItem label="数据库账号">
+                      <Input v-model="formItem.mysqlUser" placeholder="输入输入库账号"/>
+                    </FormItem>
+                    <FormItem label="数据库密码">
+                      <Input v-model="formItem.msyqlPass" placeholder="输入数据库密码"/>
+                    </FormItem>
+                    <FormItem label="Controller包名">
+                      <Input v-model="formItem.controllerPkg" placeholder="com.wzy.controller"/>
+                    </FormItem>
+                    <FormItem label="api参数包名">
+                      <Input v-model="formItem.apiPkg" placeholder="com.wzy.request"/>
+                    </FormItem>
+                    <FormItem label="Vo包名">
+                      <Input v-model="formItem.voPkg" placeholder="com.wzy.vo"/>
+                    </FormItem>
+                    <FormItem label="Service接口包名">
+                      <Input v-model="formItem.servicePkg" placeholder="com.wzy.service"/>
+                    </FormItem>
+                    <FormItem label="Service实现包名">
+                      <Input v-model="formItem.serviceImplPkg" placeholder="com.wzy.service"/>
+                    </FormItem>
+                    <FormItem label="Feign服务名">
+                      <Input v-model="formItem.feignClientService" placeholder="UserService"/>
+                    </FormItem>
+                    <FormItem label="网关访问根目录">
+                      <Input v-model="formItem.gateWayPath" placeholder="/system"/>
+                    </FormItem>
                       <FormItem label="Mapper包名">
                           <Input v-model="formItem.mapperPkg" placeholder="com.wzy.mapper"/>
                       </FormItem>
@@ -83,7 +86,8 @@ export default {
         serviceImplPkg: 'com.wzy.system.service',
         mapperPkg: 'com.wzy.system.mapper',
         dtoPgk: 'com.wzy.system.dto',
-        feignClientService: 'system-service'
+        feignClientService: 'system-service',
+        gateWayPath: '/system'
       },
       columns12: [
         {
@@ -130,7 +134,7 @@ export default {
     getTableInfoWeb (tableName) {
       this.formItem.tableName = tableName
       generatorWeb(this.formItem).then(res => {
-
+        downloadZip()
       })
     }
   }
