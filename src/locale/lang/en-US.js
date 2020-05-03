@@ -49,6 +49,7 @@ export default {
   menu: 'menu',
   role: 'role',
   enum: 'enum',
+  file: 'file',
   usertable: {
     userName: 'UserName',
     loginNum: '登录次数',

@@ -49,6 +49,7 @@ export default {
   menu: '菜单管理',
   role: '角色管理',
   enum: '枚举管理',
+  file: '文件管理',
   usertable: {
     userName: '用户名',
     loginNum: '登录次数',
