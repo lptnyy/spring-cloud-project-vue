@@ -5,17 +5,7 @@
         <Card :bordered="false">
           <p slot="title">文件管理</p>
             <div class="search">
-              <Input class="input" v-model="fileId" placeholder="请输入内容"/>
-              <Input class="input" v-model="fileName" placeholder="请输入内容"/>
-              <Input class="input" v-model="physicsPath" placeholder="请输入内容"/>
-              <Input class="input" v-model="path" placeholder="请输入内容"/>
-              <Input class="input" v-model="md5" placeholder="请输入内容"/>
-              <Input class="input" v-model="fileSize" placeholder="请输入内容"/>
-              <Input class="input" v-model="fileDns" placeholder="请输入内容"/>
-              <Input class="input" v-model="type" placeholder="请输入内容"/>
-              <Input class="input" v-model="suffix" placeholder="请输入内容"/>
-              <Input class="input" v-model="sourceType" placeholder="请输入内容"/>
-              <Input class="input" v-model="uploadTime" placeholder="请输入内容"/>
+              <Input class="input" v-model="fileName" placeholder="文件名"/>
               <Button @click="search">查询</Button>
               <Button class="add_button" @click="reset">重置</Button>
               <Button class="add_button" @click="deleteBathBtnClick" type="warning">删除</Button>
@@ -30,9 +20,6 @@
         title="添加文件"
         :footer-hide=true>
           <Form ref="formInline" :model="formInline" :rules="ruleValidate">
-            <FormItem label="文件id" prop="fileId">
-              <Input v-model="formInline.fileId" placeholder="请输入内容"/>
-            </FormItem>
             <FormItem label="文件名称" prop="fileName">
               <Input v-model="formInline.fileName" placeholder="请输入内容"/>
             </FormItem>
@@ -56,12 +43,6 @@
             </FormItem>
             <FormItem label="资源后缀" prop="suffix">
               <Input v-model="formInline.suffix" placeholder="请输入内容"/>
-            </FormItem>
-            <FormItem label="储存源" prop="sourceType">
-              <Input v-model="formInline.sourceType" placeholder="请输入内容"/>
-            </FormItem>
-            <FormItem label="上传时间" prop="uploadTime">
-              <Input v-model="formInline.uploadTime" placeholder="请输入内容"/>
             </FormItem>
           </Form>
           <div class="foodl">
@@ -87,17 +68,7 @@ export default {
     return {
       selection: [],
       addFlag: false,
-      fileId: null,
       fileName: '',
-      physicsPath: '',
-      path: '',
-      md5: '',
-      fileSize: null,
-      fileDns: '',
-      type: '',
-      suffix: '',
-      sourceType: '',
-      uploadTime: null,
       uploadUrl: userStore.state.baseUrl,
       downloadUrl: userStore.state.downloadUrl,
       pageSize: 10,
@@ -105,9 +76,6 @@ export default {
       total: 0,
       formInline: this.initFromInput(),
       ruleValidate: {
-        fileId: [
-          { required: true, message: '请输入内容', trigger: 'blur' }
-        ],
         fileName: [
           { required: true, message: '请输入内容', trigger: 'blur' }
         ],
@@ -146,38 +114,13 @@ export default {
           fixed: 'left'
         },
         {
-          title: '文件id',
-          key: 'fileId',
-          fixed: 'left'
-        },
-        {
           title: '文件名称',
           key: 'fileName',
           fixed: 'left'
         },
         {
-          title: '物理地址',
-          key: 'physicsPath',
-          fixed: 'left'
-        },
-        {
-          title: '相对路径',
-          key: 'path',
-          fixed: 'left'
-        },
-        {
-          title: '文件指纹',
-          key: 'md5',
-          fixed: 'left'
-        },
-        {
           title: '文件大小',
           key: 'fileSize',
-          fixed: 'left'
-        },
-        {
-          title: '访问域名',
-          key: 'fileDns',
           fixed: 'left'
         },
         {
@@ -248,23 +191,12 @@ export default {
         fileDns: '',
         type: '',
         suffix: '',
-        sourceType: '',
-        uploadTime: null
+        sourceType: ''
       }
       return formInline
     },
     reset () {
-      this.fileId = null
       this.fileName = ''
-      this.physicsPath = ''
-      this.path = ''
-      this.md5 = ''
-      this.fileSize = null
-      this.fileDns = ''
-      this.type = ''
-      this.suffix = ''
-      this.sourceType = ''
-      this.uploadTime = null
       this.pageNum = 1
       this.initData()
     },
@@ -376,17 +308,7 @@ export default {
     },
     initData () {
       var params = {}
-      params.fileId = this.fileId
       params.fileName = this.fileName
-      params.physicsPath = this.physicsPath
-      params.path = this.path
-      params.md5 = this.md5
-      params.fileSize = this.fileSize
-      params.fileDns = this.fileDns
-      params.type = this.type
-      params.suffix = this.suffix
-      params.sourceType = this.sourceType
-      params.uploadTime = this.uploadTime
       params.pageNum = this.pageNum
       params.pageSize = this.pageSize
       getProResourceFilePageList(params)
