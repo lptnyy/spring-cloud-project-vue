@@ -8,8 +8,8 @@
               <Input class="input" v-model="fileName" placeholder="文件名"/>
               <Button @click="search">查询</Button>
               <Button class="add_button" @click="reset">重置</Button>
-              <Button class="add_button" @click="deleteBathBtnClick" type="warning">删除</Button>
-              <Button class="add_button" @click="addBtnClick" type="primary">添加</Button>
+              <Button class="add_button" :disabled="!isDelete" @click="deleteBathBtnClick" type="warning">删除</Button>
+              <Button class="add_button" :disabled="!isCreate" @click="addBtnClick" type="primary">添加</Button>
             </div>
             <Table border @on-selection-change="tableOnSelect" ref="selection" :columns="columns" :data="tableData"></Table>
             <Page class="page" @on-page-size-change="onPageSizeChange" show-total show-sizer @on-change="tableOnChange" :total="total" show-elevator />
@@ -42,7 +42,7 @@
           </Form>
           <div class="foodl">
               <Button @click="cancel">取消</Button>
-            &nbsp;&nbsp;<Button type="primary" @click="handleSubmit('formInline')">确定</Button>
+            &nbsp;&nbsp;<Button type="primary" :disabled="!isCreate" @click="handleSubmit('formInline')">确定</Button>
           </div>
       </Modal>
     </Row>
@@ -62,6 +62,10 @@ export default {
   },
   data () {
     return {
+      isCreate: this.authorities('file_add'),
+      isDelete: this.authorities('file_del'),
+      isUpdate: this.authorities('file_add'),
+      isRetrieve: this.authorities('file_add'),
       selection: [],
       addFlag: false,
       fileName: '',
