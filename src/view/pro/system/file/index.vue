@@ -6,8 +6,8 @@
           <p slot="title">文件管理</p>
             <div class="search">
               <Input class="input" v-model="fileName" placeholder="文件名"/>
-              <Button @click="search">查询</Button>
-              <Button class="add_button" @click="reset">重置</Button>
+              <Button @click="search" :disabled="!isRetrieve">查询</Button>
+              <Button class="add_button" :disabled="!isRetrieve" @click="reset">重置</Button>
               <Button class="add_button" :disabled="!isDelete" @click="deleteBathBtnClick" type="warning">删除</Button>
               <Button class="add_button" :disabled="!isCreate" @click="addBtnClick" type="primary">添加</Button>
             </div>
@@ -65,7 +65,7 @@ export default {
       isCreate: this.authorities('file_add'),
       isDelete: this.authorities('file_del'),
       isUpdate: this.authorities('file_add'),
-      isRetrieve: this.authorities('file_add'),
+      isRetrieve: this.authorities('file_select'),
       selection: [],
       addFlag: false,
       fileName: '',
@@ -155,7 +155,8 @@ export default {
               h('Button', {
                 props: {
                   type: 'text',
-                  size: 'small'
+                  size: 'small',
+                  disabled: !this.isDelete
                 },
                 on: {
                   click: () => {
@@ -305,6 +306,7 @@ export default {
       this.initData()
     },
     initData () {
+      if (!this.isRetrieve) return
       var params = {}
       params.fileName = this.fileName
       params.pageNum = this.pageNum
