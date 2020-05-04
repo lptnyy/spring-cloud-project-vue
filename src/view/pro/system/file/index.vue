@@ -17,37 +17,32 @@
       </Col>
       <Modal
         v-model="addFlag"
-        title="添加文件"
+        title="上传文件"
         :footer-hide=true>
           <Form ref="formInline" :model="formInline" :rules="ruleValidate">
-            <FormItem label="文件名称" prop="fileName">
-              <Input v-model="formInline.fileName" placeholder="请输入内容"/>
+            <FormItem label="文件类型">
+              <Select v-model="formInline.type" style="width:200px">
+                <Option v-for="item in fileTypes" :value="item.valuestr" :key="item.valuestr">{{ item.valuestr }}</Option>
+              </Select>
             </FormItem>
-            <FormItem label="物理地址" prop="physicsPath">
-              <Input v-model="formInline.physicsPath" placeholder="请输入内容"/>
-            </FormItem>
-            <FormItem label="相对路径" prop="path">
-              <Input v-model="formInline.path" placeholder="请输入内容"/>
-            </FormItem>
-            <FormItem label="文件指纹" prop="md5">
-              <Input v-model="formInline.md5" placeholder="请输入内容"/>
-            </FormItem>
-            <FormItem label="文件大小" prop="fileSize">
-              <Input v-model="formInline.fileSize" placeholder="请输入内容"/>
-            </FormItem>
-            <FormItem label="访问域名" prop="fileDns">
-              <Input v-model="formInline.fileDns" placeholder="请输入内容"/>
-            </FormItem>
-            <FormItem label="资源类型" prop="type">
-              <Input v-model="formInline.type" placeholder="请输入内容"/>
-            </FormItem>
-            <FormItem label="资源后缀" prop="suffix">
-              <Input v-model="formInline.suffix" placeholder="请输入内容"/>
+            <FormItem>
+              <Upload
+                ref="uploadFile"
+                multiple
+                type="drag"
+                :headers="headers"
+                :action="uploadUrl+'oss/file/uploadMultipartFile'"
+                :on-success="onUploadSuccess">
+                <div style="padding: 20px 0">
+                  <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
+                  <p>点击上传或拖拽上传。</p>
+                </div>
+              </Upload>
             </FormItem>
           </Form>
           <div class="foodl">
               <Button @click="cancel">取消</Button>
-              &nbsp;&nbsp;<Button type="primary" @click="handleSubmit('formInline')">确定</Button>
+            &nbsp;&nbsp;<Button type="primary" @click="handleSubmit('formInline')">确定</Button>
           </div>
       </Modal>
     </Row>
@@ -56,7 +51,8 @@
 
 <script>
 import Tables from '_c/tables'
-import { getProResourceFilePageList, deleteProResourceFile, updateProResourceFile, saveProResourceFile, idsProResourceFileDelete } from '@/api/proResourceFile'
+import { saveBatchProResourceFile, getProResourceFilePageList, deleteProResourceFile, idsProResourceFileDelete } from '@/api/proResourceFile'
+import { getEnumList } from '@/api/enum'
 import userStore from '@/store/module/user'
 
 export default {
@@ -74,6 +70,11 @@ export default {
       pageSize: 10,
       pageNum: 1,
       total: 0,
+      fileTypes: [],
+      fromDatas: [],
+      headers: {
+        Authorization: 'Bearer ' + userStore.state.token
+      },
       formInline: this.initFromInput(),
       ruleValidate: {
         fileName: [
@@ -101,9 +102,6 @@ export default {
           { required: true, message: '请输入内容', trigger: 'blur' }
         ],
         sourceType: [
-          { required: true, message: '请输入内容', trigger: 'blur' }
-        ],
-        uploadTime: [
           { required: true, message: '请输入内容', trigger: 'blur' }
         ]
       },
@@ -157,17 +155,6 @@ export default {
                 },
                 on: {
                   click: () => {
-                    this.editBtnClick(params.index)
-                  }
-                }
-              }, '编辑'),
-              h('Button', {
-                props: {
-                  type: 'text',
-                  size: 'small'
-                },
-                on: {
-                  click: () => {
                     this.deleteBtnClick(params.index)
                   }
                 }
@@ -180,19 +167,38 @@ export default {
     }
   },
   methods: {
+    onUploadSuccess (response, file, fileList) {
+      if (response.code !== 200) {
+        this.$Message.error('上传失败')
+      } else {
+        let fileInfo = response.obj
+        var formInline = {}
+        formInline.type = this.formInline.type
+        formInline.fileDns = fileInfo.fileDns
+        formInline.fileName = fileInfo.fileName
+        formInline.fileSize = fileInfo.fileSize
+        formInline.physicsPath = fileInfo.physicsPath
+        formInline.md5 = fileInfo.md5
+        formInline.path = fileInfo.path
+        formInline.sourceType = fileInfo.sourceType
+        formInline.suffix = fileInfo.suffix
+        this.fromDatas.push(formInline)
+      }
+    },
     initFromInput () {
       var formInline = {
-        fileId: null,
         fileName: '',
         physicsPath: '',
         path: '',
         md5: '',
         fileSize: null,
         fileDns: '',
-        type: '',
+        type: '默认',
         suffix: '',
         sourceType: ''
       }
+
+      this.fromDatas = []
       return formInline
     },
     reset () {
@@ -270,33 +276,21 @@ export default {
       })
     },
     handleSubmit () {
-      this.$refs['formInline'].validate((valid) => {
-        if (valid) {
-          if (this.formInline.fileId !== null) {
-            updateProResourceFile(this.formInline)
-              .then(res => {
-                if (res.data.code === 200) {
-                  this.$Message.success('修改成功')
-                  this.initData()
-                  this.cancel()
-                } else {
-                  this.$Message.error(res.data.msg)
-                }
-              })
-          } else {
-            saveProResourceFile(this.formInline)
-              .then(res => {
-                if (res.data.code === 200) {
-                  this.$Message.success('保存成功')
-                  this.initData()
-                  this.cancel()
-                } else {
-                  this.$Message.error(res.data.msg)
-                }
-              })
-          }
-        }
-      })
+      if (this.fromDatas.length > 0) {
+        saveBatchProResourceFile(this.fromDatas)
+          .then(res => {
+            if (res.code !== 200) {
+              this.$Message.success('保存成功')
+              this.initData()
+              this.cancel()
+              this.$refs.uploadFile.clearFiles()
+            } else {
+              this.$Message.error(res.data.msg)
+            }
+          })
+      } else {
+        this.$Message.error('请上传文件')
+      }
     },
     tableOnChange (index) {
       this.pageNum = index
@@ -320,11 +314,20 @@ export default {
             this.$Message.error(res.data.msg)
           }
         })
+    },
+    initFileTypes () {
+      var params = {}
+      params.type = 'oss'
+      getEnumList(params)
+        .then(res => {
+          this.fileTypes = res.data.obj
+        })
     }
   },
   mounted () {},
   created () {
     this.initData()
+    this.initFileTypes()
   }
 }
 </script>

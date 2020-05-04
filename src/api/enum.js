@@ -13,6 +13,18 @@ export const getEnumPageList = (params) => {
 }
 
 /**
+ * 查询数据库表列表
+ * @param {} params
+ */
+export const getEnumList = (params) => {
+  return axios.request({
+    url: '/system/proEnum/getList',
+    method: 'post',
+    data: params
+  })
+}
+
+/**
  * 删除
  * @param {} params
  */

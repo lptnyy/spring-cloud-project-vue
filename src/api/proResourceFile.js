@@ -59,3 +59,15 @@ export const saveProResourceFile = (params) => {
     data: params
   })
 }
+
+/**
+ * 保存
+ * @param {} params
+ */
+export const saveBatchProResourceFile = (params) => {
+  return axios.request({
+    url: '/system/proResourceFile/saveBatch',
+    method: 'post',
+    data: params
+  })
+}
