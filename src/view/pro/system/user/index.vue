@@ -30,15 +30,14 @@
       </Col>
     </Row>
     <Modal
+      @on-cancel="cancel"
       v-model="addFlag"
       title="添加管理员"
       :footer-hide=true>
         <Form ref="formInline" :model="formInline" :rules="ruleValidate">
           <FormItem label="头像" prop="headImg">
-            <img style="width: 60px;" :src="this.downloadUrl + formInline.headImg"/>
-            <Upload :show-upload-list="false" :on-success="onUploadSuccess" :format="['jpg','jpeg','png']" :headers="headers" :action="uploadUrl+'oss/file/uploadMultipartFile'">
-              <Button icon="ios-cloud-upload-outline">上传图片</Button>
-            </Upload>
+            <img style="width: 60px;" :src="this.downloadUrl + formInline.headImg"/><br />
+            <Button @click="btnFileSelect">上传图片</Button>
           </FormItem>
           <FormItem label="账户名" prop="userName">
             <Input v-model="formInline.userName" placeholder="输入账户" />
@@ -55,6 +54,7 @@
           &nbsp;&nbsp;<Button type="primary" @click="handleSubmit('formInline')">确定</Button>
         </div>
     </Modal>
+    <FileComn :selectFileFlag="selectFileFlag" :onSelect="fileSelect"/>
   </div>
 </template>
 
@@ -63,11 +63,13 @@ import Tables from '_c/tables'
 import { getUserList, updateStats, deleteUser, saveUser, updateUser } from '@/api/user'
 import { getRoleList, saveAdminRole } from '@/api/role'
 import userStore from '@/store/module/user'
+import FileComn from '@/view/pro/components/file/index'
 
 export default {
   name: 'admin',
   components: {
-    Tables
+    Tables,
+    FileComn
   },
   data () {
     const that = this
@@ -81,6 +83,7 @@ export default {
     }
 
     return {
+      selectFileFlag: false,
       optionId: 0,
       roleCheckDatas: [],
       roleDatas: [],
@@ -212,6 +215,13 @@ export default {
     }
   },
   methods: {
+    btnFileSelect () {
+      this.selectFileFlag = true
+    },
+    fileSelect (files) {
+      this.formInline.headImg = files.path
+      this.selectFileFlag = false
+    },
     option (row) {
       this.optionId = row.userId
       this.roleCheckDatas = row.ids
@@ -246,7 +256,9 @@ export default {
     },
     cancel () {
       this.addFlag = false
+      this.selectFileFlag = false
       this.formInline = {
+        userId: null,
         userName: '',
         headImg: '',
         passWord: '',
@@ -298,7 +310,8 @@ export default {
         userName: '',
         headImg: '',
         passWord: '',
-        resPassWord: ''
+        resPassWord: '',
+        userId: null
       }
     },
     tableOnChange (index) {
