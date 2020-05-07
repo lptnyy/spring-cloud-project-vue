@@ -50,6 +50,7 @@ export default {
   role: '角色管理',
   enum: '枚举管理',
   file: '文件管理',
+  log: '操作日志',
   usertable: {
     userName: '用户名',
     loginNum: '登录次数',

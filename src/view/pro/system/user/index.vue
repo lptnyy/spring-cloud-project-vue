@@ -54,7 +54,7 @@
           &nbsp;&nbsp;<Button type="primary" @click="handleSubmit('formInline')">确定</Button>
         </div>
     </Modal>
-    <FileComn :selectFileFlag="selectFileFlag" :onSelect="fileSelect"/>
+    <FileComn :selectFileFlag="selectFileFlag" :cancel="cancel" :onSelect="fileSelect"/>
   </div>
 </template>
 
@@ -132,7 +132,7 @@ export default {
           title: '状态',
           key: 'stats',
           width: 100,
-          fixed: 'left',
+          fixed: 'center',
           render: (h, params) => {
             return h('div', [
               h('Tag', {

@@ -4,10 +4,14 @@
       width="60%"
       v-model="selectFileFlag"
       title="选择文件"
+      @on-cancel="cancel"
       :footer-hide=true>
         <div class="search">
           <Input class="input" v-model="fileName" placeholder="文件名"/>
-          <Button @click="search" :disabled="!isRetrieve">查询</Button>
+          <Select v-model="type" style="width:200px">
+            <Option v-for="item in fileTypes" :value="item.valuestr" :key="item.valuestr">{{ item.valuestr }}</Option>
+          </Select>
+          <Button class="add_button" @click="search" :disabled="!isRetrieve">查询</Button>
           <Button class="add_button" :disabled="!isRetrieve" @click="reset">重置</Button>
         </div>
         <Table border @on-selection-change="tableOnSelect" ref="selection" :columns="columns" :data="tableData"></Table>
@@ -19,6 +23,7 @@
 import Tables from '_c/tables'
 import { getProResourceFilePageList } from '@/api/proResourceFile'
 import userStore from '@/store/module/user'
+import { getEnumList } from '@/api/enum'
 
 export default {
   name: 'ProResourceFileComp',
@@ -26,6 +31,9 @@ export default {
     Tables
   },
   props: {
+    cancel: {
+      type: Function
+    },
     selectFileFlag: {
       type: Boolean
     },
@@ -40,7 +48,9 @@ export default {
       isUpdate: this.authorities('file_add'),
       isRetrieve: this.authorities('file_select'),
       selection: [],
+      fileTypes: [],
       fileName: '',
+      type: '默认',
       uploadUrl: userStore.state.baseUrl,
       downloadUrl: userStore.state.downloadUrl,
       pageSize: 10,
@@ -115,6 +125,7 @@ export default {
     },
     reset () {
       this.fileName = ''
+      this.type = '默认'
       this.pageNum = 1
       this.initData()
     },
@@ -136,6 +147,7 @@ export default {
       if (!this.isRetrieve) return
       var params = {}
       params.fileName = this.fileName
+      params.type = this.type
       params.pageNum = this.pageNum
       params.pageSize = this.pageSize
       getProResourceFilePageList(params)
@@ -147,11 +159,20 @@ export default {
             this.$Message.error(res.data.msg)
           }
         })
+    },
+    initFileTypes () {
+      var params = {}
+      params.type = 'oss'
+      getEnumList(params)
+        .then(res => {
+          this.fileTypes = res.data.obj
+        })
     }
   },
   mounted () {},
   created () {
     this.initData()
+    this.initFileTypes()
   }
 }
 </script>

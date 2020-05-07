@@ -50,6 +50,7 @@ export default {
   role: 'role',
   enum: 'enum',
   file: 'file',
+  log: 'log',
   usertable: {
     userName: 'UserName',
     loginNum: '登录次数',
