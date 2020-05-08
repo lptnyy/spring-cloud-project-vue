@@ -5,17 +5,12 @@
         <Card :bordered="false">
           <p slot="title">操作日志管理</p>
             <div class="search">
-              <Input class="input" v-model="logId" placeholder="请输入日志id"/>
-              <Input class="input" v-model="name" placeholder="请输入日志名称"/>
-              <Input class="input" v-model="value" placeholder="请输入日志内容"/>
-              <Input class="input" v-model="className" placeholder="请输入函数类"/>
-              <Input class="input" v-model="functionName" placeholder="请输入函数名"/>
-              <Input class="input" v-model="runTime" placeholder="请输入执行时间ms"/>
-              <Input class="input" v-model="source" placeholder="请输入日志来源"/>
-              <Input class="input" v-model="body" placeholder="请输入参数内容"/>
-              <Input class="input" v-model="returnBody" placeholder="请输入反馈数据"/>
-              <Input class="input" v-model="createTime" placeholder="请输入创建时间"/>
-              <Button @click="search" :disabled="!isRetrieve">查询</Button>
+              <Input class="input" v-model="name" placeholder="日志名称"/>
+              <Input class="input" v-model="className" placeholder="函数类"/>
+              <Input class="input" v-model="functionName" placeholder="函数名"/>
+              <Input class="input" v-model="source" placeholder="日志来源"/>
+              <Date-picker v-model="createTime" type="daterange" placement="bottom-end" placeholder="选择日期" style="width: 200px"></Date-picker>
+              <Button class="add_button" @click="search" :disabled="!isRetrieve">查询</Button>
               <Button class="add_button" :disabled="!isRetrieve" @click="reset">重置</Button>
               <Button class="add_button" :disabled="!isDelete" @click="deleteBathBtnClick" type="warning">删除</Button>
             </div>
@@ -25,12 +20,9 @@
       </Col>
       <Modal
         v-model="addFlag"
-        title="添加操作日志"
+        title="日志详情"
         :footer-hide=true>
           <Form ref="formInline" :model="formInline" :rules="ruleValidate">
-            <FormItem label="日志id" prop="logId">
-              <Input v-model="formInline.logId" placeholder="请输入日志id"/>
-            </FormItem>
             <FormItem label="日志名称" prop="name">
               <Input v-model="formInline.name" placeholder="请输入日志名称"/>
             </FormItem>
@@ -94,7 +86,7 @@ export default {
       source: '',
       body: '',
       returnBody: '',
-      createTime: null,
+      createTime: [],
       uploadUrl: userStore.state.baseUrl,
       downloadUrl: userStore.state.downloadUrl,
       pageSize: 10,
@@ -140,11 +132,6 @@ export default {
           fixed: 'left'
         },
         {
-          title: '日志id',
-          key: 'logId',
-          fixed: 'left'
-        },
-        {
           title: '日志名称',
           key: 'name',
           fixed: 'left'
@@ -183,7 +170,7 @@ export default {
           title: '操作',
           key: 'action',
           fixed: 'right',
-          width: 140,
+          width: 125,
           render: (h, params) => {
             return h('div', [
               h('Button', {
@@ -197,7 +184,7 @@ export default {
                     this.editBtnClick(params.index)
                   }
                 }
-              }, '编辑'),
+              }, '详情'),
               h('Button', {
                 props: {
                   type: 'text',
@@ -243,7 +230,7 @@ export default {
       this.source = ''
       this.body = ''
       this.returnBody = ''
-      this.createTime = null
+      this.createTime = []
       this.pageNum = 1
       this.initData()
     },
@@ -355,16 +342,14 @@ export default {
     initData () {
       if (!this.isRetrieve) return
       var params = {}
-      params.logId = this.logId
       params.name = this.name
-      params.value = this.value
       params.className = this.className
       params.functionName = this.functionName
-      params.runTime = this.runTime
       params.source = this.source
-      params.body = this.body
-      params.returnBody = this.returnBody
-      params.createTime = this.createTime
+      if (this.createTime.length > 1) {
+        params.startTime = this.createTime[0]
+        params.endTime = this.createTime[1]
+      }
       params.pageNum = this.pageNum
       params.pageSize = this.pageSize
       getProLogPageList(params)
