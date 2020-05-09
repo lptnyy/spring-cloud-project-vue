@@ -49,7 +49,7 @@
     </Row>
     <Modal
       v-model="modal6"
-      title="添加菜单"
+      :title="title"
       :loading="loading"
       @on-ok="asyncOK">
     </Modal>
@@ -60,9 +60,10 @@
 import { getMenuList, menuSave, idsDelete, update } from '@/api/menu'
 
 export default {
-  name: 'menu',
+  name: 'MenuComponents',
   data () {
     return {
+      title: '添加菜单',
       parentVo: null,
       selecData: [],
       modal6: false,
@@ -70,13 +71,27 @@ export default {
       isEdit: false,
       tableData: [],
       data1: [],
-      formItem: {}
+      formItem: {
+        title: '',
+        icon: '',
+        name: '',
+        path: '',
+        jurisdiction: '',
+        type: ''
+      }
     }
   },
   methods: {
     blur () {
       this.isEdit = false
-      this.formItem = {}
+      this.formItem = {
+        title: '',
+        icon: '',
+        name: '',
+        path: '',
+        jurisdiction: '',
+        type: ''
+      }
     },
     checkSelect (values) {
       var ids = []
@@ -106,15 +121,11 @@ export default {
         })
     },
     btnMenuSave () {
-      console.log(this.formItem.type)
       if (this.parentVo !== null && this.formItem.type !== '0') {
         this.formItem.parentId = this.parentVo.menuId
-        console.log(1)
       } else {
         this.formItem.parentId = 0
-        console.log(2)
       }
-      console.log(this.formItem)
       menuSave(this.formItem)
         .then(res => {
           const code = res.data.code

@@ -21,7 +21,7 @@
       </Col>
       <Modal
         v-model="addFlag"
-        title="添加枚举"
+        :title="title"
         :footer-hide=true>
         <Form ref="formInline" :model="formInline" :rules="ruleValidate">
           <FormItem label="Key" prop="keystr">
@@ -55,6 +55,7 @@ export default {
   },
   data () {
     return {
+      title: '添加枚举',
       isCreate: this.authorities('enum_add'),
       isDelete: this.authorities('enum_del'),
       isUpdate: this.authorities('enum_edit'),
@@ -167,6 +168,7 @@ export default {
       this.initData()
     },
     addBtnClick () {
+      this.title = '添加枚举'
       this.formInline = this.initFromInput()
       this.addFlag = true
     },
@@ -175,6 +177,7 @@ export default {
       this.formInline = this.initFromInput()
     },
     editBtnClick (index) {
+      this.title = '编辑枚举'
       let enumVo = this.tableData[index]
       this.formInline.enumId = enumVo.enumId
       this.formInline.keystr = enumVo.keystr

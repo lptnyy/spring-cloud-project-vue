@@ -32,7 +32,7 @@
     <Modal
       @on-cancel="cancel"
       v-model="addFlag"
-      title="添加管理员"
+      :title="title"
       :footer-hide=true>
         <Form ref="formInline" :model="formInline" :rules="ruleValidate">
           <FormItem label="头像" prop="headImg">
@@ -83,6 +83,7 @@ export default {
     }
 
     return {
+      title: '添加管理员',
       selectFileFlag: false,
       optionId: 0,
       roleCheckDatas: [],
@@ -131,7 +132,7 @@ export default {
         {
           title: '状态',
           key: 'stats',
-          width: 100,
+          width: 83,
           fixed: 'center',
           render: (h, params) => {
             return h('div', [
@@ -305,6 +306,7 @@ export default {
       }
     },
     addBtnClick () {
+      this.title = '添加管理员'
       this.addFlag = true
       this.formInline = {
         userName: '',
@@ -326,6 +328,7 @@ export default {
       this.initData()
     },
     editButton (index) {
+      this.title = '编辑管理员'
       let user = this.tableData[index]
       this.addFlag = true
       this.formInline = {
