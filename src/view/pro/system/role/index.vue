@@ -26,7 +26,7 @@
     </Col>
     <Modal
       v-model="addFlag"
-      title="添加角色"
+      :title="title"
       :footer-hide=true>
         <Form ref="formInline" :model="formInline" :rules="ruleValidate">
           <FormItem label="角色名称" prop="name">
@@ -53,6 +53,7 @@ export default {
   },
   data () {
     return {
+      title: '添加角色',
       selecData: [],
       ruleValidate: {
         name: [
@@ -218,9 +219,12 @@ export default {
       this.selecData = this.$refs.tree.getCheckedNodes()
     },
     addBtnClick () {
+      this.formInline.roleId = null
+      this.title = '添加角色'
       this.addFlag = true
     },
     updateBtnClick (index) {
+      this.title = '编辑角色'
       let role = this.tableData[index]
       this.addFlag = true
       this.formInline.name = role.name

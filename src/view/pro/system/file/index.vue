@@ -6,7 +6,10 @@
           <p slot="title">文件管理</p>
             <div class="search">
               <Input class="input" v-model="fileName" placeholder="文件名"/>
-              <Button @click="search" :disabled="!isRetrieve">查询</Button>
+              <Select v-model="type" style="width:200px">
+                <Option v-for="item in fileTypes" :value="item.valuestr" :key="item.valuestr">{{ item.valuestr }}</Option>
+              </Select>
+              <Button class="add_button" @click="search" :disabled="!isRetrieve">查询</Button>
               <Button class="add_button" :disabled="!isRetrieve" @click="reset">重置</Button>
               <Button class="add_button" :disabled="!isDelete" @click="deleteBathBtnClick" type="warning">删除</Button>
               <Button class="add_button" :disabled="!isCreate" @click="addBtnClick" type="primary">添加</Button>
@@ -67,6 +70,7 @@ export default {
       isUpdate: this.authorities('file_add'),
       isRetrieve: this.authorities('file_select'),
       selection: [],
+      type: '默认',
       addFlag: false,
       fileName: '',
       uploadUrl: userStore.state.baseUrl,
@@ -149,7 +153,7 @@ export default {
           title: '操作',
           key: 'action',
           fixed: 'right',
-          width: 140,
+          width: 80,
           render: (h, params) => {
             return h('div', [
               h('Button', {
@@ -208,6 +212,7 @@ export default {
     },
     reset () {
       this.fileName = ''
+      this.type = '默认'
       this.pageNum = 1
       this.initData()
     },
@@ -309,6 +314,7 @@ export default {
       if (!this.isRetrieve) return
       var params = {}
       params.fileName = this.fileName
+      params.type = this.type
       params.pageNum = this.pageNum
       params.pageSize = this.pageSize
       getProResourceFilePageList(params)

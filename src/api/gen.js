@@ -27,6 +27,30 @@ export const generator = (params) => {
 }
 
 /**
+ * 保存数据
+ * @param {} params
+ */
+export const saveGenOption = (params) => {
+  return axios.request({
+    url: '/gen/proGenerator/save',
+    method: 'post',
+    data: params
+  })
+}
+
+/**
+ * 获取数据
+ * @param {} params
+ */
+export const getGenOption = (params) => {
+  return axios.request({
+    url: '/gen/proGenerator/get',
+    method: 'post',
+    data: params
+  })
+}
+
+/**
  * 查询数据库表列表
  * @param {} params
  */

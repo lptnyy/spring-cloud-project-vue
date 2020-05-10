@@ -32,9 +32,10 @@
             </FormItem>
             <FormItem label="类型">
                 <RadioGroup v-model="formItem.type">
-                    <Radio label="0">根目录</Radio>
-                    <Radio label="1">子页面</Radio>
-                    <Radio label="2">功能</Radio>
+                    <Radio v-for="item in fileTypes" :label="item.valuestr" :key="item.valuestr">{{item.keystr}}</Radio>
+                    <!--<Radio label="1">子页面</Radio>-->
+                    <!--<Radio label="2">功能</Radio>-->
+                    <!--<Radio label="3">连接</Radio>-->
                 </RadioGroup>
             </FormItem>
             <FormItem>
@@ -49,7 +50,7 @@
     </Row>
     <Modal
       v-model="modal6"
-      title="添加菜单"
+      :title="title"
       :loading="loading"
       @on-ok="asyncOK">
     </Modal>
@@ -58,11 +59,13 @@
 
 <script>
 import { getMenuList, menuSave, idsDelete, update } from '@/api/menu'
+import { getEnumList } from '@/api/enum'
 
 export default {
-  name: 'menu',
+  name: 'MenuComponents',
   data () {
     return {
+      title: '添加菜单',
       parentVo: null,
       selecData: [],
       modal6: false,
@@ -70,13 +73,28 @@ export default {
       isEdit: false,
       tableData: [],
       data1: [],
-      formItem: {}
+      fileTypes: [],
+      formItem: {
+        title: '',
+        icon: '',
+        name: '',
+        path: '',
+        jurisdiction: '',
+        type: ''
+      }
     }
   },
   methods: {
     blur () {
       this.isEdit = false
-      this.formItem = {}
+      this.formItem = {
+        title: '',
+        icon: '',
+        name: '',
+        path: '',
+        jurisdiction: '',
+        type: ''
+      }
     },
     checkSelect (values) {
       var ids = []
@@ -106,15 +124,11 @@ export default {
         })
     },
     btnMenuSave () {
-      console.log(this.formItem.type)
       if (this.parentVo !== null && this.formItem.type !== '0') {
         this.formItem.parentId = this.parentVo.menuId
-        console.log(1)
       } else {
         this.formItem.parentId = 0
-        console.log(2)
       }
-      console.log(this.formItem)
       menuSave(this.formItem)
         .then(res => {
           const code = res.data.code
@@ -153,11 +167,20 @@ export default {
             this.$Message.error(res.data.msg)
           }
         })
+    },
+    initFileTypes () {
+      var params = {}
+      params.type = 'menu'
+      getEnumList(params)
+        .then(res => {
+          this.fileTypes = res.data.obj
+        })
     }
   },
   mounted () {},
   created () {
     this.initData()
+    this.initFileTypes()
   }
 }
 </script>

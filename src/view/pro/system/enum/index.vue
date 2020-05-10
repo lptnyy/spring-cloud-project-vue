@@ -10,10 +10,10 @@
           <div class="search">
             <Input class="input" v-model="key" placeholder="Key"/>
             <Input class="input" v-model="type" placeholder="Type"/>
-            <Button @click="search">查询</Button>
-            <Button class="add_button" @click="reset">重置</Button>
-            <Button class="add_button" @click="deleteBathBtnClick" type="warning">删除</Button>
-            <Button class="add_button" @click="addBtnClick" type="primary">添加</Button>
+            <Button @click="search" :disabled="!isRetrieve">查询</Button>
+            <Button class="add_button" :disabled="!isRetrieve" @click="reset">重置</Button>
+            <Button class="add_button" :disabled="!isDelete" @click="deleteBathBtnClick" type="warning">删除</Button>
+            <Button class="add_button" :disabled="!isCreate" @click="addBtnClick" type="primary">添加</Button>
           </div>
           <Table border @on-selection-change="tableOnSelect" ref="selection" :columns="columns" :data="tableData"></Table>
           <Page class="page" @on-page-size-change="onPageSizeChange" show-total show-sizer @on-change="tableOnChange" :total="total" show-elevator />
@@ -21,7 +21,7 @@
       </Col>
       <Modal
         v-model="addFlag"
-        title="添加枚举"
+        :title="title"
         :footer-hide=true>
         <Form ref="formInline" :model="formInline" :rules="ruleValidate">
           <FormItem label="Key" prop="keystr">
@@ -36,7 +36,7 @@
         </Form>
         <div class="foodl">
           <Button @click="cancel">取消</Button>
-          &nbsp;&nbsp;<Button type="primary" @click="handleSubmit('formInline')">确定</Button>
+          &nbsp;&nbsp;<Button :disabled="!isCreate" type="primary" @click="handleSubmit('formInline')">确定</Button>
         </div>
       </Modal>
     </Row>
@@ -55,6 +55,11 @@ export default {
   },
   data () {
     return {
+      title: '添加枚举',
+      isCreate: this.authorities('enum_add'),
+      isDelete: this.authorities('enum_del'),
+      isUpdate: this.authorities('enum_edit'),
+      isRetrieve: this.authorities('enum_select'),
       selection: [],
       addFlag: false,
       key: '',
@@ -115,7 +120,8 @@ export default {
               h('Button', {
                 props: {
                   type: 'text',
-                  size: 'small'
+                  size: 'small',
+                  disabled: !this.isUpdate
                 },
                 on: {
                   click: () => {
@@ -126,7 +132,8 @@ export default {
               h('Button', {
                 props: {
                   type: 'text',
-                  size: 'small'
+                  size: 'small',
+                  disabled: !this.isDelete
                 },
                 on: {
                   click: () => {
@@ -161,6 +168,7 @@ export default {
       this.initData()
     },
     addBtnClick () {
+      this.title = '添加枚举'
       this.formInline = this.initFromInput()
       this.addFlag = true
     },
@@ -169,6 +177,7 @@ export default {
       this.formInline = this.initFromInput()
     },
     editBtnClick (index) {
+      this.title = '编辑枚举'
       let enumVo = this.tableData[index]
       this.formInline.enumId = enumVo.enumId
       this.formInline.keystr = enumVo.keystr
@@ -257,7 +266,7 @@ export default {
       this.initData()
     },
     initData () {
-      console.log(this.selection)
+      if (!this.isRetrieve) return
       var params = {}
       params.keystr = this.key
       params.type = this.type
