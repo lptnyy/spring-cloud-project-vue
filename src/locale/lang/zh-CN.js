@@ -51,6 +51,12 @@ export default {
   enum: '枚举管理',
   file: '文件管理',
   log: '操作日志',
+  monitor: '监控管理',
+  eureka: '注册中心',
+  admin: 'BootAdmin',
+  zipkin: '链路追踪',
+  gen: '开发管理',
+  generatoroption: '生成器设置',
   usertable: {
     userName: '用户名',
     loginNum: '登录次数',

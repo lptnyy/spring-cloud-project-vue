@@ -3,77 +3,32 @@
 </style>
 <template>
   <Row>
-        <Col span="12">
-            <Card :bordered="false">
-                <p slot="title">数据库表</p>
-                <Table border :columns="columns12" :data="data6">
-                    <template slot-scope="{ row }" slot="name">
-                        <strong>{{ row.name }}</strong>
-                    </template>
-                    <template slot-scope="{ row, index }" slot="action">
-                      <Button type="success" size="small" style="margin-right: 5px" @click="getTableInfo(row.tableName)">生成后端</Button>
-                      <Button type="success" size="small" style="margin-right: 5px" @click="getTableInfoWeb(row.tableName)">生成前端</Button>
-                    </template>
-                </Table>
-            </Card>
-        </Col>
-        <Col span="10" offset="1">
-         <Card :bordered="false">
-                <p slot="title">生成器配置</p>
-                  <Form :model="formItem" :label-width="120">
-                    <FormItem label="数据库地址">
-                      <Input v-model="formItem.mysql" placeholder="输入mysql连接字符串"/>
-                    </FormItem>
-                    <FormItem label="数据库驱动">
-                      <Input v-model="formItem.mysqlDev" placeholder="输入数据库驱动"/>
-                    </FormItem>
-                    <FormItem label="数据库账号">
-                      <Input v-model="formItem.mysqlUser" placeholder="输入输入库账号"/>
-                    </FormItem>
-                    <FormItem label="数据库密码">
-                      <Input v-model="formItem.msyqlPass" placeholder="输入数据库密码"/>
-                    </FormItem>
-                    <FormItem label="Controller包名">
-                      <Input v-model="formItem.controllerPkg" placeholder="com.wzy.controller"/>
-                    </FormItem>
-                    <FormItem label="api参数包名">
-                      <Input v-model="formItem.apiPkg" placeholder="com.wzy.request"/>
-                    </FormItem>
-                    <FormItem label="Vo包名">
-                      <Input v-model="formItem.voPkg" placeholder="com.wzy.vo"/>
-                    </FormItem>
-                    <FormItem label="Service接口包名">
-                      <Input v-model="formItem.servicePkg" placeholder="com.wzy.service"/>
-                    </FormItem>
-                    <FormItem label="Service实现包名">
-                      <Input v-model="formItem.serviceImplPkg" placeholder="com.wzy.service"/>
-                    </FormItem>
-                    <FormItem label="Feign服务名">
-                      <Input v-model="formItem.feignClientService" placeholder="UserService"/>
-                    </FormItem>
-                    <FormItem label="网关访问根目录">
-                      <Input v-model="formItem.gateWayPath" placeholder="/system"/>
-                    </FormItem>
-                      <FormItem label="Mapper包名">
-                          <Input v-model="formItem.mapperPkg" placeholder="com.wzy.mapper"/>
-                      </FormItem>
-                      <FormItem label="Dto包名">
-                          <Input v-model="formItem.dtoPgk" placeholder="com.wzy.dto"/>
-                      </FormItem>
-                      <FormItem>
-                          <Button :disabled="!authorities('gen:connecnt')" type="primary" @click="getTableList">连接</Button>
-                      </FormItem>
-                  </Form>
-            </Card>
-        </Col>
-    </Row>
+    <Col span="24">
+      <Card :bordered="false">
+        <p slot="title">数据库表(请先设置生成器在使用此功能)</p>
+        <div class="search">
+          <Button @click="getTableList">链接数据库</Button>
+        </div>
+        <Table border :columns="columns12" :data="data6">
+          <template slot-scope="{ row }" slot="name">
+            <strong>{{ row.name }}</strong>
+          </template>
+          <template slot-scope="{ row, index }" slot="action">
+            <Button type="success" size="small" style="margin-right: 5px" @click="getTableInfo(row.tableName)">生成后端</Button>
+            <Button type="success" size="small" style="margin-right: 5px" @click="getTableInfoWeb(row.tableName)">生成前端</Button>
+          </template>
+        </Table>
+      </Card>
+    </Col>
+  </Row>
 </template>
 <script>
-import { getTableList, generator, downloadZip, generatorWeb } from '@/api/gen'
+import { getTableList, generator, downloadZip, generatorWeb, getGenOption } from '@/api/gen'
 export default {
-  name: 'gen',
+  name: 'Gen',
   data () {
     return {
+      tableName: '',
       formItem: {
         mysql: 'jdbc:mysql://localhost:3306/pro_user',
         mysqlUser: 'root',
@@ -87,7 +42,8 @@ export default {
         mapperPkg: 'com.wzy.system.mapper',
         dtoPgk: 'com.wzy.system.dto',
         feignClientService: 'system-service',
-        gateWayPath: '/system'
+        gateWayPath: '/system',
+        logSourceName: 'admin-app'
       },
       columns12: [
         {
@@ -113,6 +69,18 @@ export default {
     }
   },
   methods: {
+    init () {
+      var par = {}
+      getGenOption(par)
+        .then(res => {
+          var data = res.data
+          if (data.code !== 200) {
+            this.$Message.error(data.msg)
+          } else {
+            this.formItem = res.data.obj
+          }
+        })
+    },
     getTableList () {
       getTableList(this.formItem)
         .then(res => {
@@ -137,6 +105,10 @@ export default {
         downloadZip()
       })
     }
+  },
+  mounted () {},
+  created () {
+    this.init()
   }
 }
 </script>

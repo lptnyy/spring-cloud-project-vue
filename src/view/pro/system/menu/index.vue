@@ -32,9 +32,10 @@
             </FormItem>
             <FormItem label="类型">
                 <RadioGroup v-model="formItem.type">
-                    <Radio label="0">根目录</Radio>
-                    <Radio label="1">子页面</Radio>
-                    <Radio label="2">功能</Radio>
+                    <Radio v-for="item in fileTypes" :label="item.valuestr" :key="item.valuestr">{{item.keystr}}</Radio>
+                    <!--<Radio label="1">子页面</Radio>-->
+                    <!--<Radio label="2">功能</Radio>-->
+                    <!--<Radio label="3">连接</Radio>-->
                 </RadioGroup>
             </FormItem>
             <FormItem>
@@ -58,6 +59,7 @@
 
 <script>
 import { getMenuList, menuSave, idsDelete, update } from '@/api/menu'
+import { getEnumList } from '@/api/enum'
 
 export default {
   name: 'MenuComponents',
@@ -71,6 +73,7 @@ export default {
       isEdit: false,
       tableData: [],
       data1: [],
+      fileTypes: [],
       formItem: {
         title: '',
         icon: '',
@@ -164,11 +167,20 @@ export default {
             this.$Message.error(res.data.msg)
           }
         })
+    },
+    initFileTypes () {
+      var params = {}
+      params.type = 'menu'
+      getEnumList(params)
+        .then(res => {
+          this.fileTypes = res.data.obj
+        })
     }
   },
   mounted () {},
   created () {
     this.initData()
+    this.initFileTypes()
   }
 }
 </script>

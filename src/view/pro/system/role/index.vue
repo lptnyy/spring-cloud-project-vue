@@ -219,6 +219,7 @@ export default {
       this.selecData = this.$refs.tree.getCheckedNodes()
     },
     addBtnClick () {
+      this.formInline.roleId = null
       this.title = '添加角色'
       this.addFlag = true
     },

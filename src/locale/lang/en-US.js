@@ -51,6 +51,12 @@ export default {
   enum: 'enum',
   file: 'file',
   log: 'log',
+  monitor: 'monitor',
+  eureka: 'eureka',
+  admin: 'bootAdmin',
+  zipkin: 'zipkin',
+  gen: 'gen',
+  generatoroption: 'genOption',
   usertable: {
     userName: 'UserName',
     loginNum: '登录次数',
