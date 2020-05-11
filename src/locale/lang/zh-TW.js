@@ -57,6 +57,7 @@ export default {
   zipkin: '链路追踪',
   gen: '开发管理',
   generatoroption: '生成器设置',
+  MerchantList: '商家管理',
   usertable: {
     userName: '用户名',
     loginNum: '登录次数',

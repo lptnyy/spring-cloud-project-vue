@@ -57,6 +57,7 @@ export default {
   zipkin: 'zipkin',
   gen: 'gen',
   generatoroption: 'genOption',
+  MerchantList: 'merchant',
   usertable: {
     userName: 'UserName',
     loginNum: '登录次数',
