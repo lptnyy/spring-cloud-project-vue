@@ -3,12 +3,14 @@
     <Row>
       <Col span="24">
         <Card :bordered="false">
-          <p slot="title">商户表 管理</p>
+          <p slot="title">商户管理</p>
             <div class="search">
               <Input class="input" v-model="name" placeholder="企业名称"/>
               <Input class="input" v-model="province" placeholder="省份 城市 地区"/>
-              <Input class="input" v-model="stat" placeholder="状态(枚举表 enterprise_stat)"/>
-              <Button @click="search" :disabled="!isRetrieve">查询</Button>
+              <Select v-model="stat" style="width:200px">
+                  <Option v-for="item in statTypes" :value="item.valuestr" :key="item.valuestr">{{ item.keystr }}</Option>
+              </Select>
+              <Button class="add_button" @click="search" :disabled="!isRetrieve">查询</Button>
               <Button class="add_button" :disabled="!isRetrieve" @click="reset">重置</Button>
               <Button class="add_button" :disabled="!isDelete" @click="deleteBathBtnClick" type="warning">删除</Button>
               <Button class="add_button" :disabled="!isCreate" @click="addBtnClick" type="primary">添加</Button>
@@ -18,70 +20,75 @@
         </Card>
       </Col>
       <Modal
+        width="80%"
         v-model="addFlag"
         :title="title"
         :footer-hide=true>
           <Form ref="formInline" :model="formInline" :rules="ruleValidate">
-            <FormItem label="标示列" prop="merchantId">
-              <Input v-model="formInline.merchantId" placeholder="请输入标示列"/>
-            </FormItem>
-            <FormItem label="企业简称" prop="abbreviation">
-              <Input v-model="formInline.abbreviation" placeholder="请输入企业简称"/>
-            </FormItem>
-            <FormItem label="账号" prop="userName">
-              <Input v-model="formInline.userName" placeholder="请输入账号"/>
-            </FormItem>
-            <FormItem label="密码" prop="passWord">
-              <Input v-model="formInline.passWord" placeholder="请输入密码"/>
-            </FormItem>
-            <FormItem label="logo图片" prop="logoUrl">
-              <Input v-model="formInline.logoUrl" placeholder="请输入logo图片"/>
-            </FormItem>
-            <FormItem label="企业全名" prop="name">
-              <Input v-model="formInline.name" placeholder="请输入企业全名"/>
-            </FormItem>
-            <FormItem label="商户资质材料" prop="qualification">
-              <Input v-model="formInline.qualification" placeholder="请输入商户资质材料"/>
-            </FormItem>
-            <FormItem label="保证金额" prop="margin">
-              <Input v-model="formInline.margin" placeholder="请输入保证金额"/>
-            </FormItem>
-            <FormItem label="收款账号" prop="collectMoney">
-              <Input v-model="formInline.collectMoney" placeholder="请输入收款账号"/>
-            </FormItem>
-            <FormItem label="固定电话" prop="tel">
-              <Input v-model="formInline.tel" placeholder="请输入固定电话"/>
-            </FormItem>
-            <FormItem label="手机号码" prop="phone">
-              <Input v-model="formInline.phone" placeholder="请输入手机号码"/>
-            </FormItem>
-            <FormItem label="邮箱" prop="email">
-              <Input v-model="formInline.email" placeholder="请输入邮箱"/>
-            </FormItem>
-            <FormItem label="省份" prop="province">
-              <Input v-model="formInline.province" placeholder="请输入省份"/>
-            </FormItem>
-            <FormItem label="城市" prop="city">
-              <Input v-model="formInline.city" placeholder="请输入城市"/>
-            </FormItem>
-            <FormItem label="地区" prop="area">
-              <Input v-model="formInline.area" placeholder="请输入地区"/>
-            </FormItem>
-            <FormItem label="详细地址" prop="address">
-              <Input v-model="formInline.address" placeholder="请输入详细地址"/>
-            </FormItem>
-            <FormItem label="qq号码" prop="qq">
-              <Input v-model="formInline.qq" placeholder="请输入qq号码"/>
-            </FormItem>
-            <FormItem label="企业官网" prop="homeUrl">
-              <Input v-model="formInline.homeUrl" placeholder="请输入企业官网"/>
-            </FormItem>
-            <FormItem label="状态(枚举表 enterprise_stat)" prop="stat">
-              <Input v-model="formInline.stat" placeholder="请输入状态(枚举表 enterprise_stat)"/>
-            </FormItem>
-            <FormItem label="创建时间" prop="createTime">
-              <Input v-model="formInline.createTime" placeholder="请输入创建时间"/>
-            </FormItem>
+            <Row>
+              <Col span="11">
+                <FormItem label="企业简称" prop="abbreviation">
+                  <Input v-model="formInline.abbreviation" placeholder="请输入企业简称"/>
+                </FormItem>
+                <FormItem label="账号" prop="userName">
+                  <Input v-model="formInline.userName" placeholder="请输入账号"/>
+                </FormItem>
+                <FormItem label="密码" prop="passWord">
+                  <Input v-model="formInline.passWord" placeholder="请输入密码"/>
+                </FormItem>
+                <FormItem label="logo图片" prop="logoUrl">
+                  <br />
+                  <img style="width: 120px;" :src="this.downloadUrl + formInline.logoUrl"/><br />
+                  <Button @click="btnFileSelect">上传图片</Button>
+                </FormItem>
+                <FormItem label="企业全名" prop="name">
+                  <Input v-model="formInline.name" placeholder="请输入企业全名"/>
+                </FormItem>
+                <FormItem label="商户资质材料" prop="qualification">
+                  <Input v-model="formInline.qualification" placeholder="请输入商户资质材料"/>
+                </FormItem>
+                <FormItem label="保证金额" prop="margin">
+                  <Input v-model="formInline.margin" placeholder="请输入保证金额"/>
+                </FormItem>
+                <FormItem label="收款账号" prop="collectMoney">
+                  <Input v-model="formInline.collectMoney" placeholder="请输入收款账号"/>
+                </FormItem>
+                <FormItem label="固定电话" prop="tel">
+                  <Input v-model="formInline.tel" placeholder="请输入固定电话"/>
+                </FormItem>
+              </Col>
+              <Col span="11" offset="2">
+                <FormItem label="手机号码" prop="phone">
+                  <Input v-model="formInline.phone" placeholder="请输入手机号码"/>
+                </FormItem>
+                <FormItem label="邮箱" prop="email">
+                  <Input v-model="formInline.email" placeholder="请输入邮箱"/>
+                </FormItem>
+                <FormItem label="省份" prop="province">
+                  <Input v-model="formInline.province" placeholder="请输入省份"/>
+                </FormItem>
+                <FormItem label="城市" prop="city">
+                  <Input v-model="formInline.city" placeholder="请输入城市"/>
+                </FormItem>
+                <FormItem label="地区" prop="area">
+                  <Input v-model="formInline.area" placeholder="请输入地区"/>
+                </FormItem>
+                <FormItem label="详细地址" prop="address">
+                  <Input v-model="formInline.address" placeholder="请输入详细地址"/>
+                </FormItem>
+                <FormItem label="qq号码" prop="qq">
+                  <Input v-model="formInline.qq" placeholder="请输入qq号码"/>
+                </FormItem>
+                <FormItem label="企业官网" prop="homeUrl">
+                  <Input v-model="formInline.homeUrl" placeholder="请输入企业官网"/>
+                </FormItem>
+                <FormItem label="企业状态" prop="stat">
+                  <Select v-model="formInline.stat">
+                    <Option v-for="item in statTypes" :value="item.valuestr" :key="item.valuestr">{{ item.keystr }}</Option>
+                  </Select>
+                </FormItem>
+              </Col>
+            </Row>
           </Form>
           <div class="foodl">
               <Button @click="cancel">取消</Button>
@@ -89,22 +96,26 @@
           </div>
       </Modal>
     </Row>
+     <FileComn :selectFileFlag="selectFileFlag" :cancel="cancel" :onSelect="fileSelect"/>
   </div>
 </template>
 
 <script>
 import Tables from '_c/tables'
+import FileComn from '@/view/pro/components/file/index'
 import { getProMerchantPageList, deleteProMerchant, updateProMerchant, saveProMerchant, idsProMerchantDelete } from '@/api/proMerchant'
 import userStore from '@/store/module/user'
+import { getEnumList } from '@/api/enum'
 
 export default {
   name: 'ProMerchant',
   components: {
-    Tables
+    Tables, FileComn
   },
   data () {
     return {
-      title: '添加商户表 ',
+      selectFileFlag: false,
+      title: '添加商户',
       isCreate: this.authorities('merchant_add'),
       isDelete: this.authorities('merchant_del'),
       isUpdate: this.authorities('merchant_edit'),
@@ -136,11 +147,9 @@ export default {
       pageSize: 10,
       pageNum: 1,
       total: 0,
+      statTypes: [],
       formInline: this.initFromInput(),
       ruleValidate: {
-        merchantId: [
-          { required: true, message: '请输入标示列', trigger: 'blur' }
-        ],
         abbreviation: [
           { required: true, message: '请输入企业简称', trigger: 'blur' }
         ],
@@ -194,9 +203,6 @@ export default {
         ],
         stat: [
           { required: true, message: '请输入状态(枚举表 enterprise_stat)', trigger: 'blur' }
-        ],
-        createTime: [
-          { required: true, message: '请输入创建时间', trigger: 'blur' }
         ]
       },
       columns: [
@@ -206,63 +212,32 @@ export default {
           fixed: 'left'
         },
         {
-          title: '标示列',
-          key: 'merchantId',
-          fixed: 'left'
+          title: 'logo图片',
+          key: 'logoUrl',
+          fixed: 'left',
+          render: (h, params) => {
+              return h('div', [
+                  h('img', {
+                      attrs: {
+                          src: this.downloadUrl +params.row.logoUrl
+                      },
+                      style: {
+                          width: '80px',
+                          height: '80px'
+                      }
+                  }),
+              ]);
+          }
         },
+        
         {
           title: '企业简称',
           key: 'abbreviation',
           fixed: 'left'
         },
         {
-          title: '账号',
-          key: 'userName',
-          fixed: 'left'
-        },
-        {
-          title: '密码',
-          key: 'passWord',
-          fixed: 'left'
-        },
-        {
-          title: 'logo图片',
-          key: 'logoUrl',
-          fixed: 'left'
-        },
-        {
           title: '企业全名',
           key: 'name',
-          fixed: 'left'
-        },
-        {
-          title: '商户资质材料',
-          key: 'qualification',
-          fixed: 'left'
-        },
-        {
-          title: '保证金额',
-          key: 'margin',
-          fixed: 'left'
-        },
-        {
-          title: '收款账号',
-          key: 'collectMoney',
-          fixed: 'left'
-        },
-        {
-          title: '固定电话',
-          key: 'tel',
-          fixed: 'left'
-        },
-        {
-          title: '手机号码',
-          key: 'phone',
-          fixed: 'left'
-        },
-        {
-          title: '邮箱',
-          key: 'email',
           fixed: 'left'
         },
         {
@@ -281,22 +256,7 @@ export default {
           fixed: 'left'
         },
         {
-          title: '详细地址',
-          key: 'address',
-          fixed: 'left'
-        },
-        {
-          title: 'qq号码',
-          key: 'qq',
-          fixed: 'left'
-        },
-        {
-          title: '企业官网',
-          key: 'homeUrl',
-          fixed: 'left'
-        },
-        {
-          title: '状态(枚举表 enterprise_stat)',
+          title: '企业状态',
           key: 'stat',
           fixed: 'left'
         },
@@ -344,6 +304,13 @@ export default {
     }
   },
   methods: {
+    btnFileSelect () {
+      this.selectFileFlag = true
+    },
+    fileSelect (files) {
+      this.formInline.logoUrl = files.path
+      this.selectFileFlag = false
+    },
     initFromInput () {
       var formInline = {
         merchantId: null,
@@ -364,8 +331,7 @@ export default {
         address: '',
         qq: '',
         homeUrl: '',
-        stat: null,
-        createTime: null
+        stat: null
       }
       return formInline
     },
@@ -389,7 +355,6 @@ export default {
       this.qq = ''
       this.homeUrl = ''
       this.stat = null
-      this.createTime = null
       this.pageNum = 1
       this.initData()
     },
@@ -397,16 +362,17 @@ export default {
       this.initData()
     },
     addBtnClick () {
-      this.title = '添加商户表 '
+      this.title = '添加商户'
       this.formInline = this.initFromInput()
       this.addFlag = true
     },
     cancel () {
+      this.selectFileFlag = false
       this.addFlag = false
       this.formInline = this.initFromInput()
     },
     editBtnClick (index) {
-      this.title = '编辑商户表 '
+      this.title = '编辑商户'
       let tableRow = this.tableData[index]
       this.formInline.merchantId = tableRow.merchantId
       this.formInline.abbreviation = tableRow.abbreviation
@@ -415,7 +381,7 @@ export default {
       this.formInline.logoUrl = tableRow.logoUrl
       this.formInline.name = tableRow.name
       this.formInline.qualification = tableRow.qualification
-      this.formInline.margin = tableRow.margin
+      this.formInline.margin = tableRow.margin + ''
       this.formInline.collectMoney = tableRow.collectMoney
       this.formInline.tel = tableRow.tel
       this.formInline.phone = tableRow.phone
@@ -426,8 +392,7 @@ export default {
       this.formInline.address = tableRow.address
       this.formInline.qq = tableRow.qq
       this.formInline.homeUrl = tableRow.homeUrl
-      this.formInline.stat = tableRow.stat
-      this.formInline.createTime = tableRow.createTime
+      this.formInline.stat = tableRow.stat+''
       this.addFlag = true
     },
     deleteBathBtnClick () {
@@ -544,11 +509,20 @@ export default {
             this.$Message.error(res.data.msg)
           }
         })
+    },
+    initStatTypes () {
+      var params = {}
+      params.type = 'merchant_stat'
+      getEnumList(params)
+        .then(res => {
+          this.statTypes = res.data.obj
+        })
     }
   },
   mounted () {},
   created () {
     this.initData()
+    this.initStatTypes()
   }
 }
 </script>
