@@ -51,6 +51,18 @@ export const getGenOption = (params) => {
 }
 
 /**
+ * 获取数据
+ * @param {} params
+ */
+export const getTableInfo = (params) => {
+  return axios.request({
+    url: '/gen/db/tableInfo',
+    method: 'post',
+    data: params
+  })
+}
+
+/**
  * 查询数据库表列表
  * @param {} params
  */
