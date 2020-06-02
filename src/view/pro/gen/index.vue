@@ -9,31 +9,7 @@
         v-model="genModalVisible"
         title="生成设置"
         :footer-hide=true>
-        <Table border :columns="genTableColumns" :data="genTableDatas">
-          <template slot-scope="{ row }" slot="name">
-            <strong>{{ row.name }}</strong>
-          </template>
-          <template slot-scope="{ row }" slot="backSelectType">
-            <i-select v-model="row.backSelectType">
-                <i-option value="zore">无选择</i-option>
-                <i-option value="like">模糊查询</i-option>
-                <i-option value="eq">精确查询</i-option>
-                <i-option value="range">范围查询</i-option>
-            </i-select>
-          </template>
-          <template slot-scope="{ row }" slot="webSelectType">
-            <i-select v-model="row.webSelectType">
-                <i-option value="zore">无选择</i-option>
-                <i-option value="like">模糊查询</i-option>
-                <i-option value="eq">精确查询</i-option>
-                <i-option value="range">范围查询</i-option>
-            </i-select>
-          </template>
-          <!-- <template slot-scope="{ row, index }" slot="action">
-            <Button type="success" size="small" style="margin-right: 5px" @click="getTableInfoBack(row.tableName)">生成后端</Button>
-            <Button type="success" size="small" style="margin-right: 5px" @click="getTableInfoWeb(row.tableName)">生成前端</Button>
-          </template> -->
-        </Table>
+        <Table border :columns="genTableColumns" :data="genTableDatas"></Table>
         <div class="foodl">
           <Button @click="cancel">取消生成</Button>
           &nbsp;&nbsp;<Button type="primary" @click="ok">生成后台</Button>
@@ -81,6 +57,25 @@ export default {
         gateWayPath: '/system',
         logSourceName: 'admin-app'
       },
+      productTypeList: [
+        { id: 'zore', name: '未选择' },
+        { id: 'eq', name: '精确查询' },
+        { id: 'like', name: '模糊查询' },
+        { id: 'range', name: '范围查询' }
+      ],
+      searchTypeList: [
+        { id: 'zore', name: '未选择' },
+        { id: 'text', name: '文本类型' },
+        { id: 'select', name: '选择器' },
+        { id: 'radio', name: '单选按钮' },
+        { id: 'time', name: '时间类型(年月日)' },
+        { id: 'timeyyyymmdd', name: '时间类型(年月日时分秒)' }
+      ],
+      sortTypeList: [
+        { id: 'zore', name: '未选择' },
+        { id: 'asc', name: '正序' },
+        { id: 'desc', name: '倒序' }
+      ],
       genTableColumns: [
         {
           title: '列名',
@@ -96,11 +91,72 @@ export default {
         },
         {
           title: '后台生成设置',
-          slot: 'backSelectType'
+          render: (h, params) => {
+            return h('Select', {
+              props: {
+                value: this.genTableDatas[params.index].backSelectType, // 获取选择的下拉框的值
+                size: 'small'
+              },
+              on: {
+                'on-change': e => {
+                  this.genTableDatas[params.index].backSelectType = e // 改变下拉框赋值
+                }
+              }
+            }, this.productTypeList.map((item) => { // this.productTypeList下拉框里的data
+              return h('Option', { // 下拉框的值
+                props: {
+                  value: item.id,
+                  label: item.name
+                }
+              })
+            }))
+          }
         },
         {
           title: '前端生成设置',
-          slot: 'webSelectType'
+          render: (h, params) => {
+            return h('Select', {
+              props: {
+                value: this.genTableDatas[params.index].webSelectType, // 获取选择的下拉框的值
+                size: 'small'
+              },
+              on: {
+                'on-change': e => {
+                  this.genTableDatas[params.index].webSelectType = e // 改变下拉框赋值
+                }
+              }
+            }, this.searchTypeList.map((item) => { // this.productTypeList下拉框里的data
+              return h('Option', { // 下拉框的值
+                props: {
+                  value: item.id,
+                  label: item.name
+                }
+              })
+            }))
+          }
+        },
+        {
+          title: '是否排序',
+          render: (h, params) => {
+            return h('Select', {
+              props: {
+                value: this.genTableDatas[params.index].sort, // 获取选择的下拉框的值
+                size: 'small'
+              },
+              on: {
+                'on-change': e => {
+                  this.genTableDatas[params.index].sort = e // 改变下拉框赋值
+                }
+              }
+            }, this.sortTypeList.map((item) => { // this.productTypeList下拉框里的data
+              return h('Option', { // 下拉框的值
+                props: {
+                  value: item.id,
+                  label: item.name
+                }
+              })
+            }))
+          }
         }
       ],
       genTableDatas: [
@@ -130,11 +186,14 @@ export default {
     }
   },
   methods: {
+    checg (change) {
+      console.log(change)
+    },
     ok () {
       console.log(this.genTableDatas)
       this.formItem.tableGenInfos = this.genTableDatas
       generator(this.formItem).then(res => {
-        downloadZip()
+        // downloadZip()
       })
     },
     cancel () {
@@ -173,6 +232,7 @@ export default {
         datas.forEach(element => {
           element.backSelectType = 'zore'
           element.webSelectType = 'zore'
+          element.sort = 'zore'
         })
         this.genTableDatas = datas
         console.log(this.formItem)
