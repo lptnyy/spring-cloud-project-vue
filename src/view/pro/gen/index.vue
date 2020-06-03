@@ -60,8 +60,7 @@ export default {
       productTypeList: [
         { id: 'zore', name: '未选择' },
         { id: 'eq', name: '精确查询' },
-        { id: 'like', name: '模糊查询' },
-        { id: 'range', name: '范围查询' }
+        { id: 'like', name: '模糊查询' }
       ],
       searchTypeList: [
         { id: 'zore', name: '未选择' },
@@ -95,7 +94,8 @@ export default {
             return h('Select', {
               props: {
                 value: this.genTableDatas[params.index].backSelectType, // 获取选择的下拉框的值
-                size: 'small'
+                size: 'small',
+                transfer: true
               },
               on: {
                 'on-change': e => {
@@ -118,7 +118,8 @@ export default {
             return h('Select', {
               props: {
                 value: this.genTableDatas[params.index].webSelectType, // 获取选择的下拉框的值
-                size: 'small'
+                size: 'small',
+                transfer: true
               },
               on: {
                 'on-change': e => {
