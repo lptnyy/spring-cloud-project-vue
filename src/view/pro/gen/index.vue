@@ -11,7 +11,7 @@
         :footer-hide=true>
         <Table border :columns="genTableColumns" :data="genTableDatas"></Table>
         <div class="foodl">
-          <Button @click="cancel">取消生成</Button>
+          <Button @click="cancel">关闭</Button>
           &nbsp;&nbsp;<Button type="primary" @click="genBack">生成后台</Button>
           &nbsp;&nbsp;<Button type="primary" @click="genWeb">生成前端</Button>
         </div>
@@ -190,12 +190,14 @@ export default {
     genBack () {
       this.formItem.tableGenInfos = this.genTableDatas
       generator(this.formItem).then(res => {
+        this.$Message.success('生成成功')
         downloadZip()
       })
     },
     genWeb () {
       this.formItem.tableGenInfos = this.genTableDatas
       generatorWeb(this.formItem).then(res => {
+        this.$Message.success('生成成功')
         downloadZip()
       })
     },
