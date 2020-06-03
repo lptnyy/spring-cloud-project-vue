@@ -12,8 +12,8 @@
         <Table border :columns="genTableColumns" :data="genTableDatas"></Table>
         <div class="foodl">
           <Button @click="cancel">取消生成</Button>
-          &nbsp;&nbsp;<Button type="primary" @click="ok">生成后台</Button>
-          &nbsp;&nbsp;<Button type="primary" @click="handleSubmit('formInline')">生成前端</Button>
+          &nbsp;&nbsp;<Button type="primary" @click="genBack">生成后台</Button>
+          &nbsp;&nbsp;<Button type="primary" @click="genWeb">生成前端</Button>
         </div>
       </Modal>
       <Card :bordered="false">
@@ -58,7 +58,6 @@ export default {
         logSourceName: 'admin-app'
       },
       productTypeList: [
-        { id: 'zore', name: '未选择' },
         { id: 'eq', name: '精确查询' },
         { id: 'like', name: '模糊查询' }
       ],
@@ -113,6 +112,30 @@ export default {
           }
         },
         {
+          title: '是否排序',
+          render: (h, params) => {
+            return h('Select', {
+              props: {
+                value: this.genTableDatas[params.index].sort, // 获取选择的下拉框的值
+                size: 'small',
+                transfer: true
+              },
+              on: {
+                'on-change': e => {
+                  this.genTableDatas[params.index].sort = e // 改变下拉框赋值
+                }
+              }
+            }, this.sortTypeList.map((item) => { // this.productTypeList下拉框里的data
+              return h('Option', { // 下拉框的值
+                props: {
+                  value: item.id,
+                  label: item.name
+                }
+              })
+            }))
+          }
+        },
+        {
           title: '前端生成设置',
           render: (h, params) => {
             return h('Select', {
@@ -127,29 +150,6 @@ export default {
                 }
               }
             }, this.searchTypeList.map((item) => { // this.productTypeList下拉框里的data
-              return h('Option', { // 下拉框的值
-                props: {
-                  value: item.id,
-                  label: item.name
-                }
-              })
-            }))
-          }
-        },
-        {
-          title: '是否排序',
-          render: (h, params) => {
-            return h('Select', {
-              props: {
-                value: this.genTableDatas[params.index].sort, // 获取选择的下拉框的值
-                size: 'small'
-              },
-              on: {
-                'on-change': e => {
-                  this.genTableDatas[params.index].sort = e // 改变下拉框赋值
-                }
-              }
-            }, this.sortTypeList.map((item) => { // this.productTypeList下拉框里的data
               return h('Option', { // 下拉框的值
                 props: {
                   value: item.id,
@@ -187,14 +187,16 @@ export default {
     }
   },
   methods: {
-    checg (change) {
-      console.log(change)
-    },
-    ok () {
-      console.log(this.genTableDatas)
+    genBack () {
       this.formItem.tableGenInfos = this.genTableDatas
       generator(this.formItem).then(res => {
-        // downloadZip()
+        downloadZip()
+      })
+    },
+    genWeb () {
+      this.formItem.tableGenInfos = this.genTableDatas
+      generatorWeb(this.formItem).then(res => {
+        downloadZip()
       })
     },
     cancel () {
@@ -231,7 +233,7 @@ export default {
         this.genModalVisible = true
         var datas = res.data.obj
         datas.forEach(element => {
-          element.backSelectType = 'zore'
+          element.backSelectType = 'eq'
           element.webSelectType = 'zore'
           element.sort = 'zore'
         })
@@ -239,8 +241,7 @@ export default {
         console.log(this.formItem)
       })
     },
-    getTableInfoWeb (tableName) {
-      this.formItem.tableName = tableName
+    getTableInfoWeb () {
       generatorWeb(this.formItem).then(res => {
         downloadZip()
       })
