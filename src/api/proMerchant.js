@@ -6,7 +6,7 @@ import axios from '@/libs/api.request'
  */
 export const getProMerchantPageList = (params) => {
   return axios.request({
-    url: '/system/proMerchant/getPageList',
+    url: '/merchant/proMerchant/getPageList',
     method: 'post',
     data: params
   })
@@ -18,7 +18,7 @@ export const getProMerchantPageList = (params) => {
  */
 export const deleteProMerchant = (params) => {
   return axios.request({
-    url: '/system/proMerchant/delete',
+    url: '/merchant/proMerchant/delete',
     method: 'post',
     data: params
   })
@@ -30,7 +30,7 @@ export const deleteProMerchant = (params) => {
  */
 export const idsProMerchantDelete = (params) => {
   return axios.request({
-    url: '/system/proMerchant/idsDelete',
+    url: '/merchant/proMerchant/idsDelete',
     method: 'post',
     data: params
   })
@@ -42,7 +42,7 @@ export const idsProMerchantDelete = (params) => {
  */
 export const updateProMerchant = (params) => {
   return axios.request({
-    url: '/system/proMerchant/update',
+    url: '/merchant/proMerchant/update',
     method: 'post',
     data: params
   })
@@ -54,7 +54,7 @@ export const updateProMerchant = (params) => {
  */
 export const saveProMerchant = (params) => {
   return axios.request({
-    url: '/system/proMerchant/save',
+    url: '/merchant/proMerchant/save',
     method: 'post',
     data: params
   })
