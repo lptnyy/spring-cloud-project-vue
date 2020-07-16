@@ -7,7 +7,7 @@
             <div class="search">
               <Input class="input" v-model="name" placeholder="分类名称"/>
               <DatePicker v-model="createTime" type="date" placeholder="创建时间"></DatePicker>
-              <Button @click="search" :disabled="!isRetrieve">查询</Button>
+              <Button class="add_button" @click="search" :disabled="!isRetrieve">查询</Button>
               <Button class="add_button" :disabled="!isRetrieve" @click="reset">重置</Button>
               <Button class="add_button" :disabled="!isDelete" @click="deleteBathBtnClick" type="warning">删除</Button>
               <Button class="add_button" :disabled="!isCreate" @click="addBtnClick" type="primary">添加</Button>
@@ -82,11 +82,6 @@ export default {
         {
           type: 'selection',
           width: 60,
-          fixed: 'left'
-        },
-        {
-          title: '标识列',
-          key: 'id',
           fixed: 'left'
         },
         {
@@ -262,8 +257,16 @@ export default {
     initData () {
       if (!this.isRetrieve) return
       var params = {}
-      params.name = this.name
-      params.createTime = this.createTime
+      if (this.name !== '') {
+        params.name = this.name
+      } else {
+        params.name = null
+      }
+      if (this.createTime !== '') {
+        params.createTime = this.createTime
+      } else {
+        params.createTime = null
+      }
       params.pageNum = this.pageNum
       params.pageSize = this.pageSize
       getXiaoshuoNoveltypePageList(params)
