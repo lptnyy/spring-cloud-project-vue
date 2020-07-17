@@ -7,11 +7,12 @@
             <div class="search">
               <Input class="input" v-model="name" placeholder="小说名称"/>
               <Input class="input" v-model="broadcast" placeholder="主播"/>
-              <Select v-model="stat">
-                <Option value="0">需要编码</Option>
-              </Select>
               <Input class="input" v-model="typename" placeholder="分类名称"/>
               <Input class="input" v-model="author" placeholder="作者"/>
+              <Select class="input" v-model="stat" placeholder="状态">
+                <Option value="连载中">连载中</Option>
+                <Option value="完结">完结</Option>
+              </Select>
               <Button class="add_button" @click="search" :disabled="!isRetrieve">查询</Button>
               <Button class="add_button" :disabled="!isRetrieve" @click="reset">重置</Button>
               <Button class="add_button" :disabled="!isDelete" @click="deleteBathBtnClick" type="warning">删除</Button>
@@ -26,59 +27,26 @@
         :title="title"
         :footer-hide=true>
           <Form ref="formInline" :model="formInline" :rules="ruleValidate">
-            <FormItem label="标识id" prop="id">
-              <Input v-model="formInline.id" placeholder="请输入标识id"/>
-            </FormItem>
-            <FormItem label="图片地址" prop="img">
-              <Input v-model="formInline.img" placeholder="请输入图片地址"/>
-            </FormItem>
-            <FormItem label="下载的图片地址" prop="downimg">
-              <Input v-model="formInline.downimg" placeholder="请输入下载的图片地址"/>
+            <FormItem label="小说名称" prop="name">
+              <Input v-model="formInline.name" placeholder="请输入小说名称"/>
             </FormItem>
             <FormItem label="介绍" prop="introduce">
               <Input v-model="formInline.introduce" placeholder="请输入介绍"/>
             </FormItem>
-            <FormItem label="小说名称" prop="name">
-              <Input v-model="formInline.name" placeholder="请输入小说名称"/>
-            </FormItem>
             <FormItem label="主播" prop="broadcast">
               <Input v-model="formInline.broadcast" placeholder="请输入主播"/>
-            </FormItem>
-            <FormItem label="人气" prop="popularity">
-              <Input v-model="formInline.popularity" placeholder="请输入人气"/>
-            </FormItem>
-            <FormItem label="搜索key" prop="seachkeys">
-              <Input v-model="formInline.seachkeys" placeholder="请输入搜索key"/>
-            </FormItem>
-            <FormItem label="下载次数" prop="downloads">
-              <Input v-model="formInline.downloads" placeholder="请输入下载次数"/>
-            </FormItem>
-            <FormItem label="打开次数" prop="pcount">
-              <Input v-model="formInline.pcount" placeholder="请输入打开次数"/>
-            </FormItem>
-            <FormItem label="状态" prop="stat">
-              <Input v-model="formInline.stat" placeholder="请输入状态"/>
-            </FormItem>
-            <FormItem label="分类名称" prop="typename">
-              <Input v-model="formInline.typename" placeholder="请输入分类名称"/>
             </FormItem>
             <FormItem label="作者" prop="author">
               <Input v-model="formInline.author" placeholder="请输入作者"/>
             </FormItem>
-            <FormItem label="更新时间" prop="updateTime">
-              <Input v-model="formInline.updateTime" placeholder="请输入更新时间"/>
+            <FormItem label="热搜条件" prop="seachkeys">
+              <Input v-model="formInline.seachkeys" placeholder="请输入搜索key"/>
             </FormItem>
-            <FormItem label="" prop="createtime">
-              <Input v-model="formInline.createtime" placeholder="请输入"/>
-            </FormItem>
-            <FormItem label="同步状态" prop="syncstat">
-              <Input v-model="formInline.syncstat" placeholder="请输入同步状态"/>
-            </FormItem>
-            <FormItem label="分类ID" prop="typeid">
-              <Input v-model="formInline.typeid" placeholder="请输入分类ID"/>
-            </FormItem>
-            <FormItem label="图片大小" prop="imgsize">
-              <Input v-model="formInline.imgsize" placeholder="请输入图片大小"/>
+            <FormItem label="状态" prop="stat">
+              <Select class="input" v-model="formInline.stat" placeholder="状态">
+                <Option value="连载中">连载中</Option>
+                <Option value="完结">完结</Option>
+              </Select>
             </FormItem>
           </Form>
           <div class="foodl">
@@ -181,6 +149,26 @@ export default {
           type: 'selection',
           width: 60,
           fixed: 'left'
+        },
+        {
+          title: '图片',
+          fixed: 'left',
+          render: (h, params) => {
+            return h('img', {
+              /*  组件样式 */
+              style: {
+                'margin-top': '5px',
+                width: '100px',
+                height: '100px',
+                'border-radius': '5%'
+              },
+              /*  html属性 */
+              attrs: {
+                /*  图片的路径,直接采用后台返回的键值 */
+                src: params.row.img
+              }
+            })
+          }
         },
         {
           title: '小说名称',

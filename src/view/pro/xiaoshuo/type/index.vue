@@ -83,11 +83,6 @@ export default {
           fixed: 'left'
         },
         {
-          title: '标识列',
-          key: 'id',
-          fixed: 'left'
-        },
-        {
           title: '分类名称',
           key: 'name',
           fixed: 'left'
@@ -95,10 +90,12 @@ export default {
         {
           title: '排序',
           key: 'sort',
+          width: 120,
           fixed: 'left'
         },
         {
           title: '创建时间',
+          width: 160,
           key: 'createTime',
           fixed: 'left'
         },
