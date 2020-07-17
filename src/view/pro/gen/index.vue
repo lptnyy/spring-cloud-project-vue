@@ -9,6 +9,10 @@
         v-model="genModalVisible"
         title="生成设置"
         :footer-hide=true>
+        <Input class="input" v-model="createVali" placeholder="创建权限"/>
+        <Input class="input" v-model="queryVali" placeholder="查询权限"/>
+        <Input class="input" v-model="delVali" placeholder="删除权限"/>
+        <Input class="input" v-model="editVali" placeholder="编辑权限"/>
         <Table border :columns="genTableColumns" :data="genTableDatas"></Table>
         <div class="foodl">
           <Button @click="cancel">关闭</Button>
@@ -41,6 +45,10 @@ export default {
     return {
       genModalVisible: false,
       tableName: '',
+      createVali: '',
+      queryVali: '',
+      delVali: '',
+      editVali: '',
       formItem: {
         mysql: 'jdbc:mysql://localhost:3306/pro_user',
         mysqlUser: 'root',
@@ -189,6 +197,10 @@ export default {
   methods: {
     genBack () {
       this.formItem.tableGenInfos = this.genTableDatas
+      this.formItem.createVali = this.createVali
+      this.formItem.queryVali = this.queryVali
+      this.formItem.delVali = this.delVali
+      this.formItem.editVali = this.editVali
       generator(this.formItem).then(res => {
         this.$Message.success('生成成功')
         downloadZip()
@@ -196,6 +208,10 @@ export default {
     },
     genWeb () {
       this.formItem.tableGenInfos = this.genTableDatas
+      this.formItem.createVali = this.createVali
+      this.formItem.queryVali = this.queryVali
+      this.formItem.delVali = this.delVali
+      this.formItem.editVali = this.editVali
       generatorWeb(this.formItem).then(res => {
         this.$Message.success('生成成功')
         downloadZip()
@@ -256,4 +272,9 @@ export default {
 }
 </script>
 <style>
+ .input{
+        width: 150px;
+        margin-right: 10px;
+        margin-bottom: 10px;
+    }
 </style>

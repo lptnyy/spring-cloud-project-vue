@@ -3,10 +3,9 @@
     <Row>
       <Col span="24">
         <Card :bordered="false">
-          <p slot="title">小说分类管理</p>
+          <p slot="title">小说分类</p>
             <div class="search">
               <Input class="input" v-model="name" placeholder="分类名称"/>
-              <DatePicker v-model="createTime" type="date" placeholder="创建时间"></DatePicker>
               <Button class="add_button" @click="search" :disabled="!isRetrieve">查询</Button>
               <Button class="add_button" :disabled="!isRetrieve" @click="reset">重置</Button>
               <Button class="add_button" :disabled="!isDelete" @click="deleteBathBtnClick" type="warning">删除</Button>
@@ -57,7 +56,6 @@ export default {
       selection: [],
       addFlag: false,
       name: '',
-      createTime: null,
       uploadUrl: userStore.state.baseUrl,
       downloadUrl: userStore.state.downloadUrl,
       pageSize: 10,
@@ -82,6 +80,11 @@ export default {
         {
           type: 'selection',
           width: 60,
+          fixed: 'left'
+        },
+        {
+          title: '标识列',
+          key: 'id',
           fixed: 'left'
         },
         {
@@ -149,7 +152,6 @@ export default {
     },
     reset () {
       this.name = ''
-      this.createTime = null
       this.pageNum = 1
       this.initData()
     },
@@ -170,7 +172,7 @@ export default {
       let tableRow = this.tableData[index]
       this.formInline.id = tableRow.id
       this.formInline.name = tableRow.name
-      this.formInline.sort = tableRow.sort
+      this.formInline.sort = tableRow.sort + ''
       this.formInline.createTime = tableRow.createTime
       this.addFlag = true
     },
@@ -261,11 +263,6 @@ export default {
         params.name = this.name
       } else {
         params.name = null
-      }
-      if (this.createTime !== '') {
-        params.createTime = this.createTime
-      } else {
-        params.createTime = null
       }
       params.pageNum = this.pageNum
       params.pageSize = this.pageSize
