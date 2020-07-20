@@ -13,6 +13,18 @@ export const getXiaoshuoNoveltypePageList = (params) => {
 }
 
 /**
+ * 查询
+ * @param {} params
+ */
+export const getXiaoshuoNoveltypeList = (params) => {
+  return axios.request({
+    url: '/xiaoshuo/xiaoshuoNoveltype/getList',
+    method: 'post',
+    data: params
+  })
+}
+
+/**
  * 删除
  * @param {} params
  */

@@ -3,13 +3,13 @@
     <Row>
       <Col span="24">
         <Card :bordered="false">
-          <p slot="title"></p>
+          <p slot="title">小说内容</p>
             <div class="search">
-              <Input class="input" v-model="name" placeholder="小说名称"/>
-              <Input class="input" v-model="broadcast" placeholder="主播"/>
-              <Input class="input" v-model="typename" placeholder="分类名称"/>
+              <Input class="input" v-model="name" placeholder="名称"/>
+              <Input class="input" v-model="broadcast" placeholder="播讲"/>
               <Input class="input" v-model="author" placeholder="作者"/>
-              <Select class="input" v-model="stat" placeholder="状态">
+              <Input class="input" v-model="typeName" placeholder="分类"/>
+              <Select class="input" v-model="stat">
                 <Option value="连载中">连载中</Option>
                 <Option value="完结">完结</Option>
               </Select>
@@ -27,26 +27,38 @@
         :title="title"
         :footer-hide=true>
           <Form ref="formInline" :model="formInline" :rules="ruleValidate">
-            <FormItem label="小说名称" prop="name">
-              <Input v-model="formInline.name" placeholder="请输入小说名称"/>
+            <FormItem label="图片展示" prop="img">
+              <br /><img :src="this.downloadUrl + formInline.img" style="width:80px; height:80px;"><br />
+              <Button @click="btnFileSelect">上传图片</Button>
             </FormItem>
-            <FormItem label="介绍" prop="introduce">
-              <Input v-model="formInline.introduce" placeholder="请输入介绍"/>
-            </FormItem>
-            <FormItem label="主播" prop="broadcast">
-              <Input v-model="formInline.broadcast" placeholder="请输入主播"/>
+            <FormItem label="名称" prop="name">
+              <Input v-model="formInline.name" placeholder="请输入名称"/>
             </FormItem>
             <FormItem label="作者" prop="author">
               <Input v-model="formInline.author" placeholder="请输入作者"/>
             </FormItem>
-            <FormItem label="热搜条件" prop="seachkeys">
-              <Input v-model="formInline.seachkeys" placeholder="请输入搜索key"/>
+            <FormItem label="播讲" prop="broadcast">
+              <Input v-model="formInline.broadcast" placeholder="请输入播讲"/>
+            </FormItem>
+            <FormItem label="关键字" prop="seachKeys">
+              <Input v-model="formInline.seachKeys" placeholder="请输入关键字"/>
+            </FormItem>
+            <FormItem label="集数" prop="pcount">
+              <Input v-model="formInline.pcount" placeholder="请输入集数"/>
             </FormItem>
             <FormItem label="状态" prop="stat">
-              <Select class="input" v-model="formInline.stat" placeholder="状态">
+              <Select v-model="formInline.stat" placeholder="请输入状态">
                 <Option value="连载中">连载中</Option>
                 <Option value="完结">完结</Option>
               </Select>
+            </FormItem>
+            <FormItem label="分类" prop="typeId">
+              <Select v-model="formInline.typeId">
+                  <Option v-for="item in typeList" :value="item.id + ''" :key="item.id+ ''">{{ item.name }}</Option>
+              </Select>
+            </FormItem>
+            <FormItem label="介绍" prop="introduce">
+              <Input v-model="formInline.introduce" type="textarea" placeholder="请输入介绍"/>
             </FormItem>
           </Form>
           <div class="foodl">
@@ -55,32 +67,38 @@
           </div>
       </Modal>
     </Row>
+     <FileComn :selectFileFlag="selectFileFlag" :cancel="cancel" :onSelect="fileSelect"/>
   </div>
 </template>
 
 <script>
 import Tables from '_c/tables'
 import { getXiaoshuoNovelPageList, deleteXiaoshuoNovel, updateXiaoshuoNovel, saveXiaoshuoNovel, idsXiaoshuoNovelDelete } from '@/api/xiaoshuoNovel'
+import { getXiaoshuoNoveltypeList } from '@/api/xiaoshuoNoveltype'
 import userStore from '@/store/module/user'
+import FileComn from '@/view/pro/components/file/index'
 
 export default {
   name: 'XiaoshuoNovel',
   components: {
-    Tables
+    Tables,
+    FileComn
   },
   data () {
     return {
-      title: '添加',
+      title: '添加小说内容',
       isCreate: this.authorities('xiaoshuo_novel_add'),
       isDelete: this.authorities('xiaoshuo_novel_del'),
       isUpdate: this.authorities('xiaoshuo_novel_edit'),
       isRetrieve: this.authorities('xiaoshuo_novel_list'),
+      typeList: [],
       selection: [],
       addFlag: false,
+      selectFileFlag: false,
       name: '',
       broadcast: '',
       stat: '',
-      typename: '',
+      typeName: '',
       author: '',
       uploadUrl: userStore.state.baseUrl,
       downloadUrl: userStore.state.downloadUrl,
@@ -90,40 +108,40 @@ export default {
       formInline: this.initFromInput(),
       ruleValidate: {
         id: [
-          { required: true, message: '请输入标识id', trigger: 'blur' }
+          { required: true, message: '请输入标示id', trigger: 'blur' }
         ],
         img: [
-          { required: true, message: '请输入图片地址', trigger: 'blur' }
+          { required: true, message: '请输入图片展示', trigger: 'blur' }
         ],
-        downimg: [
-          { required: true, message: '请输入下载的图片地址', trigger: 'blur' }
+        downImg: [
+          { required: true, message: '请输入图片展示', trigger: 'blur' }
         ],
         introduce: [
           { required: true, message: '请输入介绍', trigger: 'blur' }
         ],
         name: [
-          { required: true, message: '请输入小说名称', trigger: 'blur' }
+          { required: true, message: '请输入名称', trigger: 'blur' }
         ],
         broadcast: [
-          { required: true, message: '请输入主播', trigger: 'blur' }
+          { required: true, message: '请输入播讲', trigger: 'blur' }
         ],
         popularity: [
           { required: true, message: '请输入人气', trigger: 'blur' }
         ],
-        seachkeys: [
-          { required: true, message: '请输入搜索key', trigger: 'blur' }
+        seachKeys: [
+          { required: true, message: '请输入关键字', trigger: 'blur' }
         ],
         downloads: [
           { required: true, message: '请输入下载次数', trigger: 'blur' }
         ],
         pcount: [
-          { required: true, message: '请输入打开次数', trigger: 'blur' }
+          { required: true, message: '请输入集数', trigger: 'blur' }
         ],
         stat: [
           { required: true, message: '请输入状态', trigger: 'blur' }
         ],
-        typename: [
-          { required: true, message: '请输入分类名称', trigger: 'blur' }
+        typeName: [
+          { required: true, message: '请输入分类', trigger: 'blur' }
         ],
         author: [
           { required: true, message: '请输入作者', trigger: 'blur' }
@@ -131,16 +149,16 @@ export default {
         updateTime: [
           { required: true, message: '请输入更新时间', trigger: 'blur' }
         ],
-        createtime: [
-          { required: true, message: '请输入', trigger: 'blur' }
+        createTime: [
+          { required: true, message: '请输入创建时间', trigger: 'blur' }
         ],
-        syncstat: [
+        syncStat: [
           { required: true, message: '请输入同步状态', trigger: 'blur' }
         ],
-        typeid: [
-          { required: true, message: '请输入分类ID', trigger: 'blur' }
+        typeId: [
+          { required: true, message: '请选择分类', trigger: 'blur' }
         ],
-        imgsize: [
+        imgSize: [
           { required: true, message: '请输入图片大小', trigger: 'blur' }
         ]
       },
@@ -151,43 +169,41 @@ export default {
           fixed: 'left'
         },
         {
-          title: '图片',
+          title: '展示图',
           fixed: 'left',
           render: (h, params) => {
-            return h('img', {
-              /*  组件样式 */
-              style: {
-                'margin-top': '5px',
-                width: '100px',
-                height: '100px',
-                'border-radius': '5%'
-              },
-              /*  html属性 */
-              attrs: {
-                /*  图片的路径,直接采用后台返回的键值 */
-                src: params.row.img
-              }
-            })
+            return h('div', [
+              h('img', {
+                attrs: {
+                  src: this.downloadUrl + params.row.img
+                },
+                style: {
+                  width: '80px',
+                  height: '80px',
+                  'margin-top': '5px'
+                }
+              })
+            ])
           }
         },
         {
-          title: '小说名称',
+          title: '名称',
           key: 'name',
           fixed: 'left'
         },
         {
-          title: '分类名称',
-          key: 'typename',
-          fixed: 'left'
-        },
-        {
-          title: '主播',
+          title: '播讲',
           key: 'broadcast',
           fixed: 'left'
         },
         {
           title: '作者',
           key: 'author',
+          fixed: 'left'
+        },
+        {
+          title: '关键字',
+          key: 'seachKeys',
           fixed: 'left'
         },
         {
@@ -201,7 +217,7 @@ export default {
           fixed: 'left'
         },
         {
-          title: '打开次数',
+          title: '集数',
           key: 'pcount',
           fixed: 'left'
         },
@@ -211,8 +227,18 @@ export default {
           fixed: 'left'
         },
         {
+          title: '分类',
+          key: 'typeName',
+          fixed: 'left'
+        },
+        {
+          title: '更新时间',
+          key: 'updateTime',
+          fixed: 'left'
+        },
+        {
           title: '创建时间',
-          key: 'createtime',
+          key: 'createTime',
           fixed: 'left'
         },
         {
@@ -254,26 +280,33 @@ export default {
     }
   },
   methods: {
+    btnFileSelect () {
+      this.selectFileFlag = true
+    },
+    fileSelect (files) {
+      this.formInline.img = files.path
+      this.selectFileFlag = false
+    },
     initFromInput () {
       var formInline = {
         id: null,
         img: '',
-        downimg: '',
+        downImg: '',
         introduce: '',
         name: '',
         broadcast: '',
         popularity: null,
-        seachkeys: '',
+        seachKeys: '',
         downloads: null,
         pcount: null,
         stat: '',
-        typename: '',
+        typeName: '',
         author: '',
         updateTime: null,
-        createtime: null,
-        syncstat: '',
-        typeid: null,
-        imgsize: null
+        createTime: null,
+        syncStat: '',
+        typeId: null,
+        imgSize: null
       }
       return formInline
     },
@@ -281,7 +314,7 @@ export default {
       this.name = ''
       this.broadcast = ''
       this.stat = ''
-      this.typename = ''
+      this.typeName = ''
       this.author = ''
       this.pageNum = 1
       this.initData()
@@ -290,35 +323,36 @@ export default {
       this.initData()
     },
     addBtnClick () {
-      this.title = '添加'
+      this.title = '添加小说内容'
       this.formInline = this.initFromInput()
       this.addFlag = true
     },
     cancel () {
       this.addFlag = false
+      this.selectFileFlag = false
       this.formInline = this.initFromInput()
     },
     editBtnClick (index) {
-      this.title = '编辑'
+      this.title = '编辑小说内容'
       let tableRow = this.tableData[index]
       this.formInline.id = tableRow.id + ''
       this.formInline.img = tableRow.img
-      this.formInline.downimg = tableRow.downimg
+      this.formInline.downImg = tableRow.downImg
       this.formInline.introduce = tableRow.introduce
       this.formInline.name = tableRow.name
       this.formInline.broadcast = tableRow.broadcast
       this.formInline.popularity = tableRow.popularity + ''
-      this.formInline.seachkeys = tableRow.seachkeys
+      this.formInline.seachKeys = tableRow.seachKeys
       this.formInline.downloads = tableRow.downloads + ''
       this.formInline.pcount = tableRow.pcount + ''
       this.formInline.stat = tableRow.stat
-      this.formInline.typename = tableRow.typename
+      this.formInline.typeName = tableRow.typeName
       this.formInline.author = tableRow.author
       this.formInline.updateTime = tableRow.updateTime
-      this.formInline.createtime = tableRow.createtime
-      this.formInline.syncstat = tableRow.syncstat
-      this.formInline.typeid = tableRow.typeid + ''
-      this.formInline.imgsize = tableRow.imgsize + ''
+      this.formInline.createTime = tableRow.createTime
+      this.formInline.syncStat = tableRow.syncStat
+      this.formInline.typeId = tableRow.typeId + ''
+      this.formInline.imgSize = tableRow.imgSize + ''
       this.addFlag = true
     },
     deleteBathBtnClick () {
@@ -402,6 +436,17 @@ export default {
       this.pageSize = index
       this.initData()
     },
+    initTypeData () {
+      var params = {}
+      getXiaoshuoNoveltypeList(params)
+        .then(res => {
+          if (res.code !== 200) {
+            this.typeList = res.data.obj
+          } else {
+            this.$Message.error(res.data.msg)
+          }
+        })
+    },
     initData () {
       if (!this.isRetrieve) return
       var params = {}
@@ -420,10 +465,10 @@ export default {
       } else {
         params.stat = null
       }
-      if (this.typename !== '') {
-        params.typename = this.typename
+      if (this.typeName !== '') {
+        params.typeName = this.typeName
       } else {
-        params.typename = null
+        params.typeName = null
       }
       if (this.author !== '') {
         params.author = this.author
@@ -446,6 +491,7 @@ export default {
   mounted () {},
   created () {
     this.initData()
+    this.initTypeData()
   }
 }
 </script>
