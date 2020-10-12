@@ -4,9 +4,9 @@ import axios from '@/libs/api.request'
  * 查询
  * @param {} params
  */
-export const getProMerchantPageList = (params) => {
+export const getProMemberPageList = (params) => {
   return axios.request({
-    url: '/merchant/proMerchant/getPageList',
+    url: '/system/proMember/getPageList',
     method: 'post',
     data: params
   })
@@ -16,9 +16,9 @@ export const getProMerchantPageList = (params) => {
  * 删除
  * @param {} params
  */
-export const deleteProMerchant = (params) => {
+export const deleteProMember = (params) => {
   return axios.request({
-    url: '/merchant/proMerchant/delete',
+    url: '/system/proMember/delete',
     method: 'post',
     data: params
   })
@@ -28,9 +28,9 @@ export const deleteProMerchant = (params) => {
  * 批量删除
  * @param {} params
  */
-export const idsProMerchantDelete = (params) => {
+export const idsProMemberDelete = (params) => {
   return axios.request({
-    url: '/merchant/proMerchant/idsDelete',
+    url: '/system/proMember/idsDelete',
     method: 'post',
     data: params
   })
@@ -40,9 +40,9 @@ export const idsProMerchantDelete = (params) => {
  * 修改
  * @param {} params
  */
-export const updateProMerchant = (params) => {
+export const updateProMember = (params) => {
   return axios.request({
-    url: '/merchant/proMerchant/update',
+    url: '/system/proMember/update',
     method: 'post',
     data: params
   })
@@ -52,9 +52,9 @@ export const updateProMerchant = (params) => {
  * 保存
  * @param {} params
  */
-export const saveProMerchant = (params) => {
+export const saveProMember = (params) => {
   return axios.request({
-    url: '/merchant/proMerchant/save',
+    url: '/system/proMember/save',
     method: 'post',
     data: params
   })
