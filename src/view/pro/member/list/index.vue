@@ -8,14 +8,14 @@
               <Input class="input" v-model="memberNo" placeholder="会员号"/>
               <Input class="input" v-model="nickName" placeholder="会员昵称"/>
               <Input class="input" v-model="userName" placeholder="会员账号"/>
-              <Select class="input" v-model="province">
-                <Option value="0">需要编码</Option>
+              <Select class="input" @on-change="provincesChang" v-model="province" placeholder="省份">
+                <Option v-for="item in provinces" :value="item.provinceId" :key="item.provinceId">{{ item.name }}</Option>
               </Select>
-              <Select class="input" v-model="city">
-                <Option value="0">需要编码</Option>
+              <Select class="input" @on-change="areaChang" v-model="city" placeholder="城市">
+                <Option v-for="item in selectCitys" :value="item.cityId" :key="item.cityId">{{ item.name }}</Option>
               </Select>
-              <Select class="input" v-model="area">
-                <Option value="0">需要编码</Option>
+              <Select class="input" v-model="area" placeholder="地区">
+                <Option v-for="item in selectAreas" :value="item.areaId" :key="item.areaId">{{ item.name }}</Option>
               </Select>
               <Button class="add_button" @click="search" :disabled="!isRetrieve">查询</Button>
               <Button class="add_button" :disabled="!isRetrieve" @click="reset">重置</Button>
@@ -59,13 +59,19 @@
               <Input v-model="formInline.age" placeholder="请输入年龄"/>
             </FormItem>
             <FormItem label="省份" prop="province">
-              <Input v-model="formInline.province" placeholder="请输入省份"/>
+              <Select @on-change="addProvincesChang" v-model="formInline.province" placeholder="请选择省份">
+                <Option v-for="item in provinces" :value="item.provinceId" :key="item.provinceId">{{ item.name }}</Option>
+              </Select>
             </FormItem>
             <FormItem label="城市" prop="city">
-              <Input v-model="formInline.city" placeholder="请输入城市"/>
+              <Select @on-change="addAreaChang" v-model="formInline.city" placeholder="请选择城市">
+                <Option v-for="item in addSelectCitys" :value="item.cityId" :key="item.cityId">{{ item.name }}</Option>
+              </Select>
             </FormItem>
             <FormItem label="区" prop="area">
-              <Input v-model="formInline.area" placeholder="请输入区"/>
+              <Select v-model="formInline.area" placeholder="请选择城市">
+                <Option v-for="item in addSelectAreas" :value="item.areaId" :key="item.areaId">{{ item.name }}</Option>
+              </Select>
             </FormItem>
             <FormItem label="学校" prop="school">
               <Input v-model="formInline.school" placeholder="请输入学校"/>
@@ -98,6 +104,7 @@
 <script>
 import Tables from '_c/tables'
 import { getProMemberPageList, deleteProMember, updateProMember, saveProMember, idsProMemberDelete } from '@/api/proMember'
+import { getProvince, getCity, getArea } from '@/api/regin'
 import userStore from '@/store/module/user'
 import FileComn from '@/view/pro/components/file/index'
 import { getEnumList } from '@/api/enum'
@@ -110,6 +117,13 @@ export default {
   },
   data () {
     return {
+      addSelectAreas: [],
+      addSelectCitys: [],
+      selectAreas: [],
+      selectCitys: [],
+      provinces: [],
+      citys: [],
+      areas: [],
       stateTypes: [],
       sexTypes: [],
       selectFileFlag: false,
@@ -243,17 +257,17 @@ export default {
         },
         {
           title: '省份',
-          key: 'province',
+          key: 'provinceStr',
           fixed: 'left'
         },
         {
           title: '城市',
-          key: 'city',
+          key: 'cityStr',
           fixed: 'left'
         },
         {
           title: '区',
-          key: 'area',
+          key: 'areaStr',
           fixed: 'left'
         },
         {
@@ -320,6 +334,50 @@ export default {
     }
   },
   methods: {
+    initAreaDatas (op) {
+      this.selectAreas = []
+      this.areas.forEach(area => {
+        if (area.cityId === op) {
+          this.selectAreas.push(area)
+        }
+      })
+    },
+    areaChang (op) {
+      this.initAreaDatas(op)
+    },
+    initCityDatas (op) {
+      this.selectCitys = []
+      this.citys.forEach(city => {
+        if (city.province === op) {
+          this.selectCitys.push(city)
+        }
+      })
+    },
+    initAddAreaDatas (op) {
+      this.addSelectAreas = []
+      this.areas.forEach(area => {
+        if (area.cityId === op) {
+          this.addSelectAreas.push(area)
+        }
+      })
+    },
+    addAreaChang (op) {
+      this.initAddAreaDatas(op)
+    },
+    initAddCityDatas (op) {
+      this.addSelectCitys = []
+      this.citys.forEach(city => {
+        if (city.province === op) {
+          this.addSelectCitys.push(city)
+        }
+      })
+    },
+    addProvincesChang (op) {
+      this.initAddCityDatas(op)
+    },
+    provincesChang (op) {
+      this.initCityDatas(op)
+    },
     btnFileSelect () {
       this.selectFileFlag = true
     },
@@ -395,6 +453,8 @@ export default {
       this.formInline.payPassword = tableRow.payPassword
       this.formInline.withdrawalPassword = tableRow.withdrawalPassword
       this.addFlag = true
+      this.initAddCityDatas(tableRow.province)
+      this.initAddAreaDatas(tableRow.city)
     },
     deleteBathBtnClick () {
       if (this.selection.length === 0) {
@@ -537,6 +597,23 @@ export default {
         .then(res => {
           this.sexTypes = res.data.obj
         })
+    },
+    initRegion () {
+      var params = {}
+      params.pageNum = 1
+      params.pageSize = 10000000
+      getProvince(params)
+        .then(res => {
+          this.provinces = res.data.obj
+        })
+      getCity(params)
+        .then(res => {
+          this.citys = res.data.obj
+        })
+      getArea(params)
+        .then(res => {
+          this.areas = res.data.obj
+        })
     }
   },
   mounted () {},
@@ -544,6 +621,7 @@ export default {
     this.initData()
     this.initFileTypes()
     this.initSexTypes()
+    this.initRegion()
   }
 }
 </script>

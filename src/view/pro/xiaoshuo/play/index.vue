@@ -1,68 +1,62 @@
 <template>
-  <Modal
-    v-model="showPlayStatFlag"
-    :title="title"
-    :footer-hide=true>
-    <div>
-      <Row>
-        <Col span="24">
-          <Card :bordered="false">
-            <p slot="title">播放列表</p>
-              <div class="search">
-                <Input class="input" v-model="name" placeholder="小说名称"/>
-                <Button class="add_button" @click="search" :disabled="!isRetrieve">查询</Button>
-                <Button class="add_button" :disabled="!isRetrieve" @click="reset">重置</Button>
-                <Button class="add_button" :disabled="!isDelete" @click="deleteBathBtnClick" type="warning">删除</Button>
-                <Button class="add_button" :disabled="!isCreate" @click="addBtnClick" type="primary">添加</Button>
-              </div>
-              <Table border @on-selection-change="tableOnSelect" ref="selection" :columns="columns" :data="tableData"></Table>
-              <Page class="page" @on-page-size-change="onPageSizeChange" show-total show-sizer @on-change="tableOnChange" :total="total" show-elevator />
-          </Card>
-        </Col>
-        <Modal
-          v-model="addFlag"
-          :title="title"
-          :footer-hide=true>
-            <Form ref="formInline" :model="formInline" :rules="ruleValidate">
-              <FormItem label="标示id" prop="id">
-                <Input v-model="formInline.id" placeholder="请输入标示id"/>
-              </FormItem>
-              <FormItem label="小说名称" prop="name">
-                <Input v-model="formInline.name" placeholder="请输入小说名称"/>
-              </FormItem>
-              <FormItem label="线路" prop="line">
-                <Input v-model="formInline.line" placeholder="请输入线路"/>
-              </FormItem>
-              <FormItem label="集数" prop="sets">
-                <Input v-model="formInline.sets" placeholder="请输入集数"/>
-              </FormItem>
-              <FormItem label="播放地址" prop="url">
-                <Input v-model="formInline.url" placeholder="请输入播放地址"/>
-              </FormItem>
-              <FormItem label="下载地址" prop="downUrl">
-                <Input v-model="formInline.downUrl" placeholder="请输入下载地址"/>
-              </FormItem>
-              <FormItem label="创建时间" prop="createTime">
-                <Input v-model="formInline.createTime" placeholder="请输入创建时间"/>
-              </FormItem>
-              <FormItem label="同步状态" prop="syncStat">
-                <Input v-model="formInline.syncStat" placeholder="请输入同步状态"/>
-              </FormItem>
-              <FormItem label="小说id" prop="novelId">
-                <Input v-model="formInline.novelId" placeholder="请输入小说id"/>
-              </FormItem>
-              <FormItem label="排序" prop="sort">
-                <Input v-model="formInline.sort" placeholder="请输入排序"/>
-              </FormItem>
-            </Form>
-            <div class="foodl">
-                <Button @click="cancel">取消</Button>
-                &nbsp;&nbsp;<Button type="primary" :disabled="!isCreate" @click="handleSubmit('formInline')">确定</Button>
+  <div>
+    <Row>
+      <Col span="24">
+        <Card :bordered="false">
+          <p slot="title"></p>
+            <div class="search">
+              <Button class="add_button" @click="search" :disabled="!isRetrieve">查询</Button>
+              <Button class="add_button" :disabled="!isRetrieve" @click="reset">重置</Button>
+              <Button class="add_button" :disabled="!isDelete" @click="deleteBathBtnClick" type="warning">删除</Button>
+              <Button class="add_button" :disabled="!isCreate" @click="addBtnClick" type="primary">添加</Button>
             </div>
-        </Modal>
-      </Row>
-    </div>
-  </Modal>
+            <Table border @on-selection-change="tableOnSelect" ref="selection" :columns="columns" :data="tableData"></Table>
+            <Page class="page" @on-page-size-change="onPageSizeChange" show-total show-sizer @on-change="tableOnChange" :total="total" show-elevator />
+        </Card>
+      </Col>
+      <Modal
+        v-model="addFlag"
+        :title="title"
+        :footer-hide=true>
+          <Form ref="formInline" :model="formInline" :rules="ruleValidate">
+            <FormItem label="" prop="id">
+              <Input v-model="formInline.id" placeholder="请输入"/>
+            </FormItem>
+            <FormItem label="" prop="name">
+              <Input v-model="formInline.name" placeholder="请输入"/>
+            </FormItem>
+            <FormItem label="" prop="line">
+              <Input v-model="formInline.line" placeholder="请输入"/>
+            </FormItem>
+            <FormItem label="" prop="sets">
+              <Input v-model="formInline.sets" placeholder="请输入"/>
+            </FormItem>
+            <FormItem label="" prop="url">
+              <Input v-model="formInline.url" placeholder="请输入"/>
+            </FormItem>
+            <FormItem label="" prop="downUrl">
+              <Input v-model="formInline.downUrl" placeholder="请输入"/>
+            </FormItem>
+            <FormItem label="" prop="createTime">
+              <Input v-model="formInline.createTime" placeholder="请输入"/>
+            </FormItem>
+            <FormItem label="" prop="novelId">
+              <Input v-model="formInline.novelId" placeholder="请输入"/>
+            </FormItem>
+            <FormItem label="" prop="syncStat">
+              <Input v-model="formInline.syncStat" placeholder="请输入"/>
+            </FormItem>
+            <FormItem label="" prop="urlSize">
+              <Input v-model="formInline.urlSize" placeholder="请输入"/>
+            </FormItem>
+          </Form>
+          <div class="foodl">
+              <Button @click="cancel">取消</Button>
+              &nbsp;&nbsp;<Button type="primary" :disabled="!isCreate" @click="handleSubmit('formInline')">确定</Button>
+          </div>
+      </Modal>
+    </Row>
+  </div>
 </template>
 
 <script>
@@ -75,24 +69,15 @@ export default {
   components: {
     Tables
   },
-  props: {
-    showPlayStatFlag: {
-      type: Boolean
-    },
-    novelId: {
-      type: String
-    }
-  },
   data () {
     return {
-      title: '添加播放列表',
+      title: '添加',
       isCreate: this.authorities(''),
       isDelete: this.authorities(''),
       isUpdate: this.authorities(''),
       isRetrieve: this.authorities(''),
       selection: [],
       addFlag: false,
-      name: '',
       uploadUrl: userStore.state.baseUrl,
       downloadUrl: userStore.state.downloadUrl,
       pageSize: 10,
@@ -101,34 +86,34 @@ export default {
       formInline: this.initFromInput(),
       ruleValidate: {
         id: [
-          { required: true, message: '请输入标示id', trigger: 'blur' }
+          { required: true, message: '请输入', trigger: 'blur' }
         ],
         name: [
-          { required: true, message: '请输入小说名称', trigger: 'blur' }
+          { required: true, message: '请输入', trigger: 'blur' }
         ],
         line: [
-          { required: true, message: '请输入线路', trigger: 'blur' }
+          { required: true, message: '请输入', trigger: 'blur' }
         ],
         sets: [
-          { required: true, message: '请输入集数', trigger: 'blur' }
+          { required: true, message: '请输入', trigger: 'blur' }
         ],
         url: [
-          { required: true, message: '请输入播放地址', trigger: 'blur' }
+          { required: true, message: '请输入', trigger: 'blur' }
         ],
         downUrl: [
-          { required: true, message: '请输入下载地址', trigger: 'blur' }
+          { required: true, message: '请输入', trigger: 'blur' }
         ],
         createTime: [
-          { required: true, message: '请输入创建时间', trigger: 'blur' }
-        ],
-        syncStat: [
-          { required: true, message: '请输入同步状态', trigger: 'blur' }
+          { required: true, message: '请输入', trigger: 'blur' }
         ],
         novelId: [
-          { required: true, message: '请输入小说id', trigger: 'blur' }
+          { required: true, message: '请输入', trigger: 'blur' }
         ],
-        sort: [
-          { required: true, message: '请输入排序', trigger: 'blur' }
+        syncStat: [
+          { required: true, message: '请输入', trigger: 'blur' }
+        ],
+        urlSize: [
+          { required: true, message: '请输入', trigger: 'blur' }
         ]
       },
       columns: [
@@ -138,53 +123,53 @@ export default {
           fixed: 'left'
         },
         {
-          title: '标示id',
+          title: '',
           key: 'id',
           fixed: 'left'
         },
         {
-          title: '小说名称',
+          title: '',
           key: 'name',
           fixed: 'left'
         },
         {
-          title: '线路',
+          title: '',
           key: 'line',
           fixed: 'left'
         },
         {
-          title: '集数',
+          title: '',
           key: 'sets',
           fixed: 'left'
         },
         {
-          title: '播放地址',
+          title: '',
           key: 'url',
           fixed: 'left'
         },
         {
-          title: '下载地址',
+          title: '',
           key: 'downUrl',
           fixed: 'left'
         },
         {
-          title: '创建时间',
+          title: '',
           key: 'createTime',
           fixed: 'left'
         },
         {
-          title: '同步状态',
-          key: 'syncStat',
-          fixed: 'left'
-        },
-        {
-          title: '小说id',
+          title: '',
           key: 'novelId',
           fixed: 'left'
         },
         {
-          title: '排序',
-          key: 'sort',
+          title: '',
+          key: 'syncStat',
+          fixed: 'left'
+        },
+        {
+          title: '',
+          key: 'urlSize',
           fixed: 'left'
         },
         {
@@ -235,14 +220,13 @@ export default {
         url: '',
         downUrl: '',
         createTime: null,
-        syncStat: '',
         novelId: null,
-        sort: null
+        syncStat: '',
+        urlSize: null
       }
       return formInline
     },
     reset () {
-      this.name = ''
       this.pageNum = 1
       this.initData()
     },
@@ -250,7 +234,7 @@ export default {
       this.initData()
     },
     addBtnClick () {
-      this.title = '添加播放列表'
+      this.title = '添加'
       this.formInline = this.initFromInput()
       this.addFlag = true
     },
@@ -259,7 +243,7 @@ export default {
       this.formInline = this.initFromInput()
     },
     editBtnClick (index) {
-      this.title = '编辑播放列表'
+      this.title = '编辑'
       let tableRow = this.tableData[index]
       this.formInline.id = tableRow.id + ''
       this.formInline.name = tableRow.name
@@ -268,9 +252,9 @@ export default {
       this.formInline.url = tableRow.url
       this.formInline.downUrl = tableRow.downUrl
       this.formInline.createTime = tableRow.createTime
-      this.formInline.syncStat = tableRow.syncStat
       this.formInline.novelId = tableRow.novelId + ''
-      this.formInline.sort = tableRow.sort + ''
+      this.formInline.syncStat = tableRow.syncStat
+      this.formInline.urlSize = tableRow.urlSize + ''
       this.addFlag = true
     },
     deleteBathBtnClick () {
@@ -357,11 +341,6 @@ export default {
     initData () {
       if (!this.isRetrieve) return
       var params = {}
-      if (this.name !== '') {
-        params.name = this.name
-      } else {
-        params.name = null
-      }
       params.pageNum = this.pageNum
       params.pageSize = this.pageSize
       getXiaoshuoNovellistPageList(params)

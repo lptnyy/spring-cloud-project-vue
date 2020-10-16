@@ -23,44 +23,52 @@
         </Card>
       </Col>
       <Modal
+        width="60%"
         v-model="addFlag"
         :title="title"
         :footer-hide=true>
-          <Form ref="formInline" :model="formInline" :rules="ruleValidate">
-            <FormItem label="图片展示" prop="img">
-              <br /><img :src="this.downloadUrl + formInline.img" style="width:80px; height:80px;"><br />
-              <Button @click="btnFileSelect">上传图片</Button>
-            </FormItem>
-            <FormItem label="名称" prop="name">
-              <Input v-model="formInline.name" placeholder="请输入名称"/>
-            </FormItem>
-            <FormItem label="作者" prop="author">
-              <Input v-model="formInline.author" placeholder="请输入作者"/>
-            </FormItem>
-            <FormItem label="播讲" prop="broadcast">
-              <Input v-model="formInline.broadcast" placeholder="请输入播讲"/>
-            </FormItem>
-            <FormItem label="关键字" prop="seachKeys">
-              <Input v-model="formInline.seachKeys" placeholder="请输入关键字"/>
-            </FormItem>
-            <FormItem label="集数" prop="pcount">
-              <Input v-model="formInline.pcount" placeholder="请输入集数"/>
-            </FormItem>
-            <FormItem label="状态" prop="stat">
-              <Select v-model="formInline.stat" placeholder="请输入状态">
-                <Option value="连载中">连载中</Option>
-                <Option value="完结">完结</Option>
-              </Select>
-            </FormItem>
-            <FormItem label="分类" prop="typeId">
-              <Select v-model="formInline.typeId">
-                  <Option v-for="item in typeList" :value="item.id + ''" :key="item.id+ ''">{{ item.name }}</Option>
-              </Select>
-            </FormItem>
-            <FormItem label="介绍" prop="introduce">
-              <Input v-model="formInline.introduce" type="textarea" placeholder="请输入介绍"/>
-            </FormItem>
-          </Form>
+         <Form ref="formInline" :model="formInline" :rules="ruleValidate">
+            <Row>
+              <Col span="11">
+                <p slot="title">小说详情</p>
+                  <FormItem label="图片展示" prop="img">
+                    <br /><img :src="this.downloadUrl + formInline.img" style="width:80px; height:80px;"><br />
+                    <Button @click="btnFileSelect">上传图片</Button>
+                  </FormItem>
+                  <FormItem label="名称" prop="name">
+                    <Input v-model="formInline.name" placeholder="请输入名称"/>
+                  </FormItem>
+                  <FormItem label="作者" prop="author">
+                    <Input v-model="formInline.author" placeholder="请输入作者"/>
+                  </FormItem>
+                  <FormItem label="播讲" prop="broadcast">
+                    <Input v-model="formInline.broadcast" placeholder="请输入播讲"/>
+                  </FormItem>
+                  <FormItem label="关键字">
+                    <Input v-model="formInline.seachKeys" placeholder="请输入关键字"/>
+                  </FormItem>
+              </Col>
+              <Col span="11" offset="1">
+                  <FormItem label="集数" prop="pcount">
+                    <Input v-model="formInline.pcount" placeholder="请输入集数"/>
+                  </FormItem>
+                  <FormItem label="状态" prop="stat">
+                    <Select v-model="formInline.stat" placeholder="请输入状态">
+                      <Option value="连载中">连载中</Option>
+                      <Option value="完结">完结</Option>
+                    </Select>
+                  </FormItem>
+                  <FormItem label="分类" prop="typeId">
+                    <Select v-model="formInline.typeId">
+                        <Option v-for="item in typeList" :value="item.id + ''" :key="item.id+ ''">{{ item.name }}</Option>
+                    </Select>
+                  </FormItem>
+                  <FormItem label="介绍" prop="introduce">
+                    <Input v-model="formInline.introduce"  :rows="9"  type="textarea" placeholder="请输入介绍"/>
+                  </FormItem>
+              </Col>
+            </Row>
+         </Form>
           <div class="foodl">
               <Button @click="cancel">取消</Button>
               &nbsp;&nbsp;<Button type="primary" :disabled="!isCreate" @click="handleSubmit('formInline')">确定</Button>
@@ -94,7 +102,10 @@ export default {
       typeList: [],
       selection: [],
       addFlag: false,
+      playAddFlag: false,
+      showPlayStatFlag: true,
       selectFileFlag: false,
+      novelId: '',
       name: '',
       broadcast: '',
       stat: '',
@@ -127,9 +138,6 @@ export default {
         ],
         popularity: [
           { required: true, message: '请输入人气', trigger: 'blur' }
-        ],
-        seachKeys: [
-          { required: true, message: '请输入关键字', trigger: 'blur' }
         ],
         downloads: [
           { required: true, message: '请输入下载次数', trigger: 'blur' }
@@ -245,7 +253,7 @@ export default {
           title: '操作',
           key: 'action',
           fixed: 'right',
-          width: 140,
+          width: 130,
           render: (h, params) => {
             return h('div', [
               h('Button', {
@@ -280,6 +288,13 @@ export default {
     }
   },
   methods: {
+    playCancel () {
+      this.playAddFlag = false
+    },
+    showPlays (index) {
+      this.novelId = this.tableData[index].id + ''
+      this.playAddFlag = true
+    },
     btnFileSelect () {
       this.selectFileFlag = true
     },
