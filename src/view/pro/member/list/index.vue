@@ -1,3 +1,23 @@
+<style lang="less">
+  .page {
+    margin-top: 10px;
+  }
+  .search {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    .input{
+      width: 150px;
+      margin-right: 10px;
+    }
+  }
+  .add_button {
+    margin-left: 10px;
+  }
+  .foodl{
+    text-align: center;
+    width: 100%;
+  }
+</style>
 <template>
   <div>
     <Row>
@@ -33,67 +53,69 @@
           <Form ref="formInline" :model="formInline" :rules="ruleValidate">
             <FormItem label="头像" prop="headPortrait">
               <img style="width: 60px;" :src="this.downloadUrl + formInline.headPortrait"/><br />
-              <Button @click="btnFileSelect">上传图片</Button>
+              <Button :disabled="disabled" @click="btnFileSelect">上传图片</Button>
             </FormItem>
             <FormItem label="会员号" prop="memberNo">
-              <Input v-model="formInline.memberNo" placeholder="请输入会员号"/>
+              <Input :disabled="disabled" v-model="formInline.memberNo" placeholder="请输入会员号"/>
             </FormItem>
             <FormItem label="会员昵称" prop="nickName">
-              <Input v-model="formInline.nickName" placeholder="请输入会员昵称"/>
+              <Input :disabled="disabled" v-model="formInline.nickName" placeholder="请输入会员昵称"/>
             </FormItem>
             <FormItem label="会员账号" prop="userName">
-              <Input v-model="formInline.userName" placeholder="请输入会员账号"/>
+              <Input :disabled="disabled" v-model="formInline.userName" placeholder="请输入会员账号"/>
             </FormItem>
             <FormItem label="会员密码" prop="passWord">
-              <Input v-model="formInline.passWord" placeholder="请输入会员密码"/>
+              <Input :disabled="disabled" v-model="formInline.passWord" placeholder="请输入会员密码"/>
             </FormItem>
             <FormItem label="会员简介" prop="ntroduction">
-              <Input v-model="formInline.ntroduction" placeholder="请输入会员简介"/>
+              <Input :disabled="disabled" v-model="formInline.ntroduction" placeholder="请输入会员简介"/>
             </FormItem>
             <FormItem label="性别" prop="sex">
-              <Select v-model="formInline.sex">
+              <Select :disabled="disabled" v-model="formInline.sex">
                 <Option v-for="item in sexTypes" :value="item.valuestr" :key="item.valuestr">{{ item.keystr }}</Option>
               </Select>
             </FormItem>
             <FormItem label="年龄" prop="age">
-              <Input v-model="formInline.age" placeholder="请输入年龄"/>
+              <Input :disabled="disabled" v-model="formInline.age" placeholder="请输入年龄"/>
             </FormItem>
             <FormItem label="省份" prop="province">
-              <Select @on-change="addProvincesChang" v-model="formInline.province" placeholder="请选择省份">
+              <Select :disabled="disabled" @on-change="addProvincesChang" v-model="formInline.province" placeholder="请选择省份">
                 <Option v-for="item in provinces" :value="item.provinceId" :key="item.provinceId">{{ item.name }}</Option>
               </Select>
             </FormItem>
             <FormItem label="城市" prop="city">
-              <Select @on-change="addAreaChang" v-model="formInline.city" placeholder="请选择城市">
+              <Select :disabled="disabled" @on-change="addAreaChang" v-model="formInline.city" placeholder="请选择城市">
                 <Option v-for="item in addSelectCitys" :value="item.cityId" :key="item.cityId">{{ item.name }}</Option>
               </Select>
             </FormItem>
             <FormItem label="区" prop="area">
-              <Select v-model="formInline.area" placeholder="请选择城市">
+              <Select :disabled="disabled" v-model="formInline.area" placeholder="请选择城市">
                 <Option v-for="item in addSelectAreas" :value="item.areaId" :key="item.areaId">{{ item.name }}</Option>
               </Select>
             </FormItem>
             <FormItem label="学校" prop="school">
-              <Input v-model="formInline.school" placeholder="请输入学校"/>
+              <Input :disabled="disabled" v-model="formInline.school" placeholder="请输入学校"/>
             </FormItem>
             <FormItem label="会员等级" prop="levelId">
-              <Input v-model="formInline.levelId" placeholder="请输入会员等级"/>
+              <Select :disabled="disabled" v-model="formInline.levelId" placeholder="请输入会员等级">
+                <Option v-for="item in levels" :value="item.levelId+''" :key="item.levelName">{{ item.levelName }}</Option>
+              </Select>
             </FormItem>
             <FormItem label="会员状态" prop="state">
-              <Select v-model="formInline.state">
+              <Select :disabled="disabled" v-model="formInline.state">
                 <Option v-for="item in stateTypes" :value="item.valuestr" :key="item.valuestr">{{ item.keystr }}</Option>
               </Select>
             </FormItem>
             <FormItem label="充值密码" prop="payPassword">
-              <Input v-model="formInline.payPassword" placeholder="请输入充值密码"/>
+              <Input :disabled="disabled" v-model="formInline.payPassword" placeholder="请输入充值密码"/>
             </FormItem>
             <FormItem label="提现密码" prop="withdrawalPassword">
-              <Input v-model="formInline.withdrawalPassword" placeholder="请输入提现密码"/>
+              <Input :disabled="disabled" v-model="formInline.withdrawalPassword" placeholder="请输入提现密码"/>
             </FormItem>
           </Form>
           <div class="foodl">
               <Button @click="cancel">取消</Button>
-              &nbsp;&nbsp;<Button type="primary" :disabled="!isCreate" @click="handleSubmit('formInline')">确定</Button>
+              &nbsp;&nbsp;<Button v-if="disabled===false" type="primary" :disabled="!isCreate" @click="handleSubmit('formInline')">确定</Button>
           </div>
       </Modal>
     </Row>
@@ -108,6 +130,7 @@ import { getProvince, getCity, getArea } from '@/api/regin'
 import userStore from '@/store/module/user'
 import FileComn from '@/view/pro/components/file/index'
 import { getEnumList } from '@/api/enum'
+import { getProLevelPageList } from '@/api/proLevel'
 
 export default {
   name: 'ProMember',
@@ -117,6 +140,8 @@ export default {
   },
   data () {
     return {
+      levels: [],
+      disabled: false,
       addSelectAreas: [],
       addSelectCitys: [],
       selectAreas: [],
@@ -236,12 +261,12 @@ export default {
           fixed: 'left'
         },
         {
-          title: '会员昵称',
+          title: '昵称',
           key: 'nickName',
           fixed: 'left'
         },
         {
-          title: '会员账号',
+          title: '账号',
           key: 'userName',
           fixed: 'left'
         },
@@ -276,12 +301,12 @@ export default {
           fixed: 'left'
         },
         {
-          title: '会员等级',
-          key: 'levelId',
+          title: '等级',
+          key: 'levelName',
           fixed: 'left'
         },
         {
-          title: '会员状态',
+          title: '状态',
           key: 'stateStr',
           fixed: 'left'
         },
@@ -299,9 +324,21 @@ export default {
           title: '操作',
           key: 'action',
           fixed: 'right',
-          width: 140,
+          width: 160,
           render: (h, params) => {
             return h('div', [
+              h('Button', {
+                props: {
+                  type: 'text',
+                  size: 'small',
+                  disabled: !this.isRetrieve
+                },
+                on: {
+                  click: () => {
+                    this.infoBtnClick(params.index)
+                  }
+                }
+              }, '详情'),
               h('Button', {
                 props: {
                   type: 'text',
@@ -426,11 +463,37 @@ export default {
       this.title = '添加会员'
       this.formInline = this.initFromInput()
       this.addFlag = true
+      this.disabled = false
     },
     cancel () {
       this.selectFileFlag = false
       this.addFlag = false
       this.formInline = this.initFromInput()
+    },
+    infoBtnClick (index) {
+      this.title = '编辑会员'
+      let tableRow = this.tableData[index]
+      this.formInline.memberId = tableRow.memberId + ''
+      this.formInline.memberNo = tableRow.memberNo
+      this.formInline.nickName = tableRow.nickName
+      this.formInline.userName = tableRow.userName
+      this.formInline.passWord = tableRow.passWord
+      this.formInline.headPortrait = tableRow.headPortrait
+      this.formInline.ntroduction = tableRow.ntroduction
+      this.formInline.sex = tableRow.sex
+      this.formInline.age = tableRow.age
+      this.formInline.province = tableRow.province
+      this.formInline.city = tableRow.city
+      this.formInline.area = tableRow.area
+      this.formInline.school = tableRow.school
+      this.formInline.levelId = tableRow.levelId + ''
+      this.formInline.state = tableRow.state
+      this.formInline.payPassword = tableRow.payPassword
+      this.formInline.withdrawalPassword = tableRow.withdrawalPassword
+      this.addFlag = true
+      this.initAddCityDatas(tableRow.province)
+      this.initAddAreaDatas(tableRow.city)
+      this.disabled = true
     },
     editBtnClick (index) {
       this.title = '编辑会员'
@@ -455,6 +518,7 @@ export default {
       this.addFlag = true
       this.initAddCityDatas(tableRow.province)
       this.initAddAreaDatas(tableRow.city)
+      this.disabled = false
     },
     deleteBathBtnClick () {
       if (this.selection.length === 0) {
@@ -614,6 +678,19 @@ export default {
         .then(res => {
           this.areas = res.data.obj
         })
+    },
+    initLevel () {
+      var params = {}
+      params.pageNum = 1
+      params.pageSize = 100
+      getProLevelPageList(params)
+        .then(res => {
+          if (res.code !== 200) {
+            this.levels = res.data.obj
+          } else {
+            this.$Message.error(res.data.msg)
+          }
+        })
     }
   },
   mounted () {},
@@ -622,26 +699,7 @@ export default {
     this.initFileTypes()
     this.initSexTypes()
     this.initRegion()
+    this.initLevel()
   }
 }
 </script>
-<style lang="less">
-.page {
-    margin-top: 10px;
-}
-.search {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    .input{
-        width: 150px;
-        margin-right: 10px;
-    }
-}
-.add_button {
-    margin-left: 10px;
-}
-.foodl{
-    text-align: center;
-    width: 100%;
-}
-</style>

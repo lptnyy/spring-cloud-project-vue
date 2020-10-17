@@ -74,7 +74,7 @@ export default {
         },
         {
           title: '资源类型',
-          key: 'type',
+          key: 'typeStr',
           fixed: 'left'
         },
         {

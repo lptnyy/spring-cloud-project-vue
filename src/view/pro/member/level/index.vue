@@ -1,38 +1,15 @@
-<style lang="less">
-.page {
-    margin-top: 10px;
-}
-.search {
-  margin-top: 10px;
-  margin-bottom: 10px;
-  .input{
-    width: 150px;
-    margin-right: 10px;
-  }
-}
-.add_button {
-    margin-left: 10px;
-}
-.foodl{
-    text-align: center;
-    width: 100%;
-}
-</style>
 <template>
   <div>
     <Row>
       <Col span="24">
         <Card :bordered="false">
-          <p slot="title">操作日志管理</p>
+          <p slot="title">会员等级</p>
             <div class="search">
-              <Input class="input" v-model="name" placeholder="日志名称"/>
-              <Input class="input" v-model="className" placeholder="函数类"/>
-              <Input class="input" v-model="functionName" placeholder="函数名"/>
-              <Input class="input" v-model="source" placeholder="日志来源"/>
-              <Date-picker v-model="createTime" type="daterange" placement="bottom-end" placeholder="选择日期" style="width: 200px"></Date-picker>
+              <Input class="input" v-model="levelName" placeholder="等级名称"/>
               <Button class="add_button" @click="search" :disabled="!isRetrieve">查询</Button>
               <Button class="add_button" :disabled="!isRetrieve" @click="reset">重置</Button>
               <Button class="add_button" :disabled="!isDelete" @click="deleteBathBtnClick" type="warning">删除</Button>
+              <Button class="add_button" :disabled="!isCreate" @click="addBtnClick" type="primary">添加</Button>
             </div>
             <Table border @on-selection-change="tableOnSelect" ref="selection" :columns="columns" :data="tableData"></Table>
             <Page class="page" @on-page-size-change="onPageSizeChange" show-total show-sizer @on-change="tableOnChange" :total="total" show-elevator />
@@ -40,73 +17,58 @@
       </Col>
       <Modal
         v-model="addFlag"
-        title="日志详情"
+        :title="title"
         :footer-hide=true>
           <Form ref="formInline" :model="formInline" :rules="ruleValidate">
-            <FormItem label="日志名称" prop="name">
-              <Input v-model="formInline.name" placeholder="请输入日志名称"/>
+            <FormItem label="等级名称" prop="levelName">
+              <Input :disabled="disabled" v-model="formInline.levelName" placeholder="请输入等级名称"/>
             </FormItem>
-            <FormItem label="日志内容" prop="value">
-              <Input v-model="formInline.value" placeholder="请输入日志内容"/>
+            <FormItem label="展示图片" prop="image">
+              <img style="width: 200px;" :src="this.downloadUrl + formInline.image"/>
+              <br />
+              <Button :disabled="disabled" @click="btnFileSelect">上传图片</Button>
             </FormItem>
-            <FormItem label="函数类" prop="className">
-              <Input v-model="formInline.className" placeholder="请输入函数类"/>
+            <FormItem label="等级积分" prop="integral">
+              <Input :disabled="disabled" v-model="formInline.integral" placeholder="请输入等级积分"/>
             </FormItem>
-            <FormItem label="函数名" prop="functionName">
-              <Input v-model="formInline.functionName" placeholder="请输入函数名"/>
-            </FormItem>
-            <FormItem label="执行时间ms" prop="runTime">
-              <Input v-model="formInline.runTime" placeholder="请输入执行时间ms"/>
-            </FormItem>
-            <FormItem label="日志来源" prop="source">
-              <Input v-model="formInline.source" placeholder="请输入日志来源"/>
-            </FormItem>
-            <FormItem label="参数内容" prop="body">
-              <Input v-model="formInline.body" placeholder="请输入参数内容"/>
-            </FormItem>
-            <FormItem label="反馈数据" prop="returnBody">
-              <Input v-model="formInline.returnBody" placeholder="请输入反馈数据"/>
-            </FormItem>
-            <FormItem label="创建时间" prop="createTime">
-              <Input v-model="formInline.createTime" placeholder="请输入创建时间"/>
+            <FormItem label="等级价格" prop="price">
+              <Input :disabled="disabled" v-model="formInline.price" placeholder="请输入等级价格"/>
             </FormItem>
           </Form>
           <div class="foodl">
               <Button @click="cancel">取消</Button>
+              &nbsp;&nbsp;<Button v-if="disabled===false" type="primary" :disabled="!isCreate" @click="handleSubmit('formInline')">确定</Button>
           </div>
       </Modal>
     </Row>
+    <FileComn :selectFileFlag="selectFileFlag" :cancel="cancel" :onSelect="fileSelect"/>
   </div>
 </template>
 
 <script>
 import Tables from '_c/tables'
-import { getProLogPageList, deleteProLog, updateProLog, saveProLog, idsProLogDelete } from '@/api/proLog'
+import { getProLevelPageList, deleteProLevel, updateProLevel, saveProLevel, idsProLevelDelete } from '@/api/proLevel'
 import userStore from '@/store/module/user'
+import FileComn from '@/view/pro/components/file/index'
 
 export default {
-  name: 'ProLog',
+  name: 'ProLevel',
   components: {
-    Tables
+    Tables,
+    FileComn
   },
   data () {
     return {
-      isCreate: this.authorities('权限值'),
-      isDelete: this.authorities('log_del'),
-      isUpdate: this.authorities('log_info'),
-      isRetrieve: this.authorities('log_select'),
+      disabled: false,
+      selectFileFlag: false,
+      title: '添加等级',
+      isCreate: this.authorities('level_add'),
+      isDelete: this.authorities('level_del'),
+      isUpdate: this.authorities('level_update'),
+      isRetrieve: this.authorities('level_select'),
       selection: [],
       addFlag: false,
-      logId: null,
-      name: '',
-      value: '',
-      className: '',
-      functionName: '',
-      runTime: null,
-      source: '',
-      body: '',
-      returnBody: '',
-      createTime: [],
+      levelName: '',
       uploadUrl: userStore.state.baseUrl,
       downloadUrl: userStore.state.downloadUrl,
       pageSize: 10,
@@ -114,32 +76,20 @@ export default {
       total: 0,
       formInline: this.initFromInput(),
       ruleValidate: {
-        logId: [
-          { required: true, message: '请输入日志id', trigger: 'blur' }
+        levelId: [
+          { required: true, message: '请输入等级id', trigger: 'blur' }
         ],
-        name: [
-          { required: true, message: '请输入日志名称', trigger: 'blur' }
+        levelName: [
+          { required: true, message: '请输入等级名称', trigger: 'blur' }
         ],
-        value: [
-          { required: true, message: '请输入日志内容', trigger: 'blur' }
+        image: [
+          { required: true, message: '请输入展示图片', trigger: 'blur' }
         ],
-        className: [
-          { required: true, message: '请输入函数类', trigger: 'blur' }
+        integral: [
+          { required: true, message: '请输入等级积分', trigger: 'blur' }
         ],
-        functionName: [
-          { required: true, message: '请输入函数名', trigger: 'blur' }
-        ],
-        runTime: [
-          { required: true, message: '请输入执行时间ms', trigger: 'blur' }
-        ],
-        source: [
-          { required: true, message: '请输入日志来源', trigger: 'blur' }
-        ],
-        body: [
-          { required: true, message: '请输入参数内容', trigger: 'blur' }
-        ],
-        returnBody: [
-          { required: true, message: '请输入反馈数据', trigger: 'blur' }
+        price: [
+          { required: true, message: '请输入等级价格', trigger: 'blur' }
         ],
         createTime: [
           { required: true, message: '请输入创建时间', trigger: 'blur' }
@@ -152,33 +102,37 @@ export default {
           fixed: 'left'
         },
         {
-          title: '日志名称',
-          key: 'name',
+          title: '展示图片',
+          key: 'image',
+          fixed: 'left',
+          render: (h, params) => {
+            return h('div', [
+              h('img', {
+                attrs: {
+                  src: this.downloadUrl + params.row.image
+                },
+                style: {
+                  width: '200px',
+                  height: '80px',
+                  'margin-top': '5px'
+                }
+              })
+            ])
+          }
+        },
+        {
+          title: '等级名称',
+          key: 'levelName',
           fixed: 'left'
         },
         {
-          title: '日志内容',
-          key: 'value',
+          title: '等级积分',
+          key: 'integral',
           fixed: 'left'
         },
         {
-          title: '函数类',
-          key: 'className',
-          fixed: 'left'
-        },
-        {
-          title: '函数名',
-          key: 'functionName',
-          fixed: 'left'
-        },
-        {
-          title: '执行时间ms',
-          key: 'runTime',
-          fixed: 'left'
-        },
-        {
-          title: '日志来源',
-          key: 'source',
+          title: '等级价格',
+          key: 'price',
           fixed: 'left'
         },
         {
@@ -190,9 +144,21 @@ export default {
           title: '操作',
           key: 'action',
           fixed: 'right',
-          width: 125,
+          width: 160,
           render: (h, params) => {
             return h('div', [
+              h('Button', {
+                props: {
+                  type: 'text',
+                  size: 'small',
+                  disabled: !this.isRetrieve
+                },
+                on: {
+                  click: () => {
+                    this.infoBtnClick(params.index)
+                  }
+                }
+              }, '详情'),
               h('Button', {
                 props: {
                   type: 'text',
@@ -204,7 +170,7 @@ export default {
                     this.editBtnClick(params.index)
                   }
                 }
-              }, '详情'),
+              }, '编辑'),
               h('Button', {
                 props: {
                   type: 'text',
@@ -225,32 +191,26 @@ export default {
     }
   },
   methods: {
+    btnFileSelect () {
+      this.selectFileFlag = true
+    },
+    fileSelect (files) {
+      this.formInline.image = files.path
+      this.selectFileFlag = false
+    },
     initFromInput () {
       var formInline = {
-        logId: null,
-        name: '',
-        value: '',
-        className: '',
-        functionName: '',
-        runTime: null,
-        source: '',
-        body: '',
-        returnBody: '',
+        levelId: null,
+        levelName: '',
+        image: '',
+        integral: null,
+        price: null,
         createTime: null
       }
       return formInline
     },
     reset () {
-      this.logId = null
-      this.name = ''
-      this.value = ''
-      this.className = ''
-      this.functionName = ''
-      this.runTime = null
-      this.source = ''
-      this.body = ''
-      this.returnBody = ''
-      this.createTime = []
+      this.levelName = ''
       this.pageNum = 1
       this.initData()
     },
@@ -258,24 +218,37 @@ export default {
       this.initData()
     },
     addBtnClick () {
+      this.title = '添加等级'
       this.formInline = this.initFromInput()
       this.addFlag = true
+      this.disabled = false
     },
     cancel () {
+      this.selectFileFlag = false
       this.addFlag = false
       this.formInline = this.initFromInput()
     },
-    editBtnClick (index) {
+    infoBtnClick (index) {
+      this.title = '编辑等级'
       let tableRow = this.tableData[index]
-      this.formInline.logId = tableRow.logId
-      this.formInline.name = tableRow.name
-      this.formInline.value = tableRow.value
-      this.formInline.className = tableRow.className
-      this.formInline.functionName = tableRow.functionName
-      this.formInline.runTime = tableRow.runTime
-      this.formInline.source = tableRow.source
-      this.formInline.body = tableRow.body
-      this.formInline.returnBody = tableRow.returnBody
+      this.formInline.levelId = tableRow.levelId + ''
+      this.formInline.levelName = tableRow.levelName
+      this.formInline.image = tableRow.image
+      this.formInline.integral = tableRow.integral + ''
+      this.formInline.price = tableRow.price + ''
+      this.formInline.createTime = tableRow.createTime
+      this.addFlag = true
+      this.disabled = true
+    },
+    editBtnClick (index) {
+      this.disabled = false
+      this.title = '编辑等级'
+      let tableRow = this.tableData[index]
+      this.formInline.levelId = tableRow.levelId + ''
+      this.formInline.levelName = tableRow.levelName
+      this.formInline.image = tableRow.image
+      this.formInline.integral = tableRow.integral + ''
+      this.formInline.price = tableRow.price + ''
       this.formInline.createTime = tableRow.createTime
       this.addFlag = true
     },
@@ -285,7 +258,7 @@ export default {
       } else {
         var ids = []
         for (let i = 0; i < this.selection.length; i++) {
-          ids.push(this.selection[i].logId)
+          ids.push(this.selection[i].levelId)
         }
         var params = {
           ids: ids
@@ -294,7 +267,7 @@ export default {
           title: '是否删除枚举?',
           width: 280,
           onOk: () => {
-            idsProLogDelete(params)
+            idsProLevelDelete(params)
               .then(res => {
                 this.initData()
                 this.selection = []
@@ -309,13 +282,13 @@ export default {
     deleteBtnClick (index) {
       let table = this.tableData[index]
       var params = {
-        logId: table.logId
+        levelId: table.levelId
       }
       this.$Modal.confirm({
         title: '是否删除枚举?',
         width: 280,
         onOk: () => {
-          deleteProLog(params)
+          deleteProLevel(params)
             .then(res => {
               this.initData()
             })
@@ -325,8 +298,8 @@ export default {
     handleSubmit () {
       this.$refs['formInline'].validate((valid) => {
         if (valid) {
-          if (this.formInline.logId !== null) {
-            updateProLog(this.formInline)
+          if (this.formInline.levelId !== null) {
+            updateProLevel(this.formInline)
               .then(res => {
                 if (res.data.code === 200) {
                   this.$Message.success('修改成功')
@@ -337,7 +310,7 @@ export default {
                 }
               })
           } else {
-            saveProLog(this.formInline)
+            saveProLevel(this.formInline)
               .then(res => {
                 if (res.data.code === 200) {
                   this.$Message.success('保存成功')
@@ -356,23 +329,21 @@ export default {
       this.initData()
     },
     onPageSizeChange (index) {
+      this.pageNum = 1
       this.pageSize = index
       this.initData()
     },
     initData () {
       if (!this.isRetrieve) return
       var params = {}
-      params.name = this.name
-      params.className = this.className
-      params.functionName = this.functionName
-      params.source = this.source
-      if (this.createTime.length > 1) {
-        params.startTime = this.createTime[0]
-        params.endTime = this.createTime[1]
+      if (this.levelName !== '') {
+        params.levelName = this.levelName
+      } else {
+        params.levelName = null
       }
       params.pageNum = this.pageNum
       params.pageSize = this.pageSize
-      getProLogPageList(params)
+      getProLevelPageList(params)
         .then(res => {
           if (res.code !== 200) {
             this.tableData = res.data.obj
@@ -389,3 +360,23 @@ export default {
   }
 }
 </script>
+<style lang="less">
+.page {
+    margin-top: 10px;
+}
+.search {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    .input{
+        width: 150px;
+        margin-right: 10px;
+    }
+}
+.add_button {
+    margin-left: 10px;
+}
+.foodl{
+    text-align: center;
+    width: 100%;
+}
+</style>

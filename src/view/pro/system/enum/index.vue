@@ -90,12 +90,12 @@ export default {
         {
           title: 'Key',
           key: 'keystr',
+          width: 100,
           fixed: 'left'
         },
         {
           title: 'Value',
           key: 'valuestr',
-          width: 100,
           fixed: 'left'
         },
         {

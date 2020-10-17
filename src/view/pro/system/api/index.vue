@@ -18,21 +18,20 @@
     width: 100%;
 }
 </style>
+
 <template>
   <div>
     <Row>
       <Col span="24">
         <Card :bordered="false">
-          <p slot="title">操作日志管理</p>
+          <p slot="title">api管理</p>
             <div class="search">
-              <Input class="input" v-model="name" placeholder="日志名称"/>
-              <Input class="input" v-model="className" placeholder="函数类"/>
-              <Input class="input" v-model="functionName" placeholder="函数名"/>
-              <Input class="input" v-model="source" placeholder="日志来源"/>
-              <Date-picker v-model="createTime" type="daterange" placement="bottom-end" placeholder="选择日期" style="width: 200px"></Date-picker>
+              <Input class="input" v-model="name" placeholder="Api名"/>
+              <Input class="input" v-model="nameAs" placeholder="Api别名"/>
               <Button class="add_button" @click="search" :disabled="!isRetrieve">查询</Button>
               <Button class="add_button" :disabled="!isRetrieve" @click="reset">重置</Button>
               <Button class="add_button" :disabled="!isDelete" @click="deleteBathBtnClick" type="warning">删除</Button>
+              <Button class="add_button" :disabled="!isCreate" @click="addBtnClick" type="primary">添加</Button>
             </div>
             <Table border @on-selection-change="tableOnSelect" ref="selection" :columns="columns" :data="tableData"></Table>
             <Page class="page" @on-page-size-change="onPageSizeChange" show-total show-sizer @on-change="tableOnChange" :total="total" show-elevator />
@@ -40,39 +39,27 @@
       </Col>
       <Modal
         v-model="addFlag"
-        title="日志详情"
+        :title="title"
         :footer-hide=true>
           <Form ref="formInline" :model="formInline" :rules="ruleValidate">
-            <FormItem label="日志名称" prop="name">
-              <Input v-model="formInline.name" placeholder="请输入日志名称"/>
+            <FormItem label="Api名" prop="name">
+              <Input v-model="formInline.name" placeholder="请输入功能名"/>
             </FormItem>
-            <FormItem label="日志内容" prop="value">
-              <Input v-model="formInline.value" placeholder="请输入日志内容"/>
+            <FormItem label="Api别名" prop="nameAs">
+              <Input v-model="formInline.nameAs" placeholder="请输入功能别名"/>
             </FormItem>
-            <FormItem label="函数类" prop="className">
-              <Input v-model="formInline.className" placeholder="请输入函数类"/>
+            <FormItem label="接口地址" prop="api">
+              <Input v-model="formInline.api" placeholder="请输入接口地址"/>
             </FormItem>
-            <FormItem label="函数名" prop="functionName">
-              <Input v-model="formInline.functionName" placeholder="请输入函数名"/>
-            </FormItem>
-            <FormItem label="执行时间ms" prop="runTime">
-              <Input v-model="formInline.runTime" placeholder="请输入执行时间ms"/>
-            </FormItem>
-            <FormItem label="日志来源" prop="source">
-              <Input v-model="formInline.source" placeholder="请输入日志来源"/>
-            </FormItem>
-            <FormItem label="参数内容" prop="body">
-              <Input v-model="formInline.body" placeholder="请输入参数内容"/>
-            </FormItem>
-            <FormItem label="反馈数据" prop="returnBody">
-              <Input v-model="formInline.returnBody" placeholder="请输入反馈数据"/>
-            </FormItem>
-            <FormItem label="创建时间" prop="createTime">
-              <Input v-model="formInline.createTime" placeholder="请输入创建时间"/>
+            <FormItem label="状态" prop="stat">
+              <Select v-model="formInline.stat">
+                <Option v-for="item in apiStats" :value="item.valuestr" :key="item.valuestr">{{ item.keystr }}</Option>
+              </Select>
             </FormItem>
           </Form>
           <div class="foodl">
               <Button @click="cancel">取消</Button>
+              &nbsp;&nbsp;<Button type="primary" :disabled="!isCreate" @click="handleSubmit('formInline')">确定</Button>
           </div>
       </Modal>
     </Row>
@@ -81,32 +68,27 @@
 
 <script>
 import Tables from '_c/tables'
-import { getProLogPageList, deleteProLog, updateProLog, saveProLog, idsProLogDelete } from '@/api/proLog'
+import { getProApiPageList, deleteProApi, updateProApi, saveProApi, idsProApiDelete } from '@/api/proApi'
 import userStore from '@/store/module/user'
+import { getEnumList } from '@/api/enum'
 
 export default {
-  name: 'ProLog',
+  name: 'ProApi',
   components: {
     Tables
   },
   data () {
     return {
-      isCreate: this.authorities('权限值'),
-      isDelete: this.authorities('log_del'),
-      isUpdate: this.authorities('log_info'),
-      isRetrieve: this.authorities('log_select'),
+      apiStats: [],
+      title: '添加api管理',
+      isCreate: this.authorities('api_add'),
+      isDelete: this.authorities('api_del'),
+      isUpdate: this.authorities('api_update'),
+      isRetrieve: this.authorities('api_select'),
       selection: [],
       addFlag: false,
-      logId: null,
       name: '',
-      value: '',
-      className: '',
-      functionName: '',
-      runTime: null,
-      source: '',
-      body: '',
-      returnBody: '',
-      createTime: [],
+      nameAs: '',
       uploadUrl: userStore.state.baseUrl,
       downloadUrl: userStore.state.downloadUrl,
       pageSize: 10,
@@ -114,32 +96,20 @@ export default {
       total: 0,
       formInline: this.initFromInput(),
       ruleValidate: {
-        logId: [
-          { required: true, message: '请输入日志id', trigger: 'blur' }
+        apiId: [
+          { required: true, message: '请输入标识id', trigger: 'blur' }
         ],
         name: [
-          { required: true, message: '请输入日志名称', trigger: 'blur' }
+          { required: true, message: '请输入功能名', trigger: 'blur' }
         ],
-        value: [
-          { required: true, message: '请输入日志内容', trigger: 'blur' }
+        nameAs: [
+          { required: true, message: '请输入功能别名', trigger: 'blur' }
         ],
-        className: [
-          { required: true, message: '请输入函数类', trigger: 'blur' }
+        api: [
+          { required: true, message: '请输入接口地址', trigger: 'blur' }
         ],
-        functionName: [
-          { required: true, message: '请输入函数名', trigger: 'blur' }
-        ],
-        runTime: [
-          { required: true, message: '请输入执行时间ms', trigger: 'blur' }
-        ],
-        source: [
-          { required: true, message: '请输入日志来源', trigger: 'blur' }
-        ],
-        body: [
-          { required: true, message: '请输入参数内容', trigger: 'blur' }
-        ],
-        returnBody: [
-          { required: true, message: '请输入反馈数据', trigger: 'blur' }
+        stat: [
+          { required: true, message: '请输入状态', trigger: 'blur' }
         ],
         createTime: [
           { required: true, message: '请输入创建时间', trigger: 'blur' }
@@ -152,45 +122,49 @@ export default {
           fixed: 'left'
         },
         {
-          title: '日志名称',
+          title: 'Api名',
           key: 'name',
+          fixed: 'left',
+          width: 140
+        },
+        {
+          title: 'Api别名',
+          key: 'nameAs',
+          fixed: 'left',
+          width: 140
+        },
+        {
+          title: '接口地址',
+          key: 'api',
           fixed: 'left'
         },
         {
-          title: '日志内容',
-          key: 'value',
-          fixed: 'left'
-        },
-        {
-          title: '函数类',
-          key: 'className',
-          fixed: 'left'
-        },
-        {
-          title: '函数名',
-          key: 'functionName',
-          fixed: 'left'
-        },
-        {
-          title: '执行时间ms',
-          key: 'runTime',
-          fixed: 'left'
-        },
-        {
-          title: '日志来源',
-          key: 'source',
-          fixed: 'left'
+          title: '状态',
+          key: 'statStr',
+          fixed: 'center',
+          width: 83,
+          render: (h, params) => {
+            return h('div', [
+              h('Tag', {
+                props: {
+                  width: '100px',
+                  color: this.checkStatsColor(params.row.stat)
+                }
+              }, params.row.statStr)
+            ])
+          }
         },
         {
           title: '创建时间',
           key: 'createTime',
+          width: 160,
           fixed: 'left'
         },
         {
           title: '操作',
           key: 'action',
           fixed: 'right',
-          width: 125,
+          width: 140,
           render: (h, params) => {
             return h('div', [
               h('Button', {
@@ -204,7 +178,7 @@ export default {
                     this.editBtnClick(params.index)
                   }
                 }
-              }, '详情'),
+              }, '编辑'),
               h('Button', {
                 props: {
                   type: 'text',
@@ -227,37 +201,33 @@ export default {
   methods: {
     initFromInput () {
       var formInline = {
-        logId: null,
+        apiId: null,
         name: '',
-        value: '',
-        className: '',
-        functionName: '',
-        runTime: null,
-        source: '',
-        body: '',
-        returnBody: '',
+        nameAs: '',
+        api: '',
+        stat: null,
         createTime: null
       }
       return formInline
     },
     reset () {
-      this.logId = null
       this.name = ''
-      this.value = ''
-      this.className = ''
-      this.functionName = ''
-      this.runTime = null
-      this.source = ''
-      this.body = ''
-      this.returnBody = ''
-      this.createTime = []
+      this.nameAs = ''
       this.pageNum = 1
       this.initData()
+    },
+    checkStatsColor (value) {
+      if (value === 0) {
+        return 'success'
+      } else {
+        return 'error'
+      }
     },
     search () {
       this.initData()
     },
     addBtnClick () {
+      this.title = '添加api管理'
       this.formInline = this.initFromInput()
       this.addFlag = true
     },
@@ -266,16 +236,13 @@ export default {
       this.formInline = this.initFromInput()
     },
     editBtnClick (index) {
+      this.title = '编辑api管理'
       let tableRow = this.tableData[index]
-      this.formInline.logId = tableRow.logId
+      this.formInline.apiId = tableRow.apiId + ''
       this.formInline.name = tableRow.name
-      this.formInline.value = tableRow.value
-      this.formInline.className = tableRow.className
-      this.formInline.functionName = tableRow.functionName
-      this.formInline.runTime = tableRow.runTime
-      this.formInline.source = tableRow.source
-      this.formInline.body = tableRow.body
-      this.formInline.returnBody = tableRow.returnBody
+      this.formInline.nameAs = tableRow.nameAs
+      this.formInline.api = tableRow.api
+      this.formInline.stat = tableRow.stat + ''
       this.formInline.createTime = tableRow.createTime
       this.addFlag = true
     },
@@ -285,7 +252,7 @@ export default {
       } else {
         var ids = []
         for (let i = 0; i < this.selection.length; i++) {
-          ids.push(this.selection[i].logId)
+          ids.push(this.selection[i].apiId)
         }
         var params = {
           ids: ids
@@ -294,7 +261,7 @@ export default {
           title: '是否删除枚举?',
           width: 280,
           onOk: () => {
-            idsProLogDelete(params)
+            idsProApiDelete(params)
               .then(res => {
                 this.initData()
                 this.selection = []
@@ -309,13 +276,13 @@ export default {
     deleteBtnClick (index) {
       let table = this.tableData[index]
       var params = {
-        logId: table.logId
+        apiId: table.apiId
       }
       this.$Modal.confirm({
         title: '是否删除枚举?',
         width: 280,
         onOk: () => {
-          deleteProLog(params)
+          deleteProApi(params)
             .then(res => {
               this.initData()
             })
@@ -325,8 +292,8 @@ export default {
     handleSubmit () {
       this.$refs['formInline'].validate((valid) => {
         if (valid) {
-          if (this.formInline.logId !== null) {
-            updateProLog(this.formInline)
+          if (this.formInline.apiId !== null) {
+            updateProApi(this.formInline)
               .then(res => {
                 if (res.data.code === 200) {
                   this.$Message.success('修改成功')
@@ -337,7 +304,7 @@ export default {
                 }
               })
           } else {
-            saveProLog(this.formInline)
+            saveProApi(this.formInline)
               .then(res => {
                 if (res.data.code === 200) {
                   this.$Message.success('保存成功')
@@ -356,23 +323,34 @@ export default {
       this.initData()
     },
     onPageSizeChange (index) {
+      this.pageNum = 1
       this.pageSize = index
       this.initData()
+    },
+    initStats () {
+      var params = {}
+      params.type = 'api_stat'
+      getEnumList(params)
+        .then(res => {
+          this.apiStats = res.data.obj
+        })
     },
     initData () {
       if (!this.isRetrieve) return
       var params = {}
-      params.name = this.name
-      params.className = this.className
-      params.functionName = this.functionName
-      params.source = this.source
-      if (this.createTime.length > 1) {
-        params.startTime = this.createTime[0]
-        params.endTime = this.createTime[1]
+      if (this.name !== '') {
+        params.name = this.name
+      } else {
+        params.name = null
+      }
+      if (this.nameAs !== '') {
+        params.nameAs = this.nameAs
+      } else {
+        params.nameAs = null
       }
       params.pageNum = this.pageNum
       params.pageSize = this.pageSize
-      getProLogPageList(params)
+      getProApiPageList(params)
         .then(res => {
           if (res.code !== 200) {
             this.tableData = res.data.obj
@@ -386,6 +364,7 @@ export default {
   mounted () {},
   created () {
     this.initData()
+    this.initStats()
   }
 }
 </script>

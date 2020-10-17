@@ -1,3 +1,23 @@
+<style lang="less">
+.page {
+    margin-top: 10px;
+}
+.search {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  .input{
+    width: 150px;
+    margin-right: 10px;
+  }
+}
+.add_button {
+    margin-left: 10px;
+}
+.foodl{
+    text-align: center;
+    width: 100%;
+}
+</style>
 <template>
   <div>
     <Row>
@@ -358,23 +378,3 @@ export default {
   }
 }
 </script>
-<style lang="less">
-.page {
-    margin-top: 10px;
-}
-.search {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    .input{
-        width: 150px;
-        margin-right: 10px;
-    }
-}
-.add_button {
-    margin-left: 10px;
-}
-.foodl{
-    text-align: center;
-    width: 100%;
-}
-</style>

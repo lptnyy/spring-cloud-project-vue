@@ -1,3 +1,23 @@
+<style lang="less">
+.page {
+    margin-top: 10px;
+}
+.search {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  .input{
+    width: 150px;
+    margin-right: 10px;
+  }
+}
+.add_button {
+    margin-left: 10px;
+}
+.foodl{
+    text-align: center;
+    width: 100%;
+}
+</style>
 <template>
   <div>
     <Row>
@@ -7,7 +27,7 @@
             <div class="search">
               <Input class="input" v-model="fileName" placeholder="文件名"/>
               <Select v-model="type" style="width:200px">
-                <Option v-for="item in fileTypes" :value="item.valuestr" :key="item.valuestr">{{ item.valuestr }}</Option>
+                <Option v-for="item in fileTypes" :value="item.valuestr" :key="item.valuestr">{{ item.keystr }}</Option>
               </Select>
               <Button class="add_button" @click="search" :disabled="!isRetrieve">查询</Button>
               <Button class="add_button" :disabled="!isRetrieve" @click="reset">重置</Button>
@@ -25,7 +45,7 @@
           <Form ref="formInline" :model="formInline" :rules="ruleValidate">
             <FormItem label="文件类型">
               <Select v-model="formInline.type" style="width:200px">
-                <Option v-for="item in fileTypes" :value="item.valuestr" :key="item.valuestr">{{ item.valuestr }}</Option>
+                <Option v-for="item in fileTypes" :value="item.valuestr" :key="item.valuestr">{{ item.keystr }}</Option>
               </Select>
             </FormItem>
             <FormItem>
@@ -70,7 +90,7 @@ export default {
       isUpdate: this.authorities('file_add'),
       isRetrieve: this.authorities('file_select'),
       selection: [],
-      type: '默认',
+      type: '',
       addFlag: false,
       fileName: '',
       uploadUrl: userStore.state.baseUrl,
@@ -131,7 +151,7 @@ export default {
         },
         {
           title: '资源类型',
-          key: 'type',
+          key: 'typeStr',
           fixed: 'left'
         },
         {
@@ -202,7 +222,7 @@ export default {
         md5: '',
         fileSize: null,
         fileDns: '',
-        type: '默认',
+        type: '',
         suffix: '',
         sourceType: ''
       }
@@ -212,7 +232,7 @@ export default {
     },
     reset () {
       this.fileName = ''
-      this.type = '默认'
+      this.type = ''
       this.pageNum = 1
       this.initData()
     },
@@ -343,23 +363,3 @@ export default {
   }
 }
 </script>
-<style lang="less">
-.page {
-    margin-top: 10px;
-}
-.search {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    .input{
-        width: 150px;
-        margin-right: 10px;
-    }
-}
-.add_button {
-    margin-left: 10px;
-}
-.foodl{
-    text-align: center;
-    width: 100%;
-}
-</style>
