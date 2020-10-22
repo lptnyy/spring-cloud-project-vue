@@ -16,6 +16,18 @@ export const getProProductTypePageList = (params) => {
  * 查询
  * @param {} params
  */
+export const getTypes = (params) => {
+  return axios.request({
+    url: '/system/proProductType/getTypes',
+    method: 'post',
+    data: params
+  })
+}
+
+/**
+ * 查询
+ * @param {} params
+ */
 export const getProProductTypeList = (params) => {
   return axios.request({
     url: '/system/proProductType/getList',

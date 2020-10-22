@@ -5,10 +5,8 @@
         <Card :bordered="false">
           <p slot="title">产品管理</p>
             <div class="search">
-              <Select class="input" v-model="typeId">
-                <Option value="0">需要编码</Option>
-              </Select>
               <Input class="input" v-model="titles" placeholder="标题"/>
+              <treeselect class="input" v-model="typeId" :multiple="false" :options="types" placeholder="分类"/>
               <Button class="add_button" @click="search" :disabled="!isRetrieve">查询</Button>
               <Button class="add_button" :disabled="!isRetrieve" @click="reset">重置</Button>
               <Button class="add_button" :disabled="!isDelete" @click="deleteBathBtnClick" type="warning">删除</Button>
@@ -23,38 +21,59 @@
         :title="title"
         :footer-hide=true>
           <Form ref="formInline" :model="formInline" :rules="ruleValidate">
-            <FormItem label="展示图片" prop="image">
-              <Input :disabled="disabled" v-model="formInline.image" placeholder="请输入列表展示图片"/>
+            <FormItem label="商品图片" prop="image">
+              <img style="width: 100px; height:100px;" v-if="formInline.image" :src="this.downloadUrl + formInline.image"/><br />
+              <Button :disabled="disabled" @click="btnFileSelect">选择图片</Button>
             </FormItem>
-            <FormItem label="分类id" prop="typeId">
-              <Input :disabled="disabled" v-model="formInline.typeId" placeholder="请输入分类id"/>
+            <FormItem label="商品图库" prop="images">
+              <br>
+              <div class="demo-upload-list">
+                <template >
+                  <img width="100px" height="100px" class="imgpand" src="http://qhsgz6ofy.hn-bkt.clouddn.com/jpg/2020102211260325521.jpg">
+                  <div class="demo-upload-list-cover">
+                    <Icon type="ios-eye-outline"></Icon>
+                    <Icon type="ios-trash-outline"></Icon>
+                  </div>
+                </template>
+              </div>
+              <br>
+              <Button :disabled="disabled" @click="btnFileSelect">选择图片</Button>
             </FormItem>
-            <FormItem label="标题" prop="title">
-              <Input :disabled="disabled" v-model="formInline.title" placeholder="请输入标题"/>
+            <FormItem label="商品名称" prop="title">
+              <Input :disabled="disabled" v-model="formInline.title" placeholder="商品名称"/>
             </FormItem>
-            <FormItem label="子标题" prop="subtitle">
-              <Input :disabled="disabled" v-model="formInline.subtitle" placeholder="请输入子标题"/>
+            <FormItem label="商品标题" prop="subtitle">
+              <Input :disabled="disabled" v-model="formInline.subtitle" placeholder="商品标题"/>
             </FormItem>
-            <FormItem label="赞数" prop="fabulousNum">
-              <Input :disabled="disabled" v-model="formInline.fabulousNum" placeholder="请输入赞数"/>
+            <FormItem label="商品分类" prop="typeId">
+              <treeselect :disabled="disabled" v-model="formInline.typeId" :multiple="false" :options="types" />
+            </FormItem>
+            <FormItem label="点赞数" prop="fabulousNum">
+              <Input :disabled="disabled" v-model="formInline.fabulousNum" placeholder="请输入点赞数"/>
             </FormItem>
             <FormItem label="评论数" prop="commentNum">
               <Input :disabled="disabled" v-model="formInline.commentNum" placeholder="请输入评论数"/>
             </FormItem>
-            <FormItem label="销售数量" prop="salesNum">
+            <FormItem label="实际销量" prop="salesNum">
               <Input :disabled="disabled" v-model="formInline.salesNum" placeholder="请输入销售数量"/>
             </FormItem>
             <FormItem label="分享数" prop="shareNum">
               <Input :disabled="disabled" v-model="formInline.shareNum" placeholder="请输入分享数"/>
             </FormItem>
             <FormItem label="是否会员打折" prop="discountSts">
-              <Input :disabled="disabled" v-model="formInline.discountSts" placeholder="请输入是否会员打折"/>
+              <RadioGroup v-model="formInline.discountSts">
+                <Radio v-for="item in discountSts" :disabled="disabled" :value="item.valuestr" :label="item.valuestr"  :key="item.valuestr" border>{{item.keystr}}</Radio>
+              </RadioGroup>
             </FormItem>
             <FormItem label="是否积分兑换" prop="integralSts">
-              <Input :disabled="disabled" v-model="formInline.integralSts" placeholder="请输入是否积分兑换"/>
+              <RadioGroup v-model="formInline.integralSts">
+                <Radio v-for="item in integralSts" :disabled="disabled" :value="item.valuestr" :label="item.valuestr"  :key="item.valuestr" border>{{item.keystr}}</Radio>
+              </RadioGroup>
             </FormItem>
             <FormItem label="产品状态" prop="state">
-              <Input :disabled="disabled" v-model="formInline.state" placeholder="请输入产品状态"/>
+              <RadioGroup v-model="formInline.state">
+                <Radio v-for="item in productStates" :disabled="disabled" :value="item.valuestr" :label="item.valuestr"  :key="item.valuestr" border>{{item.keystr}}</Radio>
+              </RadioGroup>
             </FormItem>
             <FormItem label="运费方式" prop="freightId">
               <Input :disabled="disabled" v-model="formInline.freightId" placeholder="请输入运费方式"/>
@@ -69,6 +88,7 @@
           </div>
       </Modal>
     </Row>
+    <FileComn :selectFileFlag="selectFileFlag" :cancel="imgCancel" :onSelect="fileSelect"/>
   </div>
 </template>
 
@@ -76,14 +96,31 @@
 import Tables from '_c/tables'
 import { getProProductPageList, deleteProProduct, updateProProduct, saveProProduct, idsProProductDelete } from '@/api/proProduct'
 import userStore from '@/store/module/user'
+import selectTree from '@/view/components/selectTree/selectTree'
+import { getTypes } from '@/api/proProductType'
+import Treeselect from '@riophae/vue-treeselect'
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+import FileComn from '@/view/pro/components/file/index'
+import { getEnumList } from '@/api/enum'
 
 export default {
   name: 'ProProduct',
   components: {
-    Tables
+    Tables,
+    selectTree,
+    Treeselect,
+    FileComn
   },
   data () {
     return {
+      discountSts: [],
+      integralSts: [],
+      productStates: [],
+      productStateColors: [],
+      selectFileFlag: false,
+      selectViews: {},
+      multiple: false,
+      types: [],
       disabled: false,
       title: '添加产品管理',
       isCreate: this.authorities('product_add'),
@@ -108,25 +145,28 @@ export default {
           { required: true, message: '请输入企业id', trigger: 'blur' }
         ],
         typeId: [
-          { required: true, message: '请输入分类id', trigger: 'blur' }
+          { type: 'number', required: true, message: '请选择商品分类', trigger: 'blur' }
         ],
         title: [
-          { required: true, message: '请输入标题', trigger: 'blur' }
+          { required: true, message: '请输入商品名称', trigger: 'blur' }
         ],
         subtitle: [
-          { required: true, message: '请输入子标题', trigger: 'blur' }
+          { required: true, message: '请输入标题', trigger: 'blur' }
         ],
         image: [
-          { required: true, message: '请输入列表展示图片', trigger: 'blur' }
+          { required: true, message: '请选择商品图片', trigger: 'blur' }
+        ],
+        images: [
+          { required: true, message: '请选择商品图片', trigger: 'blur' }
         ],
         fabulousNum: [
-          { required: true, message: '请输入赞数', trigger: 'blur' }
+          { required: true, message: '请输入点赞数', trigger: 'blur' }
         ],
         commentNum: [
           { required: true, message: '请输入评论数', trigger: 'blur' }
         ],
         salesNum: [
-          { required: true, message: '请输入销售数量', trigger: 'blur' }
+          { required: true, message: '请输入实际销量', trigger: 'blur' }
         ],
         shareNum: [
           { required: true, message: '请输入分享数', trigger: 'blur' }
@@ -160,64 +200,85 @@ export default {
           fixed: 'left'
         },
         {
-          title: '展示图片',
-          key: 'image',
-          fixed: 'left'
+          title: '商品图片',
+          fixed: 'left',
+          width: 118,
+          render: (h, params) => {
+            return h('div', [
+              h('img', {
+                attrs: {
+                  src: this.downloadUrl + params.row.image
+                },
+                style: {
+                  width: '80px',
+                  height: '80px',
+                  'margin-top': '5px'
+                }
+              })
+            ])
+          }
         },
         {
-          title: '标题',
+          title: '商品名称',
           key: 'title',
           fixed: 'left'
         },
         {
-          title: '分类id',
-          key: 'typeId',
-          fixed: 'left'
+          title: '商品分类',
+          key: 'typeName',
+          fixed: 'left',
+          width: 95
         },
         {
-          title: '销售数量',
+          title: '实际销量',
           key: 'salesNum',
-          fixed: 'left'
+          fixed: 'left',
+          width: 95
         },
         {
-          title: '赞数',
+          title: '点赞数',
           key: 'fabulousNum',
-          fixed: 'left'
+          fixed: 'left',
+          width: 95
         },
         {
           title: '评论数',
           key: 'commentNum',
-          fixed: 'left'
+          fixed: 'left',
+          width: 95
         },
         {
           title: '分享数',
           key: 'shareNum',
-          fixed: 'left'
+          fixed: 'left',
+          width: 95
         },
         {
-          title: '产品状态',
-          key: 'state',
-          fixed: 'left'
-        },
-        {
-          title: '运费方式',
-          key: 'freightId',
-          fixed: 'left'
-        },
-        {
-          title: '排序',
+          title: '商品排序',
           key: 'sort',
-          fixed: 'left'
-        },
-        {
-          title: '更新时间',
-          key: 'updateTime',
-          fixed: 'left'
+          fixed: 'left',
+          width: 95
         },
         {
           title: '创建时间',
           key: 'createTime',
-          fixed: 'left'
+          fixed: 'left',
+          width: 150
+        },
+        {
+          title: '产品状态',
+          fixed: 'left',
+          width: 95,
+          render: (h, params) => {
+            return h('div', [
+              h('Tag', {
+                props: {
+                  width: '100px',
+                  color: this.checkStatsColor(params.row.state)
+                }
+              }, params.row.stateStr)
+            ])
+          }
         },
         {
           title: '操作',
@@ -270,6 +331,25 @@ export default {
     }
   },
   methods: {
+    checkStatsColor (value) {
+      for (var i = 0; i < this.productStateColors.length; i++) {
+        var res = this.productStateColors[i]
+        if ((value + '') === res.keystr) {
+          console.log(res)
+          return res.valuestr
+        }
+      }
+    },
+    imgCancel () {
+      this.selectFileFlag = false
+    },
+    btnFileSelect () {
+      this.selectFileFlag = true
+    },
+    fileSelect (files) {
+      this.formInline.image = files.path
+      this.selectFileFlag = false
+    },
     initFromInput () {
       var formInline = {
         productId: null,
@@ -339,7 +419,7 @@ export default {
       let tableRow = this.tableData[index]
       this.formInline.productId = tableRow.productId + ''
       this.formInline.enterpriseId = tableRow.enterpriseId + ''
-      this.formInline.typeId = tableRow.typeId + ''
+      this.formInline.typeId = tableRow.typeId
       this.formInline.title = tableRow.title
       this.formInline.subtitle = tableRow.subtitle
       this.formInline.image = tableRow.image
@@ -462,11 +542,59 @@ export default {
             this.$Message.error(res.data.msg)
           }
         })
+    },
+    initTypes () {
+      var params = {}
+      getTypes(params)
+        .then(res => {
+          if (res.code !== 200) {
+            this.types = res.data.obj
+          } else {
+            this.$Message.error(res.data.msg)
+          }
+        })
+    },
+    initDiscountSts () {
+      var params = {}
+      params.type = 'discount_sts'
+      getEnumList(params)
+        .then(res => {
+          this.discountSts = res.data.obj
+        })
+    },
+    initIntegralSts () {
+      var params = {}
+      params.type = 'integral_sts'
+      getEnumList(params)
+        .then(res => {
+          this.integralSts = res.data.obj
+        })
+    },
+    initProductState () {
+      var params = {}
+      params.type = 'product_state'
+      getEnumList(params)
+        .then(res => {
+          this.productStates = res.data.obj
+        })
+    },
+    initProductStateColors () {
+      var params = {}
+      params.type = 'product_state_color'
+      getEnumList(params)
+        .then(res => {
+          this.productStateColors = res.data.obj
+        })
     }
   },
   mounted () {},
   created () {
     this.initData()
+    this.initTypes()
+    this.initIntegralSts()
+    this.initProductState()
+    this.initDiscountSts()
+    this.initProductStateColors()
   }
 }
 </script>
@@ -480,6 +608,7 @@ export default {
     .input{
         width: 150px;
         margin-right: 10px;
+        float: left;
     }
 }
 .add_button {
@@ -488,5 +617,44 @@ export default {
 .foodl{
     text-align: center;
     width: 100%;
+}
+.imgpand{
+  margin: 3px;
+}
+.demo-upload-list{
+  display: inline-block;
+  width: 60px;
+  height: 60px;
+  text-align: center;
+  line-height: 60px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #fff;
+  position: relative;
+  box-shadow: 0 1px 1px rgba(0,0,0,.2);
+  margin-right: 4px;
+}
+.demo-upload-list img{
+  width: 100%;
+  height: 100%;
+}
+.demo-upload-list-cover{
+  display: none;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0,0,0,.6);
+}
+.demo-upload-list:hover .demo-upload-list-cover{
+  display: block;
+}
+.demo-upload-list-cover i{
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  margin: 0 2px;
 }
 </style>

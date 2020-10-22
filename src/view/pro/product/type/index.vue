@@ -21,7 +21,7 @@
         :footer-hide=true>
           <Form ref="formInline" :model="formInline" :rules="ruleValidate">
             <FormItem label="图标" prop="icon">
-              <img style="width: 80px; height: 80px;" :src="this.downloadUrl + formInline.icon"/><br />
+              <img style="width: 80px; height: 80px;" v-if="formInline.icon" :src="this.downloadUrl + formInline.icon"/><br />
               <Button @click="btnFileSelect">上传图片</Button>
             </FormItem>
             <FormItem label="分类名称" prop="name">
