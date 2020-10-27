@@ -2,17 +2,17 @@
   <div>
     <Row>
       <Col span="24">
-        <Card :bordered="false">
+        <Card :bordered="false" class="cardDiv">
           <p slot="title">产品管理</p>
             <div class="search">
-              <Input class="input" v-model="titles" placeholder="标题"/>
-              <treeselect class="input" v-model="typeId" :multiple="false" :options="types" placeholder="分类"/>
+              <Input class="input floatDiv" v-model="titles" placeholder="标题"/>
+              <treeselect class="input floatDiv" v-model="typeId" :multiple="false" :options="types" placeholder="分类"/>
               <Button class="add_button" @click="search" :disabled="!isRetrieve">查询</Button>
               <Button class="add_button" :disabled="!isRetrieve" @click="reset">重置</Button>
               <Button class="add_button" :disabled="!isDelete" @click="deleteBathBtnClick" type="warning">删除</Button>
               <Button class="add_button" :disabled="!isCreate" @click="addBtnClick" type="primary">添加</Button>
             </div>
-            <Table border @on-selection-change="tableOnSelect" ref="selection" :columns="columns" :data="tableData"></Table>
+            <Table class="tableDiv" border @on-selection-change="tableOnSelect" ref="selection" :columns="columns" :data="tableData"></Table>
             <Page class="page" @on-page-size-change="onPageSizeChange" show-total show-sizer @on-change="tableOnChange" :total="total" show-elevator />
         </Card>
       </Col>
@@ -605,10 +605,12 @@ export default {
 .search {
     margin-top: 10px;
     margin-bottom: 10px;
-    .input{
+    .input {
         width: 150px;
         margin-right: 10px;
-        float: left;
+    }
+    .floatDiv {
+      float: left;
     }
 }
 .add_button {
@@ -656,5 +658,11 @@ export default {
   font-size: 20px;
   cursor: pointer;
   margin: 0 2px;
+}
+.cardDiv {
+  width: 100%;
+}
+.tableDiv {
+  width: 100%;
 }
 </style>
