@@ -13,6 +13,18 @@ export const getProBusinessTypePageList = (params) => {
 }
 
 /**
+ * 查询
+ * @param {} params
+ */
+export const getProBusinessTypeList = (params) => {
+  return axios.request({
+    url: '/system/proBusinessType/getList',
+    method: 'post',
+    data: params
+  })
+}
+
+/**
  * 删除
  * @param {} params
  */

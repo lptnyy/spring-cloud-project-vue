@@ -3,12 +3,21 @@
     margin-top: 10px;
 }
 .search {
-  margin-top: 10px;
-  margin-bottom: 10px;
-  .input{
-    width: 150px;
-    margin-right: 10px;
-  }
+    margin-top: 10px;
+    margin-bottom: 10px;
+    .input {
+        width: 150px;
+        margin-right: 10px;
+    }
+    .floatDiv {
+      float: left;
+    }
+}
+.cardDiv {
+  width: 100%;
+}
+.tableDiv {
+  width: 100%;
 }
 .add_button {
     margin-left: 10px;
