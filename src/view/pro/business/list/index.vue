@@ -66,6 +66,11 @@
             <FormItem label="地址" prop="address">
               <Input :disabled="disabled" v-model="formInline.address" placeholder="请输入地址"/>
             </FormItem>
+            <FormItem label="坐标拾取">
+              <br>
+              <Input id="qiyesousuo" :disabled="disabled" placeholder="关键字搜索" style="width:100%;"/>
+              <div class="maps" id="amap-main"></div>
+            </FormItem>
             <FormItem label="经度" prop="longitude">
               <Input :disabled="disabled" v-model="formInline.longitude" placeholder="请输入经度"/>
             </FormItem>
@@ -110,6 +115,11 @@ export default {
   },
   data () {
     return {
+      searchName: '',
+      placeSearch: null,
+      center: null,
+      lists: [],
+      businessStateColors: [],
       markers: [],
       addSelectAreas: [],
       addSelectCitys: [],
@@ -236,11 +246,6 @@ export default {
           fixed: 'left'
         },
         {
-          title: '状态',
-          key: 'stateName',
-          fixed: 'left'
-        },
-        {
           title: '创建时间',
           key: 'createTime',
           fixed: 'left',
@@ -251,6 +256,21 @@ export default {
           key: 'updateTime',
           fixed: 'left',
           width: 160
+        },
+        {
+          title: '状态',
+          fixed: 'left',
+          width: 95,
+          render: (h, params) => {
+            return h('div', [
+              h('Tag', {
+                props: {
+                  width: '100px',
+                  color: this.checkStatsColor(params.row.state)
+                }
+              }, params.row.stateName)
+            ])
+          }
         },
         {
           title: '操作',
@@ -303,6 +323,15 @@ export default {
     }
   },
   methods: {
+    checkStatsColor (value) {
+      for (var i = 0; i < this.businessStateColors.length; i++) {
+        var res = this.businessStateColors[i]
+        if ((value + '') === res.keystr) {
+          console.log(res)
+          return res.valuestr
+        }
+      }
+    },
     initFromInput () {
       var formInline = {
         businessId: null,
@@ -532,6 +561,14 @@ export default {
           this.businessStates = res.data.obj
         })
     },
+    initBusinessStateColor () {
+      var params = {}
+      params.type = 'business_state_color'
+      getEnumList(params)
+        .then(res => {
+          this.businessStateColors = res.data.obj
+        })
+    },
     initProBusinessTypeList () {
       var params = {}
       getProBusinessTypeList(params)
@@ -605,21 +642,23 @@ export default {
             this.$Message.error(res.data.msg)
           }
         })
+    },
+    searchMap () {
+
+    },
+    initMap () {
+
     }
   },
-  mounted () {},
+  mounted () {
+    this.initMap()
+  },
   created () {
-    this.markers = [
-      {
-        position: [121.5273285, 31.21515044]
-      }, {
-        position: [121.5273286, 31.21515045]
-      }
-    ]
     this.initData()
     this.initBusinessState()
     this.initProBusinessTypeList()
     this.initRegion()
+    this.initBusinessStateColor()
   }
 }
 </script>
@@ -654,5 +693,11 @@ export default {
 .mapDiv {
   width: 200px;
   height: 200px;
+}
+.maps {
+  width: 100%;
+  height: 300px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 </style>
