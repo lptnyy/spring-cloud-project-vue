@@ -165,7 +165,6 @@ export default {
   },
   methods: {
     mapCancel () {
-      alert(123)
       this.$emit('cancelfader', false)
     },
     onMapClick (e) {

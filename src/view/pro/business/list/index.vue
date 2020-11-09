@@ -421,7 +421,6 @@ export default {
       this.disabled = false
     },
     cancel () {
-      alert(1234)
       this.addFlag = false
       this.formInline = this.initFromInput()
     },
