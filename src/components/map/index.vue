@@ -1,115 +1,130 @@
 <template>
-  <div class="coord-picker">
-    <div class="map-container">
-      <amap
-        cache-key="coord-picker-map"
-        mmap-style="amap://styles/whitesmoke"
-        async
-        :center.sync="center"
-        :zoom.sync="zoom"
-        is-hotspot
-        @click="onMapClick"
-      >
-        <amap-satellite-layer :visible="satellite" />
+  <Modal
+    v-model="disPlay"
+    @cancel="mapCancel"
+    :footer-hide=true>
+    <div class="coord-picker">
+      <div class="map-container">
+        <amap
+          cache-key="coord-picker-map"
+          mmap-style="amap://styles/whitesmoke"
+          async
+          :center.sync="center"
+          :zoom.sync="zoom"
+          is-hotspot
+          @click="onMapClick"
+        >
+          <amap-satellite-layer :visible="satellite" />
 
-        <amap-marker v-if="position" :position.sync="position" draggable />
+          <amap-marker v-if="position" :position.sync="position" draggable />
 
-        <a-card
-          :body-style="{
+          <a-card
+            :body-style="{
             'max-height': '450px',
             'overflow-y': 'scroll',
             'padding-top': 0,
           }"
-          class="result-panel"
-        >
-          <template slot="title">
-            <template v-if="mode === 'search'">
-              <a-input-group compact style="display: flex">
-                <a-auto-complete
-                  v-model="query"
-                  :data-source="tips"
-                  placeholder="输入关键词"
-                  style="flex: 1"
-                  @search="autoComplete"
-                />
-                <a-button
-                  @click="search(true)"
-                  :disabled="!query"
-                  type="primary"
-                >
-                  搜索
-                </a-button>
-              </a-input-group>
-            </template>
-            <template v-if="mode === 'result'">
-              <div class="search-bar">
-                <a-button
-                  icon="left"
-                  @click="reset"
-                  style="margin-right: 6px;"
-                />
-                <span class="text"
-                >搜索 {{ query }} 共
-                  {{ searching ? '...' : total }} 条结果</span
-                >
-              </div>
-            </template>
-          </template>
-
-          <a-list
-            v-if="mode === 'result'"
-            :data-source="results"
-            :loading="searching"
-            item-layout="vertical"
-            size="small"
-            class="result-list"
+            class="result-panel"
           >
-            <a-pagination
-              slot="header"
-              v-if="total > 0"
-              v-model="pageIndex"
-              :page-size="pageSize"
-              :total="total"
+            <template slot="title">
+              <template v-if="mode === 'search'">
+                <a-input-group compact style="display: flex">
+                  <a-auto-complete
+                    v-model="query"
+                    :data-source="tips"
+                    placeholder="输入关键词"
+                    style="flex: 1"
+                    @search="autoComplete"
+                  />
+                  <a-button
+                    @click="search(true)"
+                    :disabled="!query"
+                    type="primary"
+                  >
+                    搜索
+                  </a-button>
+                </a-input-group>
+              </template>
+              <template v-if="mode === 'result'">
+                <div class="search-bar">
+                  <a-button
+                    icon="left"
+                    @click="reset"
+                    style="margin-right: 6px;"
+                  />
+                  <span class="text"
+                  >搜索 {{ query }} 共
+                  {{ searching ? '...' : total }} 条结果</span
+                  >
+                </div>
+              </template>
+            </template>
+
+            <a-list
+              v-if="mode === 'result'"
+              :data-source="results"
+              :loading="searching"
+              item-layout="vertical"
               size="small"
-            />
-            <a-list-item slot="renderItem" slot-scope="item" :key="item.id">
-              <a-list-item-meta :description="item.address">
+              class="result-list"
+            >
+              <a-pagination
+                slot="header"
+                v-if="total > 0"
+                v-model="pageIndex"
+                :page-size="pageSize"
+                :total="total"
+                size="small"
+              />
+              <a-list-item slot="renderItem" slot-scope="item" :key="item.id">
+                <a-list-item-meta :description="item.address">
                 <span
                   slot="title"
                   style="cursor: pointer;"
                   @click="focus(item)"
                 >{{ item.name }}</span
                 >
-              </a-list-item-meta>
-            </a-list-item>
-            <a-pagination
-              slot="footer"
-              v-if="total > 0"
-              v-model="pageIndex"
-              :page-size="pageSize"
-              :total="total"
-              size="small"
-            />
-          </a-list>
-        </a-card>
+                </a-list-item-meta>
+              </a-list-item>
+              <a-pagination
+                slot="footer"
+                v-if="total > 0"
+                v-model="pageIndex"
+                :page-size="pageSize"
+                :total="total"
+                size="small"
+              />
+            </a-list>
+          </a-card>
 
-        <a-form class="info ant-card ant-card-bordered" layout="inline">
-          <a-form-item label="坐标" v-if="position">
-            <a-input read-only :value="positionText" style="width: 200px;" />
-          </a-form-item>
-          <a-form-item label="卫星图">
-            <a-switch v-model="satellite" />
-          </a-form-item>
-        </a-form>
-      </amap>
+          <a-form class="info ant-card ant-card-bordered" layout="inline">
+            <a-form-item label="坐标" v-if="position">
+              <a-input read-only :value="positionText" style="width: 200px;" />
+            </a-form-item>
+            <a-form-item label="卫星图">
+              <a-switch v-model="satellite" />
+            </a-form-item>
+          </a-form>
+        </amap>
+        <div class="foodl">
+          <Button @click="mapCancel">取消</Button>
+          &nbsp;&nbsp;<Button type="primary">确定</Button>
+        </div>
+      </div>
     </div>
-  </div>
+  </Modal>
 </template>
 
 <script>
 import { loadAmap, loadPlugins } from '@amap/amap-vue'
 
 export default {
+  props: {
+    disPlay: {
+      type: Boolean,
+      default: false
+    }
+  },
   data () {
     return {
       mode: 'search',
@@ -149,6 +164,10 @@ export default {
     })
   },
   methods: {
+    mapCancel () {
+      alert(123)
+      this.$emit('cancelfader', false)
+    },
     onMapClick (e) {
       if (e.lnglat) {
         this.position = [e.lnglat.lng, e.lnglat.lat]

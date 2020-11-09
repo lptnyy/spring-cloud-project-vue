@@ -66,11 +66,9 @@
             <FormItem label="地址" prop="address">
               <Input :disabled="disabled" v-model="formInline.address" placeholder="请输入地址"/>
             </FormItem>
-            <FormItem label="经度" prop="longitude">
-              <Input :disabled="disabled" v-model="formInline.longitude" placeholder="请输入经度"/>
-            </FormItem>
-            <FormItem label="维度" prop="latitude">
-              <Input :disabled="disabled" v-model="formInline.latitude" placeholder="请输入维度"/>
+            <FormItem label="经度维度" prop="longitude">
+              <br>
+              <Button @click="cjButton">坐标采集</Button>
             </FormItem>
             <FormItem label="介绍" prop="introduce">
               <Input :disabled="disabled" v-model="formInline.introduce" placeholder="请输入介绍"/>
@@ -91,6 +89,7 @@
               &nbsp;&nbsp;<Button v-if="disabled===false" type="primary" :disabled="!isCreate" @click="handleSubmit('formInline')">确定</Button>
           </div>
       </Modal>
+      <Map :disPlay="modelDisPlay" @cancelfader="cjCancel"></Map>
     </Row>
   </div>
 </template>
@@ -102,14 +101,16 @@ import { getProBusinessTypeList } from '@/api/proBusinessType'
 import { getProvince, getCity, getArea } from '@/api/regin'
 import userStore from '@/store/module/user'
 import { getEnumList } from '@/api/enum'
+import Map from '@/components/map/index'
 
 export default {
   name: 'ProBusiness',
   components: {
-    Tables
+    Tables, Map
   },
   data () {
     return {
+      modelDisPlay: false,
       searchName: '',
       placeSearch: null,
       center: null,
@@ -318,6 +319,12 @@ export default {
     }
   },
   methods: {
+    cjButton () {
+      this.modelDisPlay = true
+    },
+    cjCancel (dis) {
+      this.modelDisPlay = dis
+    },
     checkStatsColor (value) {
       for (var i = 0; i < this.businessStateColors.length; i++) {
         var res = this.businessStateColors[i]
@@ -414,6 +421,7 @@ export default {
       this.disabled = false
     },
     cancel () {
+      alert(1234)
       this.addFlag = false
       this.formInline = this.initFromInput()
     },

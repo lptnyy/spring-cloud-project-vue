@@ -1,2 +1,2 @@
-import Map from './index.vue'
-export default Map
+import GaoDeMap from './index.vue'
+export default GaoDeMap
