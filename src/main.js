@@ -17,6 +17,9 @@ import VOrgTree from 'v-org-tree'
 import 'v-org-tree/dist/v-org-tree.css'
 import Base from './base'
 import AmapVue from '@amap/amap-vue'
+import Antd from 'ant-design-vue'
+import 'ant-design-vue/dist/antd.css'
+Vue.use(Antd)
 AmapVue.config.version = '2.0'
 AmapVue.config.key = '7b97433a8172d71bba855f526cdda1ac'
 AmapVue.config.plugins = [

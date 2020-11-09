@@ -23,7 +23,7 @@ export default {
    * @description api请求基础路径
    */
   baseUrl: {
-    dev: 'http://localhost:18087/', // 后台api接口地址
+    dev: 'http://192.168.0.154:18087/', // 后台api接口地址
     pro: 'https://produce.com'
   },
   downloadUrl: 'http://qhsgz6ofy.hn-bkt.clouddn.com/', // 图片下载域名
