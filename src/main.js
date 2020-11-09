@@ -16,6 +16,15 @@ import TreeTable from 'tree-table-vue'
 import VOrgTree from 'v-org-tree'
 import 'v-org-tree/dist/v-org-tree.css'
 import Base from './base'
+import AmapVue from '@amap/amap-vue'
+AmapVue.config.version = '2.0'
+AmapVue.config.key = '7b97433a8172d71bba855f526cdda1ac'
+AmapVue.config.plugins = [
+  'AMap.ToolBar',
+  'AMap.MoveAnimation'
+  // 在此配置你需要预加载的插件，如果不配置，在使用到的时候会自动异步加载
+]
+Vue.use(AmapVue)
 
 // 实际打包时应该不引入mock
 /* eslint-disable */
@@ -48,29 +57,6 @@ Vue.prototype.$config = config
  */
 importDirective(Vue)
 Vue.directive('clickOutside', clickOutside)
-
-// 创建高德地图
-let createMap = () => {
-  const promise = new Promise(function (resolve, reject) {
-    let script = document.createElement('script')
-    script.type = 'text/javascript'
-    script.src = 'https://webapi.amap.com/maps?v=1.3&key=7b97433a8172d71bba855f526cdda1ac'   // 高德地图
-    document.body.appendChild(script)
-    if (script.nodeName === 'SCRIPT') {
-      resolve()
-    } else {
-      reject(new Error('Could not script image at ' + script.src))
-    }
-  })
-  return promise
-}
-createMap().then(function () {
-  console.log('读取高德地图成功')
-  // 加載當前的ip定位
-}).catch(function (error) {
-  // 处理 getJSON 和 前一个回调函数运行时发生的错误
-  console.log('发生错误！', error)
-})
 
 /* eslint-disable no-new */
 new Vue({

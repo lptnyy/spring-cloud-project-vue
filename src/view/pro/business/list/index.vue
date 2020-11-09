@@ -66,11 +66,6 @@
             <FormItem label="地址" prop="address">
               <Input :disabled="disabled" v-model="formInline.address" placeholder="请输入地址"/>
             </FormItem>
-            <FormItem label="坐标拾取">
-              <br>
-              <Input id="qiyesousuo" :disabled="disabled" placeholder="关键字搜索" style="width:100%;"/>
-              <div class="maps" id="amap-main"></div>
-            </FormItem>
             <FormItem label="经度" prop="longitude">
               <Input :disabled="disabled" v-model="formInline.longitude" placeholder="请输入经度"/>
             </FormItem>
