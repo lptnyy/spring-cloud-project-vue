@@ -16,7 +16,6 @@
   .foodl{
     text-align: center;
     width: 100%;
-    background: blue;
     color: #ffffff;
     border-color: #0000000;
     border-width: 1px;

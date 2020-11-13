@@ -1,8 +1,4 @@
 <template>
-  <Modal
-    v-model="disPlay"
-    @cancel="mapCancel"
-    :footer-hide=true>
     <div class="coord-picker">
       <div class="map-container">
         <amap
@@ -30,6 +26,7 @@
               <template v-if="mode === 'search'">
                 <a-input-group compact style="display: flex">
                   <a-auto-complete
+                    :disabled="disabled"
                     v-model="query"
                     :data-source="tips"
                     placeholder="输入关键词"
@@ -97,7 +94,7 @@
             </a-list>
           </a-card>
 
-          <a-form class="info ant-card ant-card-bordered" layout="inline">
+          <a-form class="info ant-card ant-card-bordered" layout="inline" style="display: none;">
             <a-form-item label="坐标" v-if="position">
               <a-input read-only :value="positionText" style="width: 200px;" />
             </a-form-item>
@@ -106,23 +103,25 @@
             </a-form-item>
           </a-form>
         </amap>
-        <div class="foodl">
-          <Button @click="mapCancel">取消</Button>
-          &nbsp;&nbsp;<Button type="primary">确定</Button>
-        </div>
       </div>
     </div>
-  </Modal>
 </template>
 
 <script>
 import { loadAmap, loadPlugins } from '@amap/amap-vue'
-
 export default {
   props: {
     disPlay: {
       type: Boolean,
       default: false
+    },
+    disabled: {
+      type: Boolean,
+      default: false
+    },
+    updatePosition: {
+      type: Array,
+      default: null
     }
   },
   data () {
@@ -164,12 +163,10 @@ export default {
     })
   },
   methods: {
-    mapCancel () {
-      this.$emit('cancelfader', false)
-    },
     onMapClick (e) {
       if (e.lnglat) {
         this.position = [e.lnglat.lng, e.lnglat.lat]
+        this.$emit('resultLocation', e.lnglat.lat, e.lnglat.lng)
       } else {
         this.position = null
       }
@@ -184,7 +181,6 @@ export default {
         this.pageIndex = 1
         this.ps.setPageIndex(1)
       }
-
       this.searching = true
       const { query } = this
       this.ps.search(query, (status, result) => {
@@ -233,6 +229,10 @@ export default {
         this.ps.setPageIndex(value)
         this.search(false)
       })
+    },
+    updatePosition (value) {
+      this.position = [...value]
+      this.center = [...value]
     }
   }
 }
@@ -241,7 +241,7 @@ export default {
 <style lang="less" scoped>
   .map-container {
     width: 100%;
-    height: 600px;
+    height: 310px;
   }
 
   .result-panel {

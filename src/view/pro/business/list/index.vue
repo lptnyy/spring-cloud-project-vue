@@ -32,64 +32,69 @@
         </Card>
       </Col>
       <Modal
+        width="50%"
         v-model="addFlag"
         :title="title"
         :footer-hide=true>
           <Form ref="formInline" :model="formInline" :rules="ruleValidate">
-            <FormItem label="商家名称" prop="name">
-              <Input :disabled="disabled" v-model="formInline.name" placeholder="请输入商家名称"/>
-            </FormItem>
-            <FormItem label="商家简称" prop="abbreviation">
-              <Input :disabled="disabled" v-model="formInline.abbreviation" placeholder="请输入商家简称"/>
-            </FormItem>
-            <FormItem label="商家logo" prop="logo">
-              <Input :disabled="disabled" v-model="formInline.logo" placeholder="请输入商家logo"/>
-            </FormItem>
-            <FormItem label="商家图库" prop="imgs">
-              <Input :disabled="disabled" v-model="formInline.imgs" placeholder="请输入商家图库"/>
-            </FormItem>
-            <FormItem label="省份" prop="province">
-              <Select :disabled="disabled" @on-change="addProvincesChang" v-model="formInline.province" placeholder="请选择省份">
-                <Option v-for="item in provinces" :value="item.provinceId" :key="item.provinceId">{{ item.name }}</Option>
-              </Select>
-            </FormItem>
-            <FormItem label="城市" prop="city">
-              <Select :disabled="disabled" @on-change="addAreaChang" v-model="formInline.city" placeholder="请选择城市">
-                <Option v-for="item in addSelectCitys" :value="item.cityId" :key="item.cityId">{{ item.name }}</Option>
-              </Select>
-            </FormItem>
-            <FormItem label="区" prop="area">
-              <Select :disabled="disabled" v-model="formInline.area" placeholder="请选择城市">
-                <Option v-for="item in addSelectAreas" :value="item.areaId" :key="item.areaId">{{ item.name }}</Option>
-              </Select>
-            </FormItem>
-            <FormItem label="地址" prop="address">
-              <Input :disabled="disabled" v-model="formInline.address" placeholder="请输入地址"/>
-            </FormItem>
-            <FormItem label="经度维度" prop="longitude">
-              <br>
-              <Button @click="cjButton">坐标采集</Button>
-            </FormItem>
-            <FormItem label="介绍" prop="introduce">
-              <Input :disabled="disabled" v-model="formInline.introduce" placeholder="请输入介绍"/>
-            </FormItem>
-            <FormItem label="类型" prop="typeId">
-              <Select :disabled="disabled" v-model="formInline.typeId" placeholder="请选择类型">
-                <Option v-for="item in businessTypeList" :value="item.typeId + ''" :key="item.typeId">{{ item.name }}</Option>
-              </Select>
-            </FormItem>
-            <FormItem label="状态" prop="state">
-              <Select :disabled="disabled" v-model="formInline.state">
-                <Option v-for="item in businessStates" :value="item.valuestr" :key="item.valuestr">{{ item.keystr }}</Option>
-              </Select>
-            </FormItem>
+            <Row>
+              <Col span="8">
+                <FormItem label="商家名称" prop="name">
+                  <Input :disabled="disabled" v-model="formInline.name" placeholder="请输入商家名称"/>
+                </FormItem>
+                <FormItem label="商家简称" prop="abbreviation">
+                  <Input :disabled="disabled" v-model="formInline.abbreviation" placeholder="请输入商家简称"/>
+                </FormItem>
+                <FormItem label="省份" prop="province">
+                  <Select :disabled="disabled" @on-change="addProvincesChang" v-model="formInline.province" placeholder="请选择省份">
+                    <Option v-for="item in provinces" :value="item.provinceId" :key="item.provinceId">{{ item.name }}</Option>
+                  </Select>
+                </FormItem>
+                <FormItem label="城市" prop="city">
+                  <Select :disabled="disabled" @on-change="addAreaChang" v-model="formInline.city" placeholder="请选择城市">
+                    <Option v-for="item in addSelectCitys" :value="item.cityId" :key="item.cityId">{{ item.name }}</Option>
+                  </Select>
+                </FormItem>
+                <FormItem label="地区" prop="area">
+                  <Select :disabled="disabled" v-model="formInline.area" placeholder="请选择城市">
+                    <Option v-for="item in addSelectAreas" :value="item.areaId" :key="item.areaId">{{ item.name }}</Option>
+                  </Select>
+                </FormItem>
+                <FormItem label="详细地址" prop="address">
+                  <Input :disabled="disabled" v-model="formInline.address" placeholder="请输入地址"/>
+                </FormItem>
+                <FormItem label="类型" prop="typeId">
+                  <Select :disabled="disabled" v-model="formInline.typeId" placeholder="请选择类型">
+                    <Option v-for="item in businessTypeList" :value="item.typeId + ''" :key="item.typeId">{{ item.name }}</Option>
+                  </Select>
+                </FormItem>
+                <FormItem label="状态" prop="state">
+                  <Select :disabled="disabled" v-model="formInline.state">
+                    <Option v-for="item in businessStates" :value="item.valuestr" :key="item.valuestr">{{ item.keystr }}</Option>
+                  </Select>
+                </FormItem>
+              </Col>
+              <Col span="15" offset="1">
+                <FormItem label="商家logo" prop="logo">
+                  <Input :disabled="disabled" v-model="formInline.logo" placeholder="请输入商家logo"/>
+                </FormItem>
+                <FormItem label="商家图库" prop="imgs">
+                  <SelectImages style="width: 100%;"></SelectImages>
+                </FormItem>
+                <FormItem label="坐标拾取" prop="longitude">
+                  <Map @resultLocation="resultLocation" :updatePosition="updatePosition" :disabled="disabled" style="margin-top: 30px;"></Map>
+                </FormItem>
+                <FormItem label="介绍" prop="introduce">
+                  <Input :disabled="disabled" type="textarea" :rows="9" v-model="formInline.introduce" placeholder="请输入介绍"/>
+                </FormItem>
+              </Col>
+            </Row>
           </Form>
           <div class="foodl">
               <Button @click="cancel">取消</Button>
               &nbsp;&nbsp;<Button v-if="disabled===false" type="primary" :disabled="!isCreate" @click="handleSubmit('formInline')">确定</Button>
           </div>
       </Modal>
-      <Map :disPlay="modelDisPlay" @cancelfader="cjCancel"></Map>
     </Row>
   </div>
 </template>
@@ -102,14 +107,16 @@ import { getProvince, getCity, getArea } from '@/api/regin'
 import userStore from '@/store/module/user'
 import { getEnumList } from '@/api/enum'
 import Map from '@/components/map/index'
+import SelectImages from '@/components/select-images/index'
 
 export default {
   name: 'ProBusiness',
   components: {
-    Tables, Map
+    Tables, Map, SelectImages
   },
   data () {
     return {
+      updatePosition: [],
       modelDisPlay: false,
       searchName: '',
       placeSearch: null,
@@ -173,10 +180,10 @@ export default {
           { required: true, message: '请输入地址', trigger: 'blur' }
         ],
         longitude: [
-          { required: true, message: '请输入经度', trigger: 'blur' }
+          { required: true, message: '请输入经度纬度', trigger: 'blur' }
         ],
         latitude: [
-          { required: true, message: '请输入维度', trigger: 'blur' }
+          { required: true, message: '请输入纬度', trigger: 'blur' }
         ],
         introduce: [
           { required: true, message: '请输入介绍', trigger: 'blur' }
@@ -319,6 +326,10 @@ export default {
     }
   },
   methods: {
+    resultLocation (lat, lng) {
+      this.formInline.latitude = lat + ''
+      this.formInline.longitude = lng + ''
+    },
     cjButton () {
       this.modelDisPlay = true
     },
@@ -448,6 +459,9 @@ export default {
       this.initAddAreaDatas(tableRow.city)
       this.addFlag = true
       this.disabled = true
+      this.updatePosition = []
+      this.updatePosition.push(parseFloat(tableRow.longitude))
+      this.updatePosition.push(parseFloat(tableRow.latitude))
     },
     editBtnClick (index) {
       this.title = '编辑商家 '
@@ -473,6 +487,9 @@ export default {
       this.initAddAreaDatas(tableRow.city)
       this.addFlag = true
       this.disabled = false
+      this.updatePosition = []
+      this.updatePosition.push(parseFloat(tableRow.longitude))
+      this.updatePosition.push(parseFloat(tableRow.latitude))
     },
     deleteBathBtnClick () {
       if (this.selection.length === 0) {

@@ -85,6 +85,7 @@ export default {
   },
   data () {
     return {
+      defaultList: [],
       isCreate: this.authorities('file_add'),
       isDelete: this.authorities('file_del'),
       isUpdate: this.authorities('file_add'),
@@ -198,6 +199,7 @@ export default {
   methods: {
     onUploadSuccess (response, file, fileList) {
       if (response.code !== 200) {
+        this.$refs.uploadFile.clearFiles()
         this.$Message.error('上传失败')
       } else {
         let fileInfo = response.obj
