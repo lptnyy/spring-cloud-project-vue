@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="demo-upload-list" v-bind:key="item.url" v-for="item in defaultList">
-        <img :src="downloadUrl + item.url">
+    <div class="demo-upload-list" :style="{width: width, height: height}" v-bind:key="item.url" v-for="item in defaultList">
+        <img :src="downloadUrl + item.url" :style="{'width': width, 'height': height, 'line-height': height}">
         <div class="demo-upload-list-cover">
           <Icon type="ios-eye-outline" @click.native="handleView(item.url)"></Icon>
           <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
@@ -20,6 +20,12 @@ import userStore from '@/store/module/user'
 export default {
   name: 'selectImages',
   props: {
+    width: {
+      default: '80px'
+    },
+    height: {
+      default: '80px'
+    },
     size: {
       default: 0
     },
@@ -58,7 +64,7 @@ export default {
       console.log(files)
       if (this.size !== 0) {
         if (this.defaultList.length >= this.size) {
-          this.message('error', '最多只能选择' + this.size + '张图片')
+          this.message('error', '最多选择' + this.size + '张图片')
           this.selectFileFlag = false
           this.$emit('handleFile', this.defaultList)
           return
@@ -100,6 +106,7 @@ export default {
 
 <style scoped>
   .demo-upload-add{
+    margin-left: 10px;
     display: inline-block;
     width: 80px;
     height: 80px;
@@ -112,10 +119,7 @@ export default {
   }
   .demo-upload-list{
     display: inline-block;
-    width: 80px;
-    height: 80px;
     text-align: center;
-    line-height: 80px;
     border: 1px solid transparent;
     border-radius: 4px;
     overflow: hidden;
@@ -123,10 +127,6 @@ export default {
     position: relative;
     box-shadow: 0 1px 1px rgba(0,0,0,.2);
     margin-right: 4px;
-  }
-  .demo-upload-list img{
-    width: 100%;
-    height: 100%;
   }
   .demo-upload-list-cover{
     display: none;

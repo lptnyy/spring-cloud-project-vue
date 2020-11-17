@@ -76,17 +76,16 @@
               </Col>
               <Col span="15" offset="1">
                 <FormItem label="商家logo" prop="logo">
-                  <Input :disabled="disabled" v-model="formInline.logo" placeholder="请输入商家logo"/>
+                  <SelectImages style="width: 100%;" :size="1" @handleFile="logoHandleFile"></SelectImages>
                 </FormItem>
                 <FormItem label="商家图库" prop="imgs">
-                  <br /><br />
-                  <SelectImages style="width: 100%;" @handleFile="handleFile"></SelectImages>
+                  <SelectImages style="width: 100%;" :size="4" @handleFile="handleFile"></SelectImages>
                 </FormItem>
                 <FormItem label="坐标拾取" prop="longitude">
                   <Map @resultLocation="resultLocation" :updatePosition="updatePosition" :disabled="disabled" style="margin-top: 30px;"></Map>
                 </FormItem>
                 <FormItem label="介绍" prop="introduce">
-                  <Input :disabled="disabled" type="textarea" :rows="9" v-model="formInline.introduce" placeholder="请输入介绍"/>
+                  <Input :disabled="disabled" type="textarea" :rows="4" v-model="formInline.introduce" placeholder="请输入介绍"/>
                 </FormItem>
               </Col>
             </Row>
@@ -327,8 +326,11 @@ export default {
     }
   },
   methods: {
+    logoHandleFile (files) {
+      this.formInline.logo = JSON.stringify(files[0])
+    },
     handleFile (files) {
-      console.log(files)
+      this.formInline.imgs = JSON.stringify(files)
     },
     resultLocation (lat, lng) {
       this.formInline.latitude = lat + ''
