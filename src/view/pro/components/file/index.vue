@@ -31,9 +31,6 @@ export default {
     Tables
   },
   props: {
-    cancel: {
-      type: Function
-    },
     selectFileFlag: {
       type: Boolean
     },
@@ -119,6 +116,9 @@ export default {
     }
   },
   methods: {
+    cancel () {
+      this.$emit('cancel', false)
+    },
     selectBtnClick (index) {
       var table = this.tableData[index]
       this.onSelect(table)

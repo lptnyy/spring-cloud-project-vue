@@ -79,7 +79,8 @@
                   <Input :disabled="disabled" v-model="formInline.logo" placeholder="请输入商家logo"/>
                 </FormItem>
                 <FormItem label="商家图库" prop="imgs">
-                  <SelectImages style="width: 100%;"></SelectImages>
+                  <br /><br />
+                  <SelectImages style="width: 100%;" @handleFile="handleFile"></SelectImages>
                 </FormItem>
                 <FormItem label="坐标拾取" prop="longitude">
                   <Map @resultLocation="resultLocation" :updatePosition="updatePosition" :disabled="disabled" style="margin-top: 30px;"></Map>
@@ -326,6 +327,9 @@ export default {
     }
   },
   methods: {
+    handleFile (files) {
+      console.log(files)
+    },
     resultLocation (lat, lng) {
       this.formInline.latitude = lat + ''
       this.formInline.longitude = lng + ''

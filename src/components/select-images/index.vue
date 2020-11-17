@@ -1,45 +1,91 @@
 <template>
   <div>
     <div class="demo-upload-list" v-bind:key="item.url" v-for="item in defaultList">
-      <template>
-        <img :src="item.url">
+        <img :src="downloadUrl + item.url">
         <div class="demo-upload-list-cover">
           <Icon type="ios-eye-outline" @click.native="handleView(item.url)"></Icon>
           <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
         </div>
-      </template>
     </div>
-    <div style="display: inline-block;width:58px;">
-      <div style="width: 58px;height:58px;line-height: 58px;">
-        <Icon type="ios-camera" size="20"></Icon>
-      </div>
+    <div class="demo-upload-add">
+      <Icon @click="btnFileSelect" style="font-size: 65px;" type="ios-add" />
     </div>
+    <FileComn :selectFileFlag="selectFileFlag" @cancel="cancel" :onSelect="fileSelect"/>
   </div>
 </template>
-
 <script>
+import FileComn from '@/view/pro/components/file/index'
+import userStore from '@/store/module/user'
+
 export default {
   name: 'selectImages',
+  props: {
+    size: {
+      default: 0
+    },
+    files: {
+      type: Array,
+      default: () => []
+    }
+  },
+  components: {
+    FileComn
+  },
   data () {
     return {
-      defaultList: [
-        {
-          'name': 'a42bdcc1178e62b4694c830f028db5c0',
-          'url': 'https://o5wwk8baw.qnssl.com/a42bdcc1178e62b4694c830f028db5c0/avatar'
-        },
-        {
-          'name': 'bc7521e033abdd1e92222d733590f104',
-          'url': 'https://o5wwk8baw.qnssl.com/bc7521e033abdd1e92222d733590f104/avatar'
-        }
-      ],
+      uploadUrl: userStore.state.baseUrl,
+      downloadUrl: userStore.state.downloadUrl,
+      selectFileFlag: false,
+      defaultList: this.files,
       url: '',
       visible: false
     }
   },
   methods: {
+    message (type, value) {
+      this.$Message[type]({
+        background: true,
+        content: value
+      })
+    },
+    cancel (value) {
+      this.selectFileFlag = value
+    },
+    btnFileSelect () {
+      this.selectFileFlag = true
+    },
+    fileSelect (files) {
+      console.log(files)
+      if (this.size !== 0) {
+        if (this.defaultList.length >= this.size) {
+          this.message('error', '最多只能选择' + this.size + '张图片')
+          this.selectFileFlag = false
+          this.$emit('handleFile', this.defaultList)
+          return
+        }
+      }
+      this.defaultList.push({
+        files
+      })
+      this.selectFileFlag = false
+      this.$emit('handleFile', this.defaultList)
+    },
+    confirm () {
+      this.$Modal.confirm({
+        render: (h) => {
+          return h('img', {
+            props: {
+              width: '200px',
+              src: this.url
+            }
+          })
+        }
+      })
+    },
     handleView (url) {
       this.url = url
       this.visible = true
+      this.confirm()
     },
     handleRemove (file) {
       const fileList = this.defaultList
@@ -53,12 +99,23 @@ export default {
 </script>
 
 <style scoped>
+  .demo-upload-add{
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+    text-align: center;
+    line-height: 80px;
+    border: 1px solid transparent;
+    border-color: #bebebe;
+    position: relative;
+    overflow: hidden;
+  }
   .demo-upload-list{
     display: inline-block;
-    width: 60px;
-    height: 60px;
+    width: 80px;
+    height: 80px;
     text-align: center;
-    line-height: 60px;
+    line-height: 80px;
     border: 1px solid transparent;
     border-radius: 4px;
     overflow: hidden;
