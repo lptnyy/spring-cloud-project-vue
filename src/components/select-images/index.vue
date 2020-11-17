@@ -61,20 +61,15 @@ export default {
       this.selectFileFlag = true
     },
     fileSelect (files) {
-      console.log(files)
       if (this.size !== 0) {
         if (this.defaultList.length >= this.size) {
           this.message('error', '最多选择' + this.size + '张图片')
           this.selectFileFlag = false
-          this.$emit('handleFile', this.defaultList)
           return
         }
       }
-      this.defaultList.push({
-        files
-      })
       this.selectFileFlag = false
-      this.$emit('handleFile', this.defaultList)
+      this.$emit('handleFile', files)
     },
     confirm () {
       this.$Modal.confirm({

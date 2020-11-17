@@ -76,10 +76,10 @@
               </Col>
               <Col span="15" offset="1">
                 <FormItem label="商家logo" prop="logo">
-                  <SelectImages style="width: 100%;" :size="1" @handleFile="logoHandleFile"></SelectImages>
+                  <SelectImages :files="logoFiles" style="width: 100%;" :size="1" @handleFile="logoHandleFile"></SelectImages>
                 </FormItem>
                 <FormItem label="商家图库" prop="imgs">
-                  <SelectImages style="width: 100%;" :size="4" @handleFile="handleFile"></SelectImages>
+                  <SelectImages :files="imgsFiles" style="width: 100%;" :size="4" @handleFile="handleFile"></SelectImages>
                 </FormItem>
                 <FormItem label="坐标拾取" prop="longitude">
                   <Map @resultLocation="resultLocation" :updatePosition="updatePosition" :disabled="disabled" style="margin-top: 30px;"></Map>
@@ -116,6 +116,8 @@ export default {
   },
   data () {
     return {
+      logoFiles: [],
+      imgsFiles: [],
       updatePosition: [],
       modelDisPlay: false,
       searchName: '',
@@ -327,10 +329,12 @@ export default {
   },
   methods: {
     logoHandleFile (files) {
-      this.formInline.logo = JSON.stringify(files[0])
+      this.formInline.logo = JSON.stringify(files)
+      this.logoFiles.push(files)
     },
     handleFile (files) {
-      this.formInline.imgs = JSON.stringify(files)
+      this.imgsFiles.push(files)
+      this.formInline.imgs = JSON.stringify(this.imgsFiles)
     },
     resultLocation (lat, lng) {
       this.formInline.latitude = lat + ''
