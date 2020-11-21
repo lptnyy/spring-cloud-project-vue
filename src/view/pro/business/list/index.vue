@@ -76,10 +76,10 @@
               </Col>
               <Col span="15" offset="1">
                 <FormItem label="商家logo" prop="logo">
-                  <SelectImages :files="logoFiles" style="width: 100%;" :size="1" @handleFile="logoHandleFile"></SelectImages>
+                  <SelectImages :disabled="disabled" :files="logoFiles" style="width: 100%;" :size="1" @handleFile="logoHandleFile"></SelectImages>
                 </FormItem>
                 <FormItem label="商家图库" prop="imgs">
-                  <SelectImages :files="imgsFiles" style="width: 100%;" :size="4" @handleFile="handleFile"></SelectImages>
+                  <SelectImages :disabled="disabled" :files="imgsFiles" style="width: 100%;" :size="4" @handleFile="handleFile"></SelectImages>
                 </FormItem>
                 <FormItem label="坐标拾取" prop="longitude">
                   <Map @resultLocation="resultLocation" :updatePosition="updatePosition" :disabled="disabled" style="margin-top: 30px;"></Map>
@@ -329,7 +329,7 @@ export default {
   },
   methods: {
     logoHandleFile (files) {
-      this.formInline.logo = JSON.stringify(files)
+      this.formInline.logo = files.path
       this.logoFiles.push(files)
     },
     handleFile (files) {
@@ -339,12 +339,6 @@ export default {
     resultLocation (lat, lng) {
       this.formInline.latitude = lat + ''
       this.formInline.longitude = lng + ''
-    },
-    cjButton () {
-      this.modelDisPlay = true
-    },
-    cjCancel (dis) {
-      this.modelDisPlay = dis
     },
     checkStatsColor (value) {
       for (var i = 0; i < this.businessStateColors.length; i++) {
@@ -472,6 +466,14 @@ export default {
       this.updatePosition = []
       this.updatePosition.push(parseFloat(tableRow.longitude))
       this.updatePosition.push(parseFloat(tableRow.latitude))
+      this.logoFiles = []
+      this.imgsFiles = []
+      this.logoFiles.push({
+        name: '',
+        path: tableRow.logo
+      })
+      var imgs = JSON.parse(tableRow.imgs)
+      this.imgsFiles.push(imgs)
     },
     editBtnClick (index) {
       this.title = '编辑商家 '
@@ -500,6 +502,12 @@ export default {
       this.updatePosition = []
       this.updatePosition.push(parseFloat(tableRow.longitude))
       this.updatePosition.push(parseFloat(tableRow.latitude))
+      this.logoFiles.push({
+        name: '',
+        path: tableRow.logo
+      })
+      var imgs = JSON.parse(tableRow.imgs)
+      this.imgsFiles.push(imgs)
     },
     deleteBathBtnClick () {
       if (this.selection.length === 0) {
@@ -671,17 +679,9 @@ export default {
             this.$Message.error(res.data.msg)
           }
         })
-    },
-    searchMap () {
-
-    },
-    initMap () {
-
     }
   },
-  mounted () {
-    this.initMap()
-  },
+  mounted () {},
   created () {
     this.initData()
     this.initBusinessState()

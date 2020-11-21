@@ -20,6 +20,9 @@ import userStore from '@/store/module/user'
 export default {
   name: 'selectImages',
   props: {
+    disabled: {
+      default: false
+    },
     width: {
       default: '80px'
     },
@@ -58,7 +61,7 @@ export default {
       this.selectFileFlag = value
     },
     btnFileSelect () {
-      this.selectFileFlag = true
+      if (!this.disabled) { this.selectFileFlag = true }
     },
     fileSelect (files) {
       if (this.size !== 0) {
