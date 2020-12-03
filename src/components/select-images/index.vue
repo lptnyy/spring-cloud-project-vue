@@ -92,12 +92,17 @@ export default {
       this.confirm()
     },
     handleRemove (file) {
-      const fileList = this.defaultList
-      this.defaultList.splice(fileList.indexOf(file), 1)
+      this.$emit('removeFile', file)
     }
   },
-  mounted () {
-
+  watch: {
+    files: {
+      deep: true,
+      handler (v) {
+        this.defaultList = v
+        console.log(this.defaultList)
+      }
+    }
   }
 }
 </script>

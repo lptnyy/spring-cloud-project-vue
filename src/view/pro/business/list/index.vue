@@ -76,10 +76,10 @@
               </Col>
               <Col span="15" offset="1">
                 <FormItem label="商家logo" prop="logo">
-                  <SelectImages :disabled="disabled" :files="logoFiles" style="width: 100%;" :size="1" @handleFile="logoHandleFile"></SelectImages>
+                  <SelectImages :disabled="disabled" :files="logoFiles" style="width: 100%;" :size="1" @handleFile="logoHandleFile" @removeFile="logoremoveFile"></SelectImages>
                 </FormItem>
                 <FormItem label="商家图库" prop="imgs">
-                  <SelectImages :disabled="disabled" :files="imgsFiles" style="width: 100%;" :size="4" @handleFile="handleFile"></SelectImages>
+                  <SelectImages :disabled="disabled" :files="imgsFiles" style="width: 100%;" :size="4" @handleFile="handleFile" @removeFile="removeFile"></SelectImages>
                 </FormItem>
                 <FormItem label="坐标拾取" prop="longitude">
                   <Map @resultLocation="resultLocation" :updatePosition="updatePosition" :disabled="disabled" style="margin-top: 30px;"></Map>
@@ -216,9 +216,23 @@ export default {
           fixed: 'left'
         },
         {
-          title: '商家logo',
-          key: 'logo',
-          fixed: 'left'
+          title: 'Logo',
+          fixed: 'left',
+          width: 118,
+          render: (h, params) => {
+            return h('div', [
+              h('img', {
+                attrs: {
+                  src: this.downloadUrl + params.row.logo
+                },
+                style: {
+                  width: '80px',
+                  height: '80px',
+                  'margin-top': '5px'
+                }
+              })
+            ])
+          }
         },
         {
           title: '商家名称',
@@ -332,9 +346,23 @@ export default {
       this.formInline.logo = files.path
       this.logoFiles.push(files)
     },
+    logoremoveFile (files) {
+      this.formInline.logo = ''
+      const fileList = this.logoFiles
+      this.logoFiles.splice(fileList.indexOf(files), 1)
+    },
     handleFile (files) {
       this.imgsFiles.push(files)
       this.formInline.imgs = JSON.stringify(this.imgsFiles)
+    },
+    removeFile (files) {
+      const fileList = this.imgsFiles
+      this.imgsFiles.splice(fileList.indexOf(files), 1)
+      if (this.imgsFiles.length > 0) {
+        this.formInline.imgs = JSON.stringify(this.imgsFiles)
+      } else {
+        this.formInline.imgs = ''
+      }
     },
     resultLocation (lat, lng) {
       this.formInline.latitude = lat + ''
@@ -434,6 +462,8 @@ export default {
       this.formInline = this.initFromInput()
       this.addFlag = true
       this.disabled = false
+      this.imgsFiles = []
+      this.logoFiles = []
     },
     cancel () {
       this.addFlag = false
@@ -502,6 +532,8 @@ export default {
       this.updatePosition = []
       this.updatePosition.push(parseFloat(tableRow.longitude))
       this.updatePosition.push(parseFloat(tableRow.latitude))
+      this.logoFiles = []
+      this.imgsFiles = []
       this.logoFiles.push({
         name: '',
         path: tableRow.logo
