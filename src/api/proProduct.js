@@ -13,6 +13,18 @@ export const getProProductPageList = (params) => {
 }
 
 /**
+ * 查询
+ * @param {} params
+ */
+export const getProProductInfo = (params) => {
+  return axios.request({
+    url: '/system/proProduct/get',
+    method: 'post',
+    data: params
+  })
+}
+
+/**
  * 删除
  * @param {} params
  */
@@ -43,6 +55,18 @@ export const idsProProductDelete = (params) => {
 export const updateProProduct = (params) => {
   return axios.request({
     url: '/system/proProduct/update',
+    method: 'post',
+    data: params
+  })
+}
+
+/**
+ * 修改
+ * @param {} params
+ */
+export const updateUpdateState = (params) => {
+  return axios.request({
+    url: '/system/proProduct/updateState',
     method: 'post',
     data: params
   })

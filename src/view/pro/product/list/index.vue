@@ -17,70 +17,68 @@
         </Card>
       </Col>
       <Modal
+        width="50%"
         v-model="addFlag"
         :title="title"
         :footer-hide=true>
           <Form ref="formInline" :model="formInline" :rules="ruleValidate">
-            <FormItem label="商品图片" prop="image">
-              <img style="width: 100px; height:100px;" v-if="formInline.image" :src="this.downloadUrl + formInline.image"/><br />
-              <Button :disabled="disabled" @click="btnFileSelect">选择图片</Button>
-            </FormItem>
-            <FormItem label="商品图库" prop="images">
-              <br>
-              <div class="demo-upload-list">
-                <template >
-                  <img width="100px" height="100px" class="imgpand" src="http://qhsgz6ofy.hn-bkt.clouddn.com/jpg/2020102211260325521.jpg">
-                  <div class="demo-upload-list-cover">
-                    <Icon type="ios-eye-outline"></Icon>
-                    <Icon type="ios-trash-outline"></Icon>
-                  </div>
-                </template>
-              </div>
-              <br>
-              <Button :disabled="disabled" @click="btnFileSelect">选择图片</Button>
-            </FormItem>
-            <FormItem label="商品名称" prop="title">
-              <Input :disabled="disabled" v-model="formInline.title" placeholder="商品名称"/>
-            </FormItem>
-            <FormItem label="商品标题" prop="subtitle">
-              <Input :disabled="disabled" v-model="formInline.subtitle" placeholder="商品标题"/>
-            </FormItem>
-            <FormItem label="商品分类" prop="typeId">
-              <treeselect :disabled="disabled" v-model="formInline.typeId" :multiple="false" :options="types" />
-            </FormItem>
-            <FormItem label="点赞数" prop="fabulousNum">
-              <Input :disabled="disabled" v-model="formInline.fabulousNum" placeholder="请输入点赞数"/>
-            </FormItem>
-            <FormItem label="评论数" prop="commentNum">
-              <Input :disabled="disabled" v-model="formInline.commentNum" placeholder="请输入评论数"/>
-            </FormItem>
-            <FormItem label="实际销量" prop="salesNum">
-              <Input :disabled="disabled" v-model="formInline.salesNum" placeholder="请输入销售数量"/>
-            </FormItem>
-            <FormItem label="分享数" prop="shareNum">
-              <Input :disabled="disabled" v-model="formInline.shareNum" placeholder="请输入分享数"/>
-            </FormItem>
-            <FormItem label="是否会员打折" prop="discountSts">
-              <RadioGroup v-model="formInline.discountSts">
-                <Radio v-for="item in discountSts" :disabled="disabled" :value="item.valuestr" :label="item.valuestr"  :key="item.valuestr" border>{{item.keystr}}</Radio>
-              </RadioGroup>
-            </FormItem>
-            <FormItem label="是否积分兑换" prop="integralSts">
-              <RadioGroup v-model="formInline.integralSts">
-                <Radio v-for="item in integralSts" :disabled="disabled" :value="item.valuestr" :label="item.valuestr"  :key="item.valuestr" border>{{item.keystr}}</Radio>
-              </RadioGroup>
-            </FormItem>
-            <FormItem label="产品状态" prop="state">
-              <RadioGroup v-model="formInline.state">
-                <Radio v-for="item in productStates" :disabled="disabled" :value="item.valuestr" :label="item.valuestr"  :key="item.valuestr" border>{{item.keystr}}</Radio>
-              </RadioGroup>
-            </FormItem>
-            <FormItem label="运费方式" prop="freightId">
-              <Input :disabled="disabled" v-model="formInline.freightId" placeholder="请输入运费方式"/>
-            </FormItem>
-            <FormItem label="排序" prop="sort">
-              <Input :disabled="disabled" v-model="formInline.sort" placeholder="请输入排序"/>
-            </FormItem>
+            <Row>
+              <Col span="11">
+                <FormItem label="商品图片" prop="image">
+                  <SelectImages :disabled="disabled" :files="logoFiles" style="width: 100%;" :size="1" @handleFile="logoHandleFile" @removeFile="logoremoveFile"></SelectImages>
+                </FormItem>
+                <FormItem label="商品图库" prop="images">
+                  <SelectImages :disabled="disabled" :files="imgsFiles" style="width: 100%;" :size="4" @handleFile="handleFile" @removeFile="removeFile"></SelectImages>
+                </FormItem>
+                <FormItem label="商品名称" prop="title">
+                  <Input :disabled="disabled" v-model="formInline.title" placeholder="商品名称"/>
+                </FormItem>
+                <FormItem label="商品标题" prop="subtitle">
+                  <Input :disabled="disabled" v-model="formInline.subtitle" placeholder="商品标题"/>
+                </FormItem>
+                <FormItem label="商品分类" prop="typeId">
+                  <treeselect :disabled="disabled" v-model="formInline.typeId" :multiple="false" :options="types" />
+                </FormItem>
+                <FormItem label="点赞数" prop="fabulousNum">
+                  <Input :disabled="disabled" v-model="formInline.fabulousNum" placeholder="请输入点赞数"/>
+                </FormItem>
+                <FormItem label="评论数" prop="commentNum">
+                  <Input :disabled="disabled" v-model="formInline.commentNum" placeholder="请输入评论数"/>
+                </FormItem>
+              </Col>
+              <Col span="12" offset="1">
+                <FormItem label="实际销量" prop="salesNum">
+                  <Input :disabled="disabled" v-model="formInline.salesNum" placeholder="请输入销售数量"/>
+                </FormItem>
+                <FormItem label="分享数" prop="shareNum">
+                  <Input :disabled="disabled" v-model="formInline.shareNum" placeholder="请输入分享数"/>
+                </FormItem>
+                <FormItem label="是否会员打折" prop="discountSts">
+                  <RadioGroup v-model="formInline.discountSts">
+                    <Radio v-for="item in discountSts" :disabled="disabled" :value="item.valuestr" :label="item.valuestr"  :key="item.valuestr" border>{{item.keystr}}</Radio>
+                  </RadioGroup>
+                </FormItem>
+                <FormItem label="是否积分兑换" prop="integralSts">
+                  <RadioGroup v-model="formInline.integralSts">
+                    <Radio v-for="item in integralSts" :disabled="disabled" :value="item.valuestr" :label="item.valuestr"  :key="item.valuestr" border>{{item.keystr}}</Radio>
+                  </RadioGroup>
+                </FormItem>
+                <FormItem label="产品状态" prop="state">
+                  <RadioGroup v-model="formInline.state">
+                    <Radio v-for="item in productStates" :disabled="disabled" :value="item.valuestr" :label="item.valuestr"  :key="item.valuestr" border>{{item.keystr}}</Radio>
+                  </RadioGroup>
+                </FormItem>
+                <FormItem label="运费方式" prop="freightId">
+                  <Input :disabled="disabled" v-model="formInline.freightId" placeholder="请输入运费方式"/>
+                </FormItem>
+                <FormItem label="排序" prop="sort">
+                  <Input :disabled="disabled" v-model="formInline.sort" placeholder="请输入排序"/>
+                </FormItem>
+                <FormItem label="介绍" prop="introduce">
+                  <Input :disabled="disabled" type="textarea" :rows="4" v-model="formInline.introduce" placeholder="请输入介绍"/>
+                </FormItem>
+              </Col>
+            </Row>
           </Form>
           <div class="foodl">
               <Button @click="cancel">取消</Button>
@@ -88,19 +86,17 @@
           </div>
       </Modal>
     </Row>
-    <FileComn :selectFileFlag="selectFileFlag" :cancel="imgCancel" :onSelect="fileSelect"/>
   </div>
 </template>
-
 <script>
 import Tables from '_c/tables'
-import { getProProductPageList, deleteProProduct, updateProProduct, saveProProduct, idsProProductDelete } from '@/api/proProduct'
+import { getProProductPageList, deleteProProduct, updateProProduct, saveProProduct, idsProProductDelete, getProProductInfo, updateUpdateState } from '@/api/proProduct'
 import userStore from '@/store/module/user'
 import selectTree from '@/view/components/selectTree/selectTree'
 import { getTypes } from '@/api/proProductType'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
-import FileComn from '@/view/pro/components/file/index'
+import SelectImages from '@/components/select-images/index'
 import { getEnumList } from '@/api/enum'
 
 export default {
@@ -109,10 +105,14 @@ export default {
     Tables,
     selectTree,
     Treeselect,
-    FileComn
+    SelectImages
   },
   data () {
     return {
+      productSource: [],
+      productStateBtns: [],
+      imgsFiles: [],
+      logoFiles: [],
       discountSts: [],
       integralSts: [],
       productStates: [],
@@ -122,7 +122,7 @@ export default {
       multiple: false,
       types: [],
       disabled: false,
-      title: '添加产品管理',
+      title: '添加产品',
       isCreate: this.authorities('product_add'),
       isDelete: this.authorities('product_del'),
       isUpdate: this.authorities('product_update'),
@@ -188,6 +188,9 @@ export default {
         ],
         updateTime: [
           { required: true, message: '请输入更新时间', trigger: 'blur' }
+        ],
+        introduce: [
+          { required: true, message: '请输入产品介绍', trigger: 'blur' }
         ],
         createTime: [
           { required: true, message: '请输入创建时间', trigger: 'blur' }
@@ -284,9 +287,21 @@ export default {
           title: '操作',
           key: 'action',
           fixed: 'right',
-          width: 160,
+          width: 200,
           render: (h, params) => {
             return h('div', [
+              h('Button', {
+                props: {
+                  type: 'text',
+                  size: 'small',
+                  disabled: !this.isRetrieve
+                },
+                on: {
+                  click: () => {
+                    this.updateState(params.index)
+                  }
+                }
+              }, this.checkState(params.row.state)),
               h('Button', {
                 props: {
                   type: 'text',
@@ -331,11 +346,60 @@ export default {
     }
   },
   methods: {
+    updateState (index) {
+      let tableRow = this.tableData[index]
+      var params = {}
+      params.productId = tableRow.productId
+      if (tableRow.state === 1) {
+        params.state = 2
+      } else {
+        params.state = 1
+      }
+      updateUpdateState(params)
+        .then(res => {
+          if (res.data.code === 200) {
+            this.$Message.success('修改成功')
+            this.initData()
+            this.cancel()
+          } else {
+            this.$Message.error(res.data.msg)
+          }
+        })
+    },
+    checkState (state) {
+      for (var i = 0; i < this.productStateBtns.length; i++) {
+        var res = this.productStateBtns[i]
+        if ((state + '') === res.keystr) {
+          return res.valuestr
+        }
+      }
+    },
+    logoHandleFile (files) {
+      this.formInline.image = files.path
+      this.logoFiles.push(files)
+    },
+    logoremoveFile (files) {
+      this.formInline.image = ''
+      const fileList = this.logoFiles
+      this.logoFiles.splice(fileList.indexOf(files), 1)
+    },
+    handleFile (files) {
+      this.imgsFiles.push(files)
+      this.formInline.images = JSON.stringify(this.imgsFiles)
+    },
+    removeFile (files) {
+      const fileList = this.imgsFiles
+      this.imgsFiles.splice(fileList.indexOf(files), 1)
+      if (this.imgsFiles.length > 0) {
+        this.formInline.images = JSON.stringify(this.imgsFiles)
+      } else {
+        this.formInline.images = ''
+      }
+    },
     checkStatsColor (value) {
       for (var i = 0; i < this.productStateColors.length; i++) {
         var res = this.productStateColors[i]
         if ((value + '') === res.keystr) {
-          console.log(res)
           return res.valuestr
         }
       }
@@ -358,6 +422,7 @@ export default {
         title: '',
         subtitle: '',
         image: '',
+        images: '',
         fabulousNum: null,
         commentNum: null,
         salesNum: null,
@@ -367,6 +432,7 @@ export default {
         state: null,
         freightId: null,
         sort: null,
+        introduce: null,
         updateTime: null,
         createTime: null
       }
@@ -382,60 +448,94 @@ export default {
       this.initData()
     },
     addBtnClick () {
-      this.title = '添加产品管理'
+      this.title = '添加产品'
       this.formInline = this.initFromInput()
       this.addFlag = true
       this.disabled = false
+      this.logoFiles = []
+      this.imgsFiles = []
     },
     cancel () {
       this.addFlag = false
       this.formInline = this.initFromInput()
     },
     infoBtnClick (index) {
-      this.title = '编辑产品管理'
+      this.title = '产品详情'
       let tableRow = this.tableData[index]
-      this.formInline.productId = tableRow.productId + ''
-      this.formInline.enterpriseId = tableRow.enterpriseId + ''
-      this.formInline.typeId = tableRow.typeId + ''
-      this.formInline.title = tableRow.title
-      this.formInline.subtitle = tableRow.subtitle
-      this.formInline.image = tableRow.image
-      this.formInline.fabulousNum = tableRow.fabulousNum + ''
-      this.formInline.commentNum = tableRow.commentNum + ''
-      this.formInline.salesNum = tableRow.salesNum + ''
-      this.formInline.shareNum = tableRow.shareNum + ''
-      this.formInline.discountSts = tableRow.discountSts + ''
-      this.formInline.integralSts = tableRow.integralSts + ''
-      this.formInline.state = tableRow.state + ''
-      this.formInline.freightId = tableRow.freightId + ''
-      this.formInline.sort = tableRow.sort + ''
-      this.formInline.updateTime = tableRow.updateTime
-      this.formInline.createTime = tableRow.createTime
-      this.addFlag = true
-      this.disabled = true
+      var params = {}
+      params.productId = tableRow.productId
+      getProProductInfo(params)
+        .then(res => {
+          tableRow = res.data.obj
+          this.formInline.productId = tableRow.productId + ''
+          this.formInline.enterpriseId = tableRow.enterpriseId + ''
+          this.formInline.typeId = tableRow.typeId
+          this.formInline.title = tableRow.title
+          this.formInline.subtitle = tableRow.subtitle
+          this.formInline.image = tableRow.image
+          this.formInline.fabulousNum = tableRow.fabulousNum + ''
+          this.formInline.commentNum = tableRow.commentNum + ''
+          this.formInline.salesNum = tableRow.salesNum + ''
+          this.formInline.shareNum = tableRow.shareNum + ''
+          this.formInline.discountSts = tableRow.discountSts + ''
+          this.formInline.integralSts = tableRow.integralSts + ''
+          this.formInline.state = tableRow.state + ''
+          this.formInline.freightId = tableRow.freightId + ''
+          this.formInline.sort = tableRow.sort + ''
+          this.formInline.updateTime = tableRow.updateTime
+          this.formInline.createTime = tableRow.createTime
+          this.formInline.images = tableRow.images
+          this.formInline.introduce = tableRow.introduce
+          this.addFlag = true
+          this.disabled = true
+          this.logoFiles = []
+          this.imgsFiles = []
+          this.logoFiles.push({
+            name: '',
+            path: tableRow.image
+          })
+          var imgs = JSON.parse(tableRow.images)
+          this.imgsFiles = imgs
+        })
     },
     editBtnClick (index) {
-      this.title = '编辑产品管理'
+      this.title = '编辑产品'
       let tableRow = this.tableData[index]
-      this.formInline.productId = tableRow.productId + ''
-      this.formInline.enterpriseId = tableRow.enterpriseId + ''
-      this.formInline.typeId = tableRow.typeId
-      this.formInline.title = tableRow.title
-      this.formInline.subtitle = tableRow.subtitle
-      this.formInline.image = tableRow.image
-      this.formInline.fabulousNum = tableRow.fabulousNum + ''
-      this.formInline.commentNum = tableRow.commentNum + ''
-      this.formInline.salesNum = tableRow.salesNum + ''
-      this.formInline.shareNum = tableRow.shareNum + ''
-      this.formInline.discountSts = tableRow.discountSts + ''
-      this.formInline.integralSts = tableRow.integralSts + ''
-      this.formInline.state = tableRow.state + ''
-      this.formInline.freightId = tableRow.freightId + ''
-      this.formInline.sort = tableRow.sort + ''
-      this.formInline.updateTime = tableRow.updateTime
-      this.formInline.createTime = tableRow.createTime
-      this.addFlag = true
-      this.disabled = false
+      var params = {}
+      params.productId = tableRow.productId
+      getProProductInfo(params)
+        .then(res => {
+          tableRow = res.data.obj
+          this.formInline.productId = tableRow.productId + ''
+          this.formInline.enterpriseId = tableRow.enterpriseId + ''
+          this.formInline.typeId = tableRow.typeId
+          this.formInline.title = tableRow.title
+          this.formInline.subtitle = tableRow.subtitle
+          this.formInline.image = tableRow.image
+          this.formInline.fabulousNum = tableRow.fabulousNum + ''
+          this.formInline.commentNum = tableRow.commentNum + ''
+          this.formInline.salesNum = tableRow.salesNum + ''
+          this.formInline.shareNum = tableRow.shareNum + ''
+          this.formInline.discountSts = tableRow.discountSts + ''
+          this.formInline.integralSts = tableRow.integralSts + ''
+          this.formInline.state = tableRow.state + ''
+          this.formInline.freightId = tableRow.freightId + ''
+          this.formInline.sort = tableRow.sort + ''
+          this.formInline.updateTime = tableRow.updateTime
+          this.formInline.createTime = tableRow.createTime
+          this.formInline.images = tableRow.images
+          this.formInline.introduce = tableRow.introduce
+          this.addFlag = true
+          this.disabled = false
+          this.logoFiles = []
+          this.imgsFiles = []
+          this.logoFiles.push({
+            name: '',
+            path: tableRow.image
+          })
+          var imgs = JSON.parse(tableRow.images)
+          this.imgsFiles = imgs
+        })
     },
     deleteBathBtnClick () {
       if (this.selection.length === 0) {
@@ -585,16 +685,34 @@ export default {
         .then(res => {
           this.productStateColors = res.data.obj
         })
+    },
+    initproductStateBtns () {
+      var params = {}
+      params.type = 'product_state_btn'
+      getEnumList(params)
+        .then(res => {
+          this.productStateBtns = res.data.obj
+        })
+    },
+    initproductSource () {
+      var params = {}
+      params.type = 'product_source'
+      getEnumList(params)
+        .then(res => {
+          this.productSource = res.data.obj
+        })
     }
   },
   mounted () {},
   created () {
+    this.initproductStateBtns()
     this.initData()
     this.initTypes()
     this.initIntegralSts()
     this.initProductState()
     this.initDiscountSts()
     this.initProductStateColors()
+    this.initproductSource()
   }
 }
 </script>

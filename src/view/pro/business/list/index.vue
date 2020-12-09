@@ -125,6 +125,7 @@ export default {
       center: null,
       lists: [],
       businessStateColors: [],
+      businessCheckStates: [],
       markers: [],
       addSelectAreas: [],
       addSelectCitys: [],
@@ -295,9 +296,21 @@ export default {
           title: '操作',
           key: 'action',
           fixed: 'right',
-          width: 160,
+          width: 200,
           render: (h, params) => {
             return h('div', [
+              h('Button', {
+                props: {
+                  type: 'text',
+                  size: 'small',
+                  disabled: !this.isRetrieve
+                },
+                on: {
+                  click: () => {
+                    this.updateCheckStats(params.index)
+                  }
+                }
+              }, this.checkStats(params.row.state)),
               h('Button', {
                 props: {
                   type: 'text',
@@ -342,6 +355,35 @@ export default {
     }
   },
   methods: {
+    updateCheckStats (value) {
+      var data = this.tableData[value]
+      var state = 1
+      if (data.state === 1) {
+        state = 2
+      }
+      var params = {
+        businessId: data.businessId,
+        state: state
+      }
+      updateProBusiness(params)
+        .then(res => {
+          if (res.data.code === 200) {
+            this.$Message.success('保存成功')
+            this.initData()
+            this.cancel()
+          } else {
+            this.$Message.error(res.data.msg)
+          }
+        })
+    },
+    checkStats (value) {
+      for (var i = 0; i < this.businessCheckStates.length; i++) {
+        var res = this.businessCheckStates[i]
+        if ((value + '') === res.keystr) {
+          return res.valuestr
+        }
+      }
+    },
     logoHandleFile (files) {
       this.formInline.logo = files.path
       this.logoFiles.push(files)
@@ -372,7 +414,6 @@ export default {
       for (var i = 0; i < this.businessStateColors.length; i++) {
         var res = this.businessStateColors[i]
         if ((value + '') === res.keystr) {
-          console.log(res)
           return res.valuestr
         }
       }
@@ -503,7 +544,7 @@ export default {
         path: tableRow.logo
       })
       var imgs = JSON.parse(tableRow.imgs)
-      this.imgsFiles.push(imgs)
+      this.imgsFiles = imgs
     },
     editBtnClick (index) {
       this.title = '编辑商家 '
@@ -539,7 +580,7 @@ export default {
         path: tableRow.logo
       })
       var imgs = JSON.parse(tableRow.imgs)
-      this.imgsFiles.push(imgs)
+      this.imgsFiles = imgs
     },
     deleteBathBtnClick () {
       if (this.selection.length === 0) {
@@ -628,6 +669,14 @@ export default {
       getEnumList(params)
         .then(res => {
           this.businessStates = res.data.obj
+        })
+    },
+    initCheckBusinessState () {
+      var params = {}
+      params.type = 'business_check_state'
+      getEnumList(params)
+        .then(res => {
+          this.businessCheckStates = res.data.obj
         })
     },
     initBusinessStateColor () {
@@ -720,6 +769,7 @@ export default {
     this.initProBusinessTypeList()
     this.initRegion()
     this.initBusinessStateColor()
+    this.initCheckBusinessState()
   }
 }
 </script>
